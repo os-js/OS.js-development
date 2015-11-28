@@ -83,7 +83,10 @@
 
     'gui-button': {
       isContainer: false,
-      icon: 'widget-gtk-button.png'
+      icon: 'widget-gtk-button.png',
+      properties: {
+        label: 'Button'
+      }
     },
     'gui-radio': {
       isContainer: false,
@@ -103,15 +106,24 @@
     },
     'gui-label': {
       isContainer: false,
-      icon: 'widget-gtk-label.png'
+      icon: 'widget-gtk-label.png',
+      properties: {
+        label: 'Label'
+      }
     },
     'gui-password': {
       isContainer: false,
-      icon: 'widget-gtk-entry.png'
+      icon: 'widget-gtk-entry.png',
+      properties: {
+        value: ''
+      }
     },
     'gui-richtext': {
       isContainer: false,
-      icon: 'widget-gtk-textview.png'
+      icon: 'widget-gtk-textview.png',
+      properties: {
+        value: ''
+      }
     },
     'gui-select': {
       isContainer: false,
@@ -131,11 +143,17 @@
     },
     'gui-text': {
       isContainer: false,
-      icon: 'widget-gtk-entry.png'
+      icon: 'widget-gtk-entry.png',
+      properties: {
+        value: ''
+      }
     },
     'gui-textarea': {
       isContainer: false,
-      icon: 'widget-gtk-textview.png'
+      icon: 'widget-gtk-textview.png',
+      properties: {
+        value: ''
+      }
     },
 
     'separator3' : null,
@@ -161,7 +179,10 @@
 
     'gui-progress-bar': {
       isContainer: false,
-      icon: 'widget-gtk-progressbar.png'
+      icon: 'widget-gtk-progressbar.png',
+      properties: {
+        progress: ''
+      }
     },
     'gui-color-box': {
       isContainer: false,
@@ -193,10 +214,22 @@
       skip: true
     },
     'gui-vbox-container': {
-      skip: true
+      skip: true,
+      properties: {
+        fill: 0,
+        shrink: 0,
+        expand: false,
+        fill: false
+      }
     },
     'gui-hbox-container': {
-      skip: true
+      skip: true,
+      properties: {
+        fill: 0,
+        shrink: 0,
+        expand: false,
+        fill: false
+      }
     },
     'gui-menu-entry': {
       skip: true
@@ -264,6 +297,23 @@
       console.warn('Error getting target', e.stack, e);
     }
     return ttarget;
+  };
+
+  Project.prototype.getElementProperties = function(xpath, tagName, el) {
+    var element = this.getElement(xpath);
+    var defaultProps = el.properties || {};
+    var elementProps = {};
+
+    if ( element ) {
+      var attributes = element.attributes;
+      var attrib;
+      for ( var i = 1; i < attributes.length; i++ ) {
+        attrib = attributes[i];
+        elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
+      }
+    }
+
+    return Utils.argumentDefaults(elementProps, defaultProps);
   };
 
   /////////////////////////////////////////////////////////////////////////////

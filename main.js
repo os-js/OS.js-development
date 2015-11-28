@@ -115,6 +115,7 @@
     var win = this.getDesignerWindow();
     var target = win.getElement(xpath);
     var ttarget = this.currentProject.getElement(xpath);
+    var propWin = this.getPropertiesWindow();
 
     console.group('ApplicationIDE::onElementSelected()');
     console.log('Xpath', xpath);
@@ -125,6 +126,8 @@
 
     if ( target ) {
       win.selectElement(target);
+      var props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName]);
+      propWin.renderProperties(xpath, props);
     }
   };
 

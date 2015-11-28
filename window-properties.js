@@ -83,15 +83,42 @@
   };
 
   ApplicationIDEPropertiesWindow.prototype.clear = function() {
+    this._scheme.find(this, 'Tree').clear();
+    this._scheme.find(this, 'Properties').clear();
   };
 
   ApplicationIDEPropertiesWindow.prototype.load = function() {
     this.renderTree();
+    this.renderProperties();
   };
 
-  ApplicationIDEPropertiesWindow.prototype.renderProperties = function() {
+  ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, properties) {
     var app = this._app;
     var project = app.currentProject;
+
+    var listView = this._scheme.find(this, 'Properties');
+    listView.clear();
+
+    if ( xpath && properties ) {
+      var rows = [];
+      listView.set('columns', [
+        {label: 'Name', basis: '100px', grow: 1, shrink: 1},
+        {label: 'Value', grow: 0, shrink: 0}
+      ]);
+
+      Object.keys(properties).forEach(function(k) {
+        var val = (properties[k]).toString();
+        rows.push({
+          value: val,
+          columns: [
+            {label: k},
+            {label: val}
+          ]
+        });
+      });
+
+      listView.add(rows);
+    }
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
@@ -101,6 +128,8 @@
     var rootWindow = project.getWindow(windowName);
 
     var treeView = this._scheme.find(this, 'Tree');
+    treeView.clear();
+
     var elements = OSjs.Applications.ApplicationIDE.Elements;
     var rootIter = {
       label: windowName,
@@ -140,8 +169,6 @@
     }
 
     traverse(rootWindow, rootIter);
-
-    treeView.clear();
     treeView.add(tree);
   };
 
