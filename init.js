@@ -34,15 +34,77 @@
   // INIT
   /////////////////////////////////////////////////////////////////////////////
 
+  function inputProperties(icon) {
+    return {
+      isContainer: false,
+      icon: icon,
+      propertyTypes: {
+        value: {
+          type: 'string'
+        },
+        placeholder: {
+          type: 'string'
+        }
+      },
+      properties: {
+        value: '',
+        placeholder : ''
+      }
+    };
+  }
+
+  function getBoxContainerProperties(name, icon) {
+    return {
+      isContainer: name + '-container',
+      icon: icon,
+      propertyTypes: {
+        _size: {
+          type: 'number'
+        }
+      },
+      properties: {
+        _size: function(el, tagName) {
+          return el.parentNode.getElementsByTagName(tagName + '-container').length || 0;
+        }
+      }
+    };
+  }
+
+  function boxProperties() {
+    return {
+      skip: true,
+      isContainer: true,
+      propertyTypes: {
+        grow: {
+          type: 'number'
+        },
+        shrink: {
+          type: 'number'
+        },
+        basis: {
+          type: 'mixed',
+          values: [null, 'auto']
+        },
+        expand: {
+          type: 'boolean'
+        },
+        fill: {
+          type: 'boolean'
+        }
+      },
+      properties: {
+        grow: null,
+        shrink: null,
+        basis: null,
+        expand: null,
+        fill: null
+      }
+    };
+  }
+
   var elements = {
-    'gui-hbox': {
-      isContainer: 'gui-hbox-container',
-      icon: 'widget-gtk-hbox.png'
-    },
-    'gui-vbox': {
-      isContainer: 'gui-vbox-container',
-      icon: 'widget-gtk-vbox.png'
-    },
+    'gui-hbox': getBoxContainerProperties('gui-hbox', 'widget-gtk-hbox.png'),
+    'gui-vbox': getBoxContainerProperties('gui-vbox', 'widget-gtk-vbox.png'),
     'gui-paned-view': {
       isContainer: 'gui-paned-view-container',
       icon: 'widget-gtk-hpaned.png'
@@ -111,13 +173,6 @@
         label: 'Label'
       }
     },
-    'gui-password': {
-      isContainer: false,
-      icon: 'widget-gtk-entry.png',
-      properties: {
-        value: ''
-      }
-    },
     'gui-richtext': {
       isContainer: false,
       icon: 'widget-gtk-textview.png',
@@ -141,20 +196,9 @@
       isContainer: false,
       icon: 'widget-gtk-togglebutton.png'
     },
-    'gui-text': {
-      isContainer: false,
-      icon: 'widget-gtk-entry.png',
-      properties: {
-        value: ''
-      }
-    },
-    'gui-textarea': {
-      isContainer: false,
-      icon: 'widget-gtk-textview.png',
-      properties: {
-        value: ''
-      }
-    },
+    'gui-text': inputProperties('widget-gtk-entry.png'),
+    'gui-password': inputProperties('widget-gtk-entry.png'),
+    'gui-textarea': inputProperties('widget-gtk-textview.png'),
 
     'separator3' : null,
 
@@ -213,24 +257,8 @@
     'gui-menu-bar-entry': {
       skip: true
     },
-    'gui-vbox-container': {
-      skip: true,
-      properties: {
-        fill: 0,
-        shrink: 0,
-        expand: false,
-        fill: false
-      }
-    },
-    'gui-hbox-container': {
-      skip: true,
-      properties: {
-        fill: 0,
-        shrink: 0,
-        expand: false,
-        fill: false
-      }
-    },
+    'gui-vbox-container': boxProperties(),
+    'gui-hbox-container': boxProperties(),
     'gui-menu-entry': {
       skip: true
     },
@@ -300,12 +328,30 @@
   };
 
   Project.prototype.getElementProperties = function(xpath, tagName, el) {
-    var element = this.getElement(xpath);
-    var defaultProps = el.properties || {};
-    var elementProps = {};
+    var target = this.getElement(xpath);
+    var defaultProps = {};
 
-    if ( element ) {
-      var attributes = element.attributes;
+    var elementProps = {
+      id: null
+    };
+    var elementPropTypes = Utils.argumentDefaults(el.propertyTypes || {}, {
+      id: {
+        type: 'string'
+      }
+    });
+
+    var refProps = el.properties || {};
+    Object.keys(refProps).forEach(function(k) {
+      var value = refProps[k];
+      if ( typeof value === 'function' ) {
+        value = value(target, tagName);
+      }
+      defaultProps[k] = value;
+    });
+
+
+    if ( target ) {
+      var attributes = target.attributes;
       var attrib;
       for ( var i = 1; i < attributes.length; i++ ) {
         attrib = attributes[i];
@@ -313,7 +359,12 @@
       }
     }
 
-    return Utils.argumentDefaults(elementProps, defaultProps);
+    var props = Utils.argumentDefaults(elementProps, defaultProps);
+    Object.keys(props).forEach(function(p) {
+      var type = (elementPropTypes[p] || {}).type || 'unknown';
+      props[p] = type + ':' + props[p];
+    });
+    return props;
   };
 
   /////////////////////////////////////////////////////////////////////////////

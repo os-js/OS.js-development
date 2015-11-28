@@ -107,7 +107,7 @@
       ]);
 
       Object.keys(properties).forEach(function(k) {
-        var val = (properties[k]).toString();
+        var val = String(properties[k]);
         rows.push({
           value: val,
           columns: [
