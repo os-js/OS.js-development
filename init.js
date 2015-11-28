@@ -254,6 +254,18 @@
     return result;
   };
 
+  Project.prototype.getElement = function(xpath) {
+    xpath = '/div[1]/application-window[1]/' + xpath; // FIXME
+
+    var ttarget = null;
+    try {
+      ttarget = OSjs.Applications.ApplicationIDE.getElementByXpath(xpath, this.dom.firstChild);
+    } catch ( e ) {
+      console.warn('Error getting target', e.stack, e);
+    }
+    return ttarget;
+  };
+
   /////////////////////////////////////////////////////////////////////////////
   // UTILS
   /////////////////////////////////////////////////////////////////////////////

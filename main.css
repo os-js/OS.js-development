@@ -32,6 +32,16 @@
   white-space : normal;
 }
 
+.ApplicationIDEDesignerWindow gui-vbox-container {
+  min-height : 16px;
+}
+.ApplicationIDEDesignerWindow gui-hbox-container {
+  min-width : 16px;
+}
+
 .ApplicationIDEDesignerWindow .ide-selected {
   background : red;
+}
+.ApplicationIDEDesignerWindow .ide-hover {
+  background : blue;
 }

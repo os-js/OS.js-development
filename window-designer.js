@@ -30,6 +30,28 @@
 (function(Application, Window, Utils, API, VFS, GUI) {
   'use strict';
 
+  function createDroppable(root, onDrop) {
+    onDrop = onDrop || function() {};
+
+    API.createDroppable(root, {
+      onEnter: function(ev) {
+        ev.stopPropagation();
+        Utils.$addClass(root, 'ide-hover');
+      },
+      onOver: function(ev) {
+        ev.stopPropagation();
+        Utils.$addClass(root, 'ide-hover');
+      },
+      onLeave: function() {
+        Utils.$removeClass(root, 'ide-hover');
+      },
+      onDrop: function() {
+        Utils.$removeClass(root, 'ide-hover');
+        onDrop();
+      }
+    });
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // WINDOWS
   /////////////////////////////////////////////////////////////////////////////
@@ -55,10 +77,8 @@
     var self = this;
 
     // Load and set up scheme (GUI) here
-    API.createDroppable(root, {
-      onDrop: function() {
-        app.onElementDropped(self, root);
-      }
+    createDroppable(root, function() {
+      app.onElementDropped(null, null);
     });
 
     return root;
@@ -71,6 +91,14 @@
   };
 
   ApplicationIDEDesignerWindow.prototype.clear = function() {
+  };
+
+  ApplicationIDEDesignerWindow.prototype.getElement = function(xpath) {
+    var target = null;
+    try {
+      target = OSjs.Applications.ApplicationIDE.getElementByXpath(xpath, this._$root);
+    } catch ( e ) {}
+    return target;
   };
 
   ApplicationIDEDesignerWindow.prototype.selectElement = function(el) {
@@ -114,18 +142,16 @@
               console.debug('Creating droppable in', sel, 'with', cn);
 
               if ( cn === true ) {
-                API.createDroppable(sel, {
-                  onDrop: function() {
-                    app.onElementDropped(self, sel);
-                  }
+                createDroppable(sel, function() {
+                  var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
+                  app.onElementDropped(xpath, tagName);
                 });
               } else {
                 sel.getElementsByTagName(cn).forEach(function(cel) {
                   console.log(cel);
-                  API.createDroppable(cel, {
-                    onDrop: function() {
-                      app.onElementDropped(self, cel);
-                    }
+                  createDroppable(cel, function() {
+                    var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
+                    app.onElementDropped(xpath, tagName);
                   });
                 });
               }

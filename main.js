@@ -110,11 +110,17 @@
     }
   };
 
-  ApplicationIDE.prototype.onElementSelected = function(win, el, target) {
+  ApplicationIDE.prototype.onElementSelected = function(xpath, tagName) {
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var win = this.getDesignerWindow();
+    var target = win.getElement(xpath);
+    var ttarget = this.currentProject.getElement(xpath);
+
     console.group('ApplicationIDE::onElementSelected()');
-    console.log('Window', win);
-    console.log('Element', el);
+    console.log('Xpath', xpath);
+    console.log('Element', tagName, elements[tagName]);
     console.log('Target', target);
+    console.log('Template Target', ttarget);
     console.groupEnd();
 
     if ( target ) {
@@ -122,19 +128,39 @@
     }
   };
 
-  ApplicationIDE.prototype.onDeleteElementClick = function(win, el, target) {
+  ApplicationIDE.prototype.onDeleteElementClick = function(xpath, tagName) {
     console.group('ApplicationIDE::onDeleteElementClick()');
-    console.log('Window', win);
-    console.log('Element', el);
+
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var win = this.getDesignerWindow();
+    var target = win.getElement(xpath);
+    var ttarget = this.currentProject.getElement(xpath);
+
+    console.log('Xpath', xpath);
+    console.log('Element', tagName, elements[tagName]);
     console.log('Target', target);
+    console.log('Template Target', ttarget);
     console.groupEnd();
 
-    if ( target ) {
+    if ( target && ttarget ) {
+      Utils.$remove(ttarget);
+
+      win.render();
     }
   };
 
-  ApplicationIDE.prototype.onElementDropped = function(win, el, target) {
-    console.warn('ApplicationIDE::onElementDropped()', win, el, target);
+  ApplicationIDE.prototype.onElementDropped = function(xpath, tagName) {
+    var win = this.getDesignerWindow();
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var target = win.getElement(xpath);
+    var ttarget = this.currentProject.getElement(xpath);
+
+    console.group('ApplicationIDE::onElementDropped()');
+    console.log('Xpath', xpath);
+    console.log('Element', tagName, elements[tagName]);
+    console.log('Target', target);
+    console.log('Template Target', ttarget);
+    console.groupEnd();
   };
 
   ApplicationIDE.prototype.getMainWindow = function() {
