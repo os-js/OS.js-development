@@ -30,6 +30,7 @@
 (function(Application, Window, Utils, API, VFS, GUI) {
   'use strict';
 
+  var timeout;
   function createDroppable(root, onDrop) {
     onDrop = onDrop || function() {};
 
@@ -49,8 +50,14 @@
         Utils.$removeClass(root, 'ide-hover');
       },
       onItemDropped: function(ev, el, item, args) {
-        Utils.$removeClass(root, 'ide-hover');
-        onDrop(item.data);
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        timeout = clearTimeout(timeout);
+        timeout = setTimeout(function() {
+          Utils.$removeClass(root, 'ide-hover');
+          onDrop(item.data);
+        }, 10);
       }
     });
   }
@@ -140,19 +147,20 @@
         el.children.forEach(function(sel) {
           var tagName = sel.tagName.toLowerCase();
           if ( elements[tagName] ) {
-            if ( elements[tagName].isContainer ) {
-              var cn = elements[tagName].isContainer;
-              console.group('ApplicationIDEDesignerWindow::render()->traverse()');
-              console.debug('Creating droppable in', sel, 'with', cn);
+            var cn = elements[tagName].isContainer;
+            if ( cn ) {
+              //console.group('ApplicationIDEDesignerWindow::render()->traverse()');
+              //console.debug('Creating droppable in', sel, 'with', cn);
+
+              sel.setAttribute('data-ide-container', 'true');
 
               if ( cn === true ) {
                 createDroppable(sel, function(data) {
-                  var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
+                  var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(sel, self._$root);
                   app.onElementDropped(xpath, tagName, data.tagName);
                 });
               } else {
                 sel.getElementsByTagName(cn).forEach(function(cel) {
-                  console.log(cel);
                   createDroppable(cel, function(data) {
                     var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
                     app.onElementDropped(xpath, tagName, data.tagName);
@@ -160,8 +168,10 @@
                 });
               }
 
-              console.groupEnd();
+            } else {
+              sel.setAttribute('data-ide-element', 'true');
             }
+            //console.groupEnd();
           }
 
           traverse(sel);

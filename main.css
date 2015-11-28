@@ -38,10 +38,38 @@
 .ApplicationIDEDesignerWindow gui-hbox-container {
   min-width : 16px;
 }
+.ApplicationIDEDesignerWindow  *[data-ide-element='true'] {
+  pointer-events : none;
+}
 
 .ApplicationIDEDesignerWindow .ide-selected {
-  background : red;
+  position : relative;
 }
+  .ApplicationIDEDesignerWindow .ide-selected:after {
+    content : '';
+    position : absolute;
+    top : 0px;
+    right : 0px;
+    bottom : 0px;
+    left : 0px;
+    z-index : 9999999999999;
+    background : rgba(255, 0, 0, .5) !important;
+    border : 1px solid red;
+    pointer-events : none;
+  }
+
 .ApplicationIDEDesignerWindow .ide-hover {
-  background : blue;
+  position : relative;
 }
+  .ApplicationIDEDesignerWindow .ide-hover:after {
+    content : '';
+    position : absolute;
+    top : 0px;
+    right : 0px;
+    bottom : 0px;
+    left : 0px;
+    z-index : 9999999999999;
+    background : rgba(0, 0, 255, .5) !important;
+    border : 1px solid blue;
+    pointer-events : none;
+  }

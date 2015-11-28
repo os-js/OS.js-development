@@ -172,6 +172,24 @@
 
     if ( target && ttarget ) {
       var el = document.createElement(elementTagName);
+      var setProps = elements[elementTagName].properties || {};
+
+      Object.keys(setProps).forEach(function(k) {
+        var val = setProps[k];
+        if ( typeof setProps[k] === 'function' ) {
+          setProps[k](null, elementTagName);
+        }
+        console.warn("XXXX", k, val);
+
+        if ( val !== null ) {
+          if ( k === 'label' && elements[elementTagName].hasInnerLabel === true ) {
+            el.appendChild(document.createTextNode(String(val)));
+          } else {
+            el.setAttribute('data-' + k, String(val));
+          }
+        }
+      });
+
       ttarget.appendChild(el);
 
       win.render()

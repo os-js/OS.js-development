@@ -145,6 +145,7 @@
 
     'gui-button': {
       isContainer: false,
+      hasInnerLabel: true,
       icon: 'widget-gtk-button.png',
       properties: {
         label: 'Button'
@@ -332,7 +333,7 @@
     var defaultProps = {};
 
     var elementProps = {
-      id: null
+      id: target.getAttribute('data-id') || null
     };
     var elementPropTypes = Utils.argumentDefaults(el.propertyTypes || {}, {
       id: {
