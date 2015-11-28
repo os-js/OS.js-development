@@ -40,8 +40,8 @@
       gravity: 'nort-east',
       icon: metadata.icon,
       title: metadata.name + ' - Properties',
-      width: 300,
-      height: 500
+      width: 350,
+      height: 740
     }, app, scheme]);
   }
 
@@ -152,8 +152,14 @@
             icon: 'status/dialog-question.png'
           });
 
+          var name = c.tagName.toLowerCase();
+          var id = c.getAttribute('data-id') || null;
+          if ( id ) {
+            name = name + ' (' + id + ')';
+          }
+
           var niter = {
-            label: c.tagName,
+            label: name,
             icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
             value: {
               tagName: c.tagName.toLowerCase(),

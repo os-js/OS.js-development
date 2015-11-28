@@ -43,7 +43,6 @@
 }
 
 .ApplicationIDEDesignerWindow .ide-selected {
-  position : relative;
 }
   .ApplicationIDEDesignerWindow .ide-selected:after {
     content : '';
@@ -57,9 +56,12 @@
     border : 1px solid red;
     pointer-events : none;
   }
+  .ApplicationIDEDesignerWindow *[data-ide-element='true'].ide-selected:after {
+    background : rgba(0, 255, 0, .5) !important;
+    border : 1px solid green !important;
+  }
 
 .ApplicationIDEDesignerWindow .ide-hover {
-  position : relative;
 }
   .ApplicationIDEDesignerWindow .ide-hover:after {
     content : '';

@@ -264,7 +264,8 @@
       skip: true
     },
     'gui-paned-view-container': {
-      skip: true
+      skip: true,
+      isContainer: true
     }
   };
 

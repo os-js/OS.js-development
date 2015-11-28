@@ -179,7 +179,6 @@
         if ( typeof setProps[k] === 'function' ) {
           setProps[k](null, elementTagName);
         }
-        console.warn("XXXX", k, val);
 
         if ( val !== null ) {
           if ( k === 'label' && elements[elementTagName].hasInnerLabel === true ) {
