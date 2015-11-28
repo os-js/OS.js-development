@@ -44,6 +44,7 @@
       height: 400
     }, app]);
 
+    this.selectedElement = null;
   }
 
   ApplicationIDEDesignerWindow.prototype = Object.create(Window.prototype);
@@ -64,10 +65,20 @@
   };
 
   ApplicationIDEDesignerWindow.prototype.destroy = function() {
+    this.selectedElement = null;
+
     Window.prototype.destroy.apply(this, arguments);
   };
 
   ApplicationIDEDesignerWindow.prototype.clear = function() {
+  };
+
+  ApplicationIDEDesignerWindow.prototype.selectElement = function(el) {
+    if ( this.selectedElement ) {
+      Utils.$removeClass(this.selectedElement, 'ide-selected');
+    }
+    this.selectedElement = el;
+    Utils.$addClass(this.selectedElement, 'ide-selected');
   };
 
   ApplicationIDEDesignerWindow.prototype.load = function() {

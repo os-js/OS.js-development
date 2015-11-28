@@ -73,9 +73,9 @@
   };
 
   ApplicationIDE.prototype.windowAction = function(fn, args) {
-    var mainWin = this._getWindow(null);
-    var propWin = this._getWindowsByTag('properties')[0];
-    var designWin = this._getWindowsByTag('designer')[0];
+    var mainWin = this.getMainWindow();
+    var propWin = this.getPropertiesWindow();
+    var designWin = this.getDesignerWindow();
 
     mainWin[fn].apply(mainWin, args);
     propWin[fn].apply(propWin, args);
@@ -91,6 +91,7 @@
 
     this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name);
     this.currentProject.load(function(err) {
+      console.warn("PROJECT", self.currentProject);
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
         self.windowAction('load', []);
@@ -109,7 +110,43 @@
     }
   };
 
+  ApplicationIDE.prototype.onElementSelected = function(win, el, target) {
+    console.group('ApplicationIDE::onElementSelected()');
+    console.log('Window', win);
+    console.log('Element', el);
+    console.log('Target', target);
+    console.groupEnd();
+
+    if ( target ) {
+      win.selectElement(target);
+    }
+  };
+
+  ApplicationIDE.prototype.onDeleteElementClick = function(win, el, target) {
+    console.group('ApplicationIDE::onDeleteElementClick()');
+    console.log('Window', win);
+    console.log('Element', el);
+    console.log('Target', target);
+    console.groupEnd();
+
+    if ( target ) {
+    }
+  };
+
   ApplicationIDE.prototype.onElementDropped = function(win, el, target) {
+    console.warn('ApplicationIDE::onElementDropped()', win, el, target);
+  };
+
+  ApplicationIDE.prototype.getMainWindow = function() {
+    return this._getWindow(null);
+  };
+
+  ApplicationIDE.prototype.getDesignerWindow = function() {
+    return this._getWindowsByTag('designer')[0];
+  };
+
+  ApplicationIDE.prototype.getPropertiesWindow = function() {
+    return this._getWindowsByTag('properties')[0];
   };
 
   /////////////////////////////////////////////////////////////////////////////

@@ -63,6 +63,9 @@
         toolbar.append(document.createElement('div'));
         return;
       }
+      if ( el.skip === true ) {
+        return;
+      }
 
       var button = scheme.create(self, 'gui-button', {
         icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),

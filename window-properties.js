@@ -55,6 +55,49 @@
     // Load and set up scheme (GUI) here
     scheme.render(this, 'IDEPropertiesWindow', root);
 
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var treeView = this._scheme.find(this, 'Tree');
+    treeView.on('contextmenu', function(ev) {
+      var entry = ev.detail.entries[0];
+      if ( entry ) {
+        API.createMenu([
+          {
+            title: 'Delete',
+            onClick: function() {
+              var target = null;
+              var el = null;
+              var win = app.getDesignerWindow();
+              try {
+                target = OSjs.Applications.ApplicationIDE.getElementByXpath(entry.path, win._$root);
+                el = elements[target.tagName.toLowerCase()];
+              } catch ( e ) {}
+
+              app.onDeleteElementClick(win, el, target, entry.path);
+            }
+          }
+        ], ev);
+      }
+    });
+
+    treeView.on('select', function(ev) {
+      var project = app.currentProject;
+      var windowName = project.windows[0];
+      var rootWindow = project.getWindow(windowName);
+
+      var entry = ev.detail.entries[0].data;
+      var el = elements[entry.tagName];
+
+      console.warn(entry);
+
+      var win = app.getDesignerWindow();
+      var target = null;
+      try {
+        target = OSjs.Applications.ApplicationIDE.getElementByXpath(entry.path, win._$root);
+      } catch ( e ) {}
+
+      app.onElementSelected(win, el, target);
+    });
+
     return root;
   };
 
@@ -72,7 +115,6 @@
   ApplicationIDEPropertiesWindow.prototype.renderProperties = function() {
     var app = this._app;
     var project = app.currentProject;
-
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
@@ -86,6 +128,10 @@
     var rootIter = {
       label: windowName,
       icon: API.getApplicationResource(app, 'icons/widget-gtk-window.png'),
+      value: {
+        tagName: 'application-window',
+        path: ''
+      },
       entries: []
     };
 
@@ -95,15 +141,18 @@
       if ( root.children ) {
         root.children.forEach(function(c) {
 
-          var el = elements[c.tagName.toLowerCase()] || {
+          var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
             isContainer: false,
             icon: 'status/dialog-question.png'
-          };
+          });
 
           var niter = {
             label: c.tagName,
-            icon: API.getIcon(),
             icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
+            value: {
+              tagName: c.tagName.toLowerCase(),
+              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow).replace('/div[1]/application-window[1]/', '')
+            },
             entries: []
           };
 

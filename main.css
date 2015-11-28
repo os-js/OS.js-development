@@ -32,3 +32,6 @@
   white-space : normal;
 }
 
+.ApplicationIDEDesignerWindow .ide-selected {
+  background : red;
+}
