@@ -45,9 +45,12 @@
       onLeave: function() {
         Utils.$removeClass(root, 'ide-hover');
       },
-      onDrop: function() {
+      onDrop: function(ev) {
         Utils.$removeClass(root, 'ide-hover');
-        onDrop();
+      },
+      onItemDropped: function(ev, el, item, args) {
+        Utils.$removeClass(root, 'ide-hover');
+        onDrop(item.data);
       }
     });
   }
@@ -130,6 +133,7 @@
     project.scheme.render(this, windowName, root);
 
     var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var thispath = OSjs.Applications.ApplicationIDE.getXpathByElement(this._$root);
 
     function traverse(el) {
       if ( el.children ) {
@@ -142,16 +146,16 @@
               console.debug('Creating droppable in', sel, 'with', cn);
 
               if ( cn === true ) {
-                createDroppable(sel, function() {
+                createDroppable(sel, function(data) {
                   var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
-                  app.onElementDropped(xpath, tagName);
+                  app.onElementDropped(xpath, tagName, data.tagName);
                 });
               } else {
                 sel.getElementsByTagName(cn).forEach(function(cel) {
                   console.log(cel);
-                  createDroppable(cel, function() {
+                  createDroppable(cel, function(data) {
                     var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
-                    app.onElementDropped(xpath, tagName);
+                    app.onElementDropped(xpath, tagName, data.tagName);
                   });
                 });
               }

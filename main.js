@@ -146,13 +146,18 @@
       Utils.$remove(ttarget);
 
       win.render();
+      this.getPropertiesWindow().load();
     }
   };
 
-  ApplicationIDE.prototype.onElementDropped = function(xpath, tagName) {
+  ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName) {
     var win = this.getDesignerWindow();
+
+    var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
+    xpath = xpath.replace(rootPath, '');
+
     var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var target = win.getElement(xpath);
+    var target = win.getElement(xpath.replace(/^\//, ''));
     var ttarget = this.currentProject.getElement(xpath);
 
     console.group('ApplicationIDE::onElementDropped()');
@@ -160,6 +165,16 @@
     console.log('Element', tagName, elements[tagName]);
     console.log('Target', target);
     console.log('Template Target', ttarget);
+    console.log('Teplate Element', elementTagName, elements[elementTagName]);
+
+    if ( target && ttarget ) {
+      var el = document.createElement(elementTagName);
+      ttarget.appendChild(el);
+
+      win.render()
+      this.getPropertiesWindow().load();
+    }
+
     console.groupEnd();
   };
 

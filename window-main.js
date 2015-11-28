@@ -74,6 +74,9 @@
       }, toolbar);
 
       API.createDraggable(button.$element, {
+        data: {
+          tagName: name
+        }
       });
 
       button = null;
