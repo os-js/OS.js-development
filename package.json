@@ -1,0 +1,18 @@
+{
+  "className":  "ApplicationIDE",
+  "name":       "IDE",
+  "mime":       null,
+  "icon":       "categories/gnome-devel.png",
+  "singular":   true,
+  "preload":    [
+    {"src": "init.js", "type": "javascript"},
+    {"src": "main.js", "type": "javascript"},
+    {"src": "window-main.js", "type": "javascript"},
+    {"src": "window-properties.js", "type": "javascript"},
+    {"src": "window-designer.js", "type": "javascript"},
+    {"src": "main.css", "type": "stylesheet"}
+  ]
+}
+
+
+

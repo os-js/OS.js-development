@@ -1,0 +1,44 @@
+<application-window data-id="IDEWindow">
+  <gui-vbox>
+    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+      <gui-menu-bar>
+        <gui-menu-bar-entry data-label="LBL_FILE">
+          <gui-menu data-id="SubmenuFile">
+            <gui-menu-entry data-id="MenuNew" data-label="LBL_NEW"></gui-menu-entry>
+            <gui-menu-entry data-id="MenuOpen" data-label="LBL_OPEN"></gui-menu-entry>
+            <gui-menu-entry data-id="MenuSave" data-label="LBL_SAVE"></gui-menu-entry>
+            <gui-menu-entry data-id="MenuSaveAs" data-label="LBL_SAVEAS"></gui-menu-entry>
+            <gui-menu-entry data-id="MenuClose" data-label="LBL_CLOSE"></gui-menu-entry>
+          </gui-menu>
+        </gui-menu-bar-entry>
+      </gui-menu-bar>
+    </gui-vbox-container>
+
+    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="auto" data-fill="true">
+      <gui-button-bar data-id="Buttons">
+      </gui-button-bar>
+    </gui-vbox-container>
+  </gui-vbox>
+</application-window>
+
+<application-window data-id="IDEPropertiesWindow">
+  <gui-vbox>
+    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="auto" data-fill="true">
+      <gui-tree-view data-expanded="true" data-id="Tree">
+      </gui-tree-view>
+    </gui-vbox-container>
+    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="auto" data-fill="true">
+      <gui-list-view id="Properties">
+      </gui-list-view>
+    </gui-vbox-container>
+    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+      <gui-button-bar data-id="PropertiesButtons">
+        <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
+      </gui-button-bar>
+    </gui-vbox-container>
+  </gui-vbox>
+</application-window>
+
+<application-window data-id="IDEDesignerWindow">
+
+</application-window>
