@@ -23,11 +23,11 @@
 
 <application-window data-id="IDEPropertiesWindow">
   <gui-vbox>
-    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="60%" data-fill="true">
+    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="30%" data-fill="true">
       <gui-tree-view data-expanded="true" data-id="Tree">
       </gui-tree-view>
     </gui-vbox-container>
-    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="40%" data-fill="true">
+    <gui-vbox-container data-grow="1" data-shrink="0" data-fill="true">
       <gui-list-view data-id="Properties">
       </gui-list-view>
     </gui-vbox-container>
@@ -35,6 +35,9 @@
       <gui-button-bar data-id="PropertiesButtons">
         <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
       </gui-button-bar>
+    </gui-vbox-container>
+    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+      <gui-statusbar data-id="Statusbar"></gui-statusbar>
     </gui-vbox-container>
   </gui-vbox>
 </application-window>

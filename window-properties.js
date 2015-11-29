@@ -85,6 +85,8 @@
   ApplicationIDEPropertiesWindow.prototype.clear = function() {
     this._scheme.find(this, 'Tree').clear();
     this._scheme.find(this, 'Properties').clear();
+
+    this._scheme.find(this, 'Statusbar').set('value', '');
   };
 
   ApplicationIDEPropertiesWindow.prototype.load = function() {
@@ -92,19 +94,23 @@
     this.renderProperties();
   };
 
-  ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName) {
+  ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
     var treeView = this._scheme.find(this, 'Tree');
-    treeView.set('selected', xpath, 'path');
+    treeView.set('selected', xpath, 'path', {scroll:true});
   };
 
-  ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, properties) {
+  ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, tagName, properties) {
     var app = this._app;
     var project = app.currentProject;
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+
+    var statusBar = this._scheme.find(this, 'Statusbar');
+    statusBar.set('value', '/' + (typeof xpath === 'string' ? (xpath || '') : (xpath || 'null')));
 
     var listView = this._scheme.find(this, 'Properties');
     listView.clear();
 
-    if ( xpath && properties ) {
+    if ( properties ) {
       var rows = [];
       listView.set('columns', [
         {label: 'Name', basis: '100px', grow: 1, shrink: 1},
@@ -113,10 +119,12 @@
 
       Object.keys(properties).forEach(function(k) {
         var val = String(properties[k]);
+        var key = k;
+
         rows.push({
           value: val,
           columns: [
-            {label: k},
+            {label: key},
             {label: val}
           ]
         });

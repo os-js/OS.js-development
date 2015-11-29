@@ -152,14 +152,26 @@
     this.onElementSelected(xpath, tagName);
 
     var propWin = this.getPropertiesWindow(xpath, tagName);
-    propWin.selectElement(xpath, tagName);
+    propWin.selectElement(xpath, tagName, true);
   };
 
   ApplicationIDE.prototype.onElementSelected = function(xpath, tagName) {
     var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var propWin = this.getPropertiesWindow();
     var win = this.getDesignerWindow();
-    var target = win.getElement(xpath);
-    var ttarget = this.currentProject.getElement(xpath);
+
+    var target = null;
+    var ttarget = null;
+    var props = null;
+
+    if ( xpath ) {
+      target = win.getElement(xpath);
+      ttarget = this.currentProject.getElement(xpath);
+    } else {
+      target = win._$root;
+      ttarget = this.currentProject.getWindow();
+      tagName = 'application-window';
+    }
 
     console.group('ApplicationIDE::onElementSelected()');
     console.log('Xpath', xpath);
@@ -171,9 +183,8 @@
     if ( target ) {
       win.selectElement(target);
 
-      var props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName]);
-      var propWin = this.getPropertiesWindow();
-      propWin.renderProperties(xpath, props);
+      var props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName], win);
+      propWin.renderProperties(xpath, tagName, props);
     }
   };
 

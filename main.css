@@ -31,6 +31,9 @@
 .ApplicationIDEWindow application-window-content gui-button-bar {
   white-space : normal;
 }
+.ApplicationIDEPropertiesWindow application-window-content gui-statusbar {
+  white-space : nowrap;
+}
 
 /**
  * Overrides

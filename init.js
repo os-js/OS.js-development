@@ -103,12 +103,33 @@
   }
 
   var elements = {
+    'application-window': {
+      skip: true,
+      isContainer: true/*,
+      properties: {
+        x: null,
+        y: null,
+        width: null,
+        height: null
+      }*/
+    },
+
+    //
+    // CONTAINERS
+    //
+
     'gui-hbox': getBoxContainerProperties('gui-hbox', 'widget-gtk-hbox.png'),
+      'gui-hbox-container': boxProperties(),
+
     'gui-vbox': getBoxContainerProperties('gui-vbox', 'widget-gtk-vbox.png'),
+      'gui-vbox-container': boxProperties(),
+
     'gui-paned-view': {
       isContainer: 'gui-paned-view-container',
       icon: 'widget-gtk-hpaned.png'
     },
+      'gui-paned-view-container': boxProperties(),
+
     'gui-tabs': {
       isContainer: 'gui-tab-container',
       icon: 'widget-gtk-notebook.png'
@@ -123,6 +144,10 @@
     },
 
     'separator1' : null,
+
+    //
+    // MEDIA
+    //
 
     'gui-audio': {
       isContainer: false,
@@ -142,6 +167,10 @@
     },
 
     'separator2' : null,
+
+    //
+    // INPUTS
+    //
 
     'gui-button': {
       isContainer: false,
@@ -203,6 +232,10 @@
 
     'separator3' : null,
 
+    //
+    // VIEWS
+    //
+
     'gui-tree-view': {
       isContainer: false,
       icon: 'widget-gtk-treeview.png'
@@ -221,6 +254,10 @@
     },
 
     'separator4' : null,
+
+    //
+    // MISC
+    //
 
     'gui-progress-bar': {
       isContainer: false,
@@ -245,28 +282,21 @@
       isContainer: false,
       icon: 'widget-gtk-menu.png'
     },
+      'gui-menu-entry': {
+        skip: true
+      },
     'gui-menu-bar': {
       isContainer: false,
       icon: 'widget-gtk-menubar.png'
     },
+      'gui-menu-bar-entry': {
+        skip: true
+      },
     'gui-statusbar': {
       isContainer: false,
       icon: 'widget-gtk-statusbar.png'
-    },
-
-
-    'gui-menu-bar-entry': {
-      skip: true
-    },
-    'gui-vbox-container': boxProperties(),
-    'gui-hbox-container': boxProperties(),
-    'gui-menu-entry': {
-      skip: true
-    },
-    'gui-paned-view-container': {
-      skip: true,
-      isContainer: true
     }
+
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -329,12 +359,16 @@
     return ttarget;
   };
 
+  Project.prototype.getWindow = function() {
+    return this.dom.firstChild.getElementsByTagName('application-window')[0];
+  };
+
   Project.prototype.getElementProperties = function(xpath, tagName, el) {
-    var target = this.getElement(xpath);
+    var target = xpath ? this.getElement(xpath) : null;
     var defaultProps = {};
 
     var elementProps = {
-      id: target.getAttribute('data-id') || null
+      id: target ? (target.getAttribute('data-id') || null) : null
     };
     var elementPropTypes = Utils.argumentDefaults(el.propertyTypes || {}, {
       id: {
@@ -362,6 +396,7 @@
     }
 
     var props = Utils.argumentDefaults(elementProps, defaultProps);
+
     Object.keys(props).forEach(function(p) {
       var type = (elementPropTypes[p] || {}).type || 'unknown';
       props[p] = type + ':' + props[p];
