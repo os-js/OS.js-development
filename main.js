@@ -39,12 +39,16 @@
 
     this.currentProject = null;
     this.currentWindow = null;
+    this.globalClickEvent = null;
   }
 
   ApplicationIDE.prototype = Object.create(Application.prototype);
   ApplicationIDE.constructor = Application;
 
   ApplicationIDE.prototype.destroy = function() {
+    document.removeEventListener('click', this.globalClickEvent, false);
+    this.curentProject = null;
+
     return Application.prototype.destroy.apply(this, arguments);
   };
 
@@ -69,6 +73,12 @@
       onInited();
     });
 
+    this.globalClickEvent = function(ev) {
+      self.onDOMElementClicked(ev, ev.target || ev.srcElement);
+    };
+
+    document.addEventListener('click', this.globalClickEvent, false);
+
     this._setScheme(scheme);
   };
 
@@ -91,7 +101,6 @@
 
     this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name);
     this.currentProject.load(function(err) {
-      console.warn("PROJECT", self.currentProject);
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
         self.windowAction('load', []);
@@ -110,12 +119,47 @@
     }
   };
 
+  ApplicationIDE.prototype.onDOMElementClicked = function(ev, target) {
+    function isValid(el) {
+      if ( el ) {
+        if ( el.getAttribute('data-ide-element') === 'true' || el.getAttribute('data-ide-container') === 'true' ) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if ( isValid(target) ) {
+      if ( Utils.$hasClass(target, 'ide-selected') ) {
+        if ( isValid(target.parentNode) ) {
+          target = target.parentNode;
+        }
+      }
+      this.onElementClicked(target);
+    }
+  };
+
+  ApplicationIDE.prototype.onElementClicked = function(target) {
+    var win = this.getDesignerWindow();
+    var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
+    var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(target).replace(rootPath + '/', '');
+    var tagName = target.tagName.toLowerCase();
+
+    win.selectElement(target, true);
+
+    console.log('ApplicationIDE::onElementClicked()', xpath, target);
+
+    this.onElementSelected(xpath, tagName);
+
+    var propWin = this.getPropertiesWindow(xpath, tagName);
+    propWin.selectElement(xpath, tagName);
+  };
+
   ApplicationIDE.prototype.onElementSelected = function(xpath, tagName) {
     var elements = OSjs.Applications.ApplicationIDE.Elements;
     var win = this.getDesignerWindow();
     var target = win.getElement(xpath);
     var ttarget = this.currentProject.getElement(xpath);
-    var propWin = this.getPropertiesWindow();
 
     console.group('ApplicationIDE::onElementSelected()');
     console.log('Xpath', xpath);
@@ -126,7 +170,9 @@
 
     if ( target ) {
       win.selectElement(target);
+
       var props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName]);
+      var propWin = this.getPropertiesWindow();
       propWin.renderProperties(xpath, props);
     }
   };

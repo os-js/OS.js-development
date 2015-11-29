@@ -111,7 +111,7 @@
     return target;
   };
 
-  ApplicationIDEDesignerWindow.prototype.selectElement = function(el) {
+  ApplicationIDEDesignerWindow.prototype.selectElement = function(el, clicked) {
     if ( this.selectedElement ) {
       Utils.$removeClass(this.selectedElement, 'ide-selected');
     }

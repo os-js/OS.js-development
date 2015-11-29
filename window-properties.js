@@ -92,6 +92,11 @@
     this.renderProperties();
   };
 
+  ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName) {
+    var treeView = this._scheme.find(this, 'Tree');
+    treeView.set('selected', xpath, 'path');
+  };
+
   ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, properties) {
     var app = this._app;
     var project = app.currentProject;

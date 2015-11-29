@@ -32,16 +32,31 @@
   white-space : normal;
 }
 
+/**
+ * Overrides
+ */
 .ApplicationIDEDesignerWindow gui-vbox-container {
   min-height : 16px;
 }
 .ApplicationIDEDesignerWindow gui-hbox-container {
   min-width : 16px;
 }
-.ApplicationIDEDesignerWindow  *[data-ide-element='true'] {
+
+/**
+ * Workaround
+ */
+.ApplicationIDEDesignerWindow  gui-file-view[data-ide-element='true'] > *,
+.ApplicationIDEDesignerWindow  gui-paned-view-handle,
+.ApplicationIDEDesignerWindow  *[data-ide-element='true'] input,
+.ApplicationIDEDesignerWindow  *[data-ide-element='true'] textarea,
+.ApplicationIDEDesignerWindow  *[data-ide-element='true'] iframe,
+.ApplicationIDEDesignerWindow  *[data-ide-element='true'] button {
   pointer-events : none;
 }
 
+/**
+ * Overlays
+ */
 .ApplicationIDEDesignerWindow .ide-selected {
 }
   .ApplicationIDEDesignerWindow .ide-selected:after {
