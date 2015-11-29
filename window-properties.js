@@ -56,6 +56,8 @@
     scheme.render(this, 'IDEPropertiesWindow', root);
 
     var treeView = this._scheme.find(this, 'Tree');
+    var iconView = this._scheme.find(this, 'Properties');
+
     treeView.on('contextmenu', function(ev) {
       var entry = ev.detail.entries[0].data;
       if ( entry ) {
@@ -75,6 +77,13 @@
       app.onElementSelected(entry.path, entry.tagName);
     });
 
+    iconView.on('select', function(ev) {
+      var sel = treeView.get('selected') || [];
+      sel = (sel[0] || {}).data || null;
+
+      app.onPropertySelected(ev.detail.entries[0].data, sel);
+    });
+
     return root;
   };
 
@@ -85,8 +94,8 @@
   ApplicationIDEPropertiesWindow.prototype.clear = function() {
     this._scheme.find(this, 'Tree').clear();
     this._scheme.find(this, 'Properties').clear();
-
     this._scheme.find(this, 'Statusbar').set('value', '');
+    this._scheme.find(this, 'PropertyValue').set('value', '');
   };
 
   ApplicationIDEPropertiesWindow.prototype.load = function() {
@@ -99,10 +108,16 @@
     treeView.set('selected', xpath, 'path', {scroll:true});
   };
 
+  ApplicationIDEPropertiesWindow.prototype.selectProperty = function(property, value) {
+    this._scheme.find(this, 'PropertyValue').set('value', String(value));
+  };
+
   ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, tagName, properties) {
     var app = this._app;
     var project = app.currentProject;
     var elements = OSjs.Applications.ApplicationIDE.Elements;
+
+    this._scheme.find(this, 'PropertyValue').set('value', '');
 
     var statusBar = this._scheme.find(this, 'Statusbar');
     statusBar.set('value', '/' + (typeof xpath === 'string' ? (xpath || '') : (xpath || 'null')));
@@ -122,7 +137,7 @@
         var key = k;
 
         rows.push({
-          value: val,
+          value: k,
           columns: [
             {label: key},
             {label: val}

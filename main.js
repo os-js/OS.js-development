@@ -119,6 +119,18 @@
     }
   };
 
+  ApplicationIDE.prototype.onPropertySelected = function(property, item) {
+    if ( property && item ) {
+      var elements = OSjs.Applications.ApplicationIDE.Elements;
+      var win = this.getDesignerWindow();
+      var propWin = this.getPropertiesWindow();
+      var tagName = item.tagName;
+      var value = this.currentProject.getElementProperty(item.path, tagName, elements[tagName], property);
+
+      propWin.selectProperty(property, value);
+    }
+  };
+
   ApplicationIDE.prototype.onDOMElementClicked = function(ev, target) {
     function isValid(el) {
       if ( el ) {

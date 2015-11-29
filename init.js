@@ -30,6 +30,44 @@
 (function(Application, Window, Utils, API, VFS, GUI) {
   'use strict';
 
+  function getPropertyTypes(el) {
+    return Utils.argumentDefaults(el.propertyTypes || {}, {
+      id: {
+        type: 'string'
+      }
+    });
+  }
+
+  function getProperties(xpath, tagName, el) {
+    var target = xpath ? this.getElement(xpath) : null;
+    var defaultProps = {};
+    var elementPropTypes = getPropertyTypes(el);
+    var elementProps = {
+      id: target ? (target.getAttribute('data-id') || null) : null
+    };
+
+    var refProps = el.properties || {};
+    Object.keys(refProps).forEach(function(k) {
+      var value = refProps[k];
+      if ( typeof value === 'function' ) {
+        value = value(target, tagName);
+      }
+      defaultProps[k] = value;
+    });
+
+
+    if ( target ) {
+      var attributes = target.attributes;
+      var attrib;
+      for ( var i = 1; i < attributes.length; i++ ) {
+        attrib = attributes[i];
+        elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
+      }
+    }
+
+    return Utils.argumentDefaults(elementProps, defaultProps);
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // INIT
   /////////////////////////////////////////////////////////////////////////////
@@ -363,43 +401,21 @@
     return this.dom.firstChild.getElementsByTagName('application-window')[0];
   };
 
+  Project.prototype.getElementProperty = function(xpath, tagName, el, property) {
+    var props = getProperties.call(this, xpath, tagName, el);
+    return typeof props[property] === 'undefined' ? null : props[property];
+  };
+
   Project.prototype.getElementProperties = function(xpath, tagName, el) {
-    var target = xpath ? this.getElement(xpath) : null;
-    var defaultProps = {};
-
-    var elementProps = {
-      id: target ? (target.getAttribute('data-id') || null) : null
-    };
-    var elementPropTypes = Utils.argumentDefaults(el.propertyTypes || {}, {
-      id: {
-        type: 'string'
-      }
-    });
-
-    var refProps = el.properties || {};
-    Object.keys(refProps).forEach(function(k) {
-      var value = refProps[k];
-      if ( typeof value === 'function' ) {
-        value = value(target, tagName);
-      }
-      defaultProps[k] = value;
-    });
-
-
-    if ( target ) {
-      var attributes = target.attributes;
-      var attrib;
-      for ( var i = 1; i < attributes.length; i++ ) {
-        attrib = attributes[i];
-        elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
-      }
-    }
-
-    var props = Utils.argumentDefaults(elementProps, defaultProps);
-
+    var props = getProperties.call(this, xpath, tagName, el);
+    var elementPropTypes = getPropertyTypes(el);
     Object.keys(props).forEach(function(p) {
       var type = (elementPropTypes[p] || {}).type || 'unknown';
-      props[p] = type + ':' + props[p];
+      var value = props[p];
+      if ( typeof value === 'string' && !value.length ) {
+        value = '(empty)';
+      }
+      props[p] = type + ':' + value;
     });
     return props;
   };

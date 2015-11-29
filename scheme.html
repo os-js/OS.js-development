@@ -32,9 +32,15 @@
       </gui-list-view>
     </gui-vbox-container>
     <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
-      <gui-button-bar data-id="PropertiesButtons">
-        <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
-      </gui-button-bar>
+      <gui-hbox>
+        <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+          <gui-text data-id="PropertyValue" />
+        </gui-hbox-container>
+
+        <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+          <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
+        </gui-hbox-container>
+      </gui-hbox>
     </gui-vbox-container>
     <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
       <gui-statusbar data-id="Statusbar"></gui-statusbar>
