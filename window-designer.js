@@ -76,6 +76,8 @@
       height: 400
     }, app]);
 
+    this._restored = false;
+
     this.selectedElement = null;
   }
 

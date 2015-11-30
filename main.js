@@ -261,16 +261,7 @@
     var props = {};
     if ( target ) {
       win.selectElement(target);
-      if ( xpath ) {
-        props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName], win);
-      } else {
-        props = {
-          id: {
-            type: 'string',
-            value: this.currentProject.getFragmentName()
-          }
-        };
-      }
+      props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName]);
     }
 
     propWin.renderProperties(xpath, tagName, props);

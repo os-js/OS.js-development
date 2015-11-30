@@ -40,13 +40,21 @@
 
   function getProperties(xpath, tagName, el) {
     var target = xpath ? this.getElement(xpath) : null;
-    var defaultProps = {};
     var elementPropTypes = getPropertyTypes(el);
-    var elementProps = {
-      id: target ? (target.getAttribute('data-id') || null) : null
-    };
-
+    var defaultProps = {};
+    var elementProps = {};
     var refProps = el.properties || {};
+
+    if ( xpath ) {
+      elementProps = {
+        id: target.getAttribute('data-id')
+      };
+    } else {
+      elementProps = {
+        id: this.getFragmentName()
+      };
+    }
+
     Object.keys(refProps).forEach(function(k) {
       var value = refProps[k];
       if ( typeof value === 'function' ) {
@@ -176,7 +184,19 @@
   var elements = {
     'application-window': {
       skip: true,
-      isContainer: true
+      isContainer: true,
+      propertyTypes: {
+        width: {
+          type: 'number'
+        },
+        height: {
+          type: 'number'
+        }
+      },
+      properties: {
+        width: null,
+        height: null
+      }
     },
 
     //
@@ -402,7 +422,7 @@
     return (getPropertyTypes(el)[property] || {}).type || 'unknown';
   };
 
-  Project.prototype.getElementProperties = function(xpath, tagName, el) {
+  Project.prototype.getElementProperties = function(xpath, tagName, el, win) {
     var props = getProperties.call(this, xpath, tagName, el);
     var elementPropTypes = getPropertyTypes(el);
     Object.keys(props).forEach(function(p) {

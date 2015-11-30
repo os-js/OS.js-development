@@ -161,7 +161,6 @@
     var input = this._scheme.find(this, 'PropertyValueInput').set('value', val);
     var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
 
-    console.warn("XXX", type);
     if ( type === 'boolean' ) {
       input.hide();
 
