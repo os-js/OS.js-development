@@ -45,6 +45,18 @@
   min-width : 16px;
 }
 
+.ApplicationIDEDesignerWindow gui-progress-bar {
+  min-width : 16px;
+}
+
+.ApplicationIDEDesignerWindow gui-file-view,
+.ApplicationIDEDesignerWindow gui-icon-view,
+.ApplicationIDEDesignerWindow gui-tree-view,
+.ApplicationIDEDesignerWindow gui-list-view {
+  min-height : 16px;
+  min-width : 16px;
+}
+
 /**
  * Workaround
  */
