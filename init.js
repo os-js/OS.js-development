@@ -59,7 +59,7 @@
     if ( target ) {
       var attributes = target.attributes;
       var attrib;
-      for ( var i = 1; i < attributes.length; i++ ) {
+      for ( var i = 0; i < attributes.length; i++ ) {
         attrib = attributes[i];
         elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
       }
@@ -72,23 +72,56 @@
   // INIT
   /////////////////////////////////////////////////////////////////////////////
 
-  function inputProperties(icon) {
+  function getMediaProperties(icon) {
     return {
       isContainer: false,
       icon: icon,
+      properties: {
+        src: ''
+      },
       propertyTypes: {
-        value: {
+        src: {
           type: 'string'
+        }
+      }
+    };
+  }
+
+  function getInputProperties(icon, hasLabel, defaultValue, mergeWith, hasIcon) {
+    mergeWith = mergeWith || {};
+
+    var defaults = {
+      isContainer: false,
+      icon: icon,
+      propertyTypes: {
+        disabled: {
+          type: 'boolean'
         },
         placeholder: {
           type: 'string'
         }
       },
       properties: {
-        value: '',
+        disabled: null,
         placeholder : ''
       }
     };
+
+    var lbl = hasLabel ? 'label' : 'value';
+    defaults.propertyTypes[lbl] = {
+      type: 'string',
+      defaultValue: defaultValue || ''
+    };
+    defaults.properties[lbl] = '';
+
+    if ( hasIcon ) {
+      defaults.properties.icon = '';
+      defaults.propertyTypes.icon = {
+        type: 'string'
+      };
+    }
+
+    return Utils.argumentDefaults(defaults, mergeWith);
   }
 
   function getBoxContainerProperties(name, icon) {
@@ -162,10 +195,7 @@
     'gui-vbox': getBoxContainerProperties('gui-vbox', 'widget-gtk-vbox.png'),
       'gui-vbox-container': boxProperties(),
 
-    'gui-paned-view': {
-      isContainer: 'gui-paned-view-container',
-      icon: 'widget-gtk-hpaned.png'
-    },
+    'gui-paned-view': getBoxContainerProperties('gui-paned-view', 'widget-gtk-hpaned.png'),
       'gui-paned-view-container': boxProperties(),
 
     'gui-tabs': {
@@ -187,21 +217,12 @@
     // MEDIA
     //
 
-    'gui-audio': {
-      isContainer: false,
-      icon: 'status/dialog-question.png'
-    },
-    'gui-video': {
-      isContainer: false,
-      icon: 'status/dialog-question.png'
-    },
+    'gui-audio': getMediaProperties('status/dialog-question.png'),
+    'gui-video': getMediaProperties('status/dialog-question.png'),
+    'gui-image': getMediaProperties('widget-gtk-image.png'),
     'gui-canvas': {
       isContainer: false,
       icon: 'widget-gtk-drawingarea.png'
-    },
-    'gui-image': {
-      isContainer: false,
-      icon: 'widget-gtk-image.png'
     },
 
     'separator2' : null,
@@ -210,37 +231,21 @@
     // INPUTS
     //
 
-    'gui-button': {
-      isContainer: false,
-      hasInnerLabel: true,
-      icon: 'widget-gtk-button.png',
-      properties: {
-        label: 'Button'
-      }
-    },
-    'gui-radio': {
-      isContainer: false,
-      icon: 'widget-gtk-radiotoolbutton.png'
-    },
-    'gui-checkbox': {
-      isContainer: false,
-      icon: 'widget-gtk-radiotoolbutton.png'
-    },
-    'gui-file-upload': {
-      isContainer: false,
-      icon: 'widget-gtk-filechooserbutton.png'
-    },
-    'gui-input-modal': {
-      isContainer: false,
-      icon: 'widget-gtk-comboboxentry.png'
-    },
-    'gui-label': {
-      isContainer: false,
-      icon: 'widget-gtk-label.png',
-      properties: {
-        label: 'Label'
-      }
-    },
+    'gui-label': getInputProperties('widget-gtk-label.png', true, 'Label'),
+    'gui-radio': getInputProperties('widget-gtk-radiotoolbutton.png'),
+    'gui-checkbox': getInputProperties('widget-gtk-radiotoolbutton.png'),
+    'gui-file-upload': getInputProperties('widget-gtk-filechooserbutton.png'),
+    'gui-input-modal': getInputProperties('widget-gtk-comboboxentry.png'),
+    'gui-select': getInputProperties('widget-gtk-combobox.png'),
+    'gui-select-list': getInputProperties('widget-gtk-list.png'),
+    'gui-slider': getInputProperties('widget-gtk-hscale.png'),
+    'gui-switch': getInputProperties('widget-gtk-togglebutton.png'),
+    'gui-text': getInputProperties('widget-gtk-entry.png'),
+    'gui-password': getInputProperties('widget-gtk-entry.png'),
+    'gui-textarea': getInputProperties('widget-gtk-textview.png'),
+    'gui-button': getInputProperties('widget-gtk-button.png', true, 'Button', {
+      hasInnerLabel: true
+    }, true),
     'gui-richtext': {
       isContainer: false,
       icon: 'widget-gtk-textview.png',
@@ -248,25 +253,6 @@
         value: ''
       }
     },
-    'gui-select': {
-      isContainer: false,
-      icon: 'widget-gtk-combobox.png'
-    },
-    'gui-select-list': {
-      isContainer: false,
-      icon: 'widget-gtk-list.png'
-    },
-    'gui-slider': {
-      isContainer: false,
-      icon: 'widget-gtk-hscale.png'
-    },
-    'gui-switch': {
-      isContainer: false,
-      icon: 'widget-gtk-togglebutton.png'
-    },
-    'gui-text': inputProperties('widget-gtk-entry.png'),
-    'gui-password': inputProperties('widget-gtk-entry.png'),
-    'gui-textarea': inputProperties('widget-gtk-textview.png'),
 
     'separator3' : null,
 
@@ -297,9 +283,17 @@
     // MISC
     //
 
+    'gui-iframe': getMediaProperties('widget-gtk-custom.png'),
     'gui-progress-bar': {
       isContainer: false,
       icon: 'widget-gtk-progressbar.png',
+      propertyTypes: {
+        progress: {
+          type: 'number',
+          min: 0,
+          max: 100
+        }
+      },
       properties: {
         progress: ''
       }
@@ -312,13 +306,10 @@
       isContainer: false,
       icon: 'widget-gtk-colorselection.png'
     },
-    'gui-iframe': {
-      isContainer: false,
-      icon: 'widget-gtk-custom.png'
-    },
     'gui-menu': {
       isContainer: false,
-      icon: 'widget-gtk-menu.png'
+      icon: 'widget-gtk-menu.png',
+      special: true
     },
       'gui-menu-entry': {
         skip: true
@@ -332,7 +323,15 @@
       },
     'gui-statusbar': {
       isContainer: false,
-      icon: 'widget-gtk-statusbar.png'
+      icon: 'widget-gtk-statusbar.png',
+      properties: {
+        value: ''
+      },
+      propertyTypes: {
+        value: {
+          type: 'string'
+        }
+      }
     }
 
   };
@@ -403,6 +402,10 @@
   Project.prototype.getElementProperty = function(xpath, tagName, el, property) {
     var props = getProperties.call(this, xpath, tagName, el);
     return typeof props[property] === 'undefined' ? null : props[property];
+  };
+
+  Project.prototype.getElementPropertyType = function(el, property) {
+    return getPropertyTypes(el)[property] || 'unknown';
   };
 
   Project.prototype.getElementProperties = function(xpath, tagName, el) {

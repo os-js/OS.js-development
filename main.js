@@ -169,7 +169,7 @@
         value = property === 'id' ? this.currentProject.getFragmentName() : null;
       }
 
-      propWin.selectProperty(property, value);
+      propWin.selectProperty(property, value, tagName);
     }
   };
 
@@ -326,12 +326,18 @@
 
       Object.keys(setProps).forEach(function(k) {
         var val = setProps[k];
+        var ref = elements[elementTagName];
+
         if ( typeof setProps[k] === 'function' ) {
           setProps[k](null, elementTagName);
         }
 
+        if ( (ref.propertyTypes || {})[k] && typeof ref.propertyTypes[k].defaultValue !== 'undefined' ) {
+          val = ref.propertyTypes[k].defaultValue;
+        }
+
         if ( val !== null ) {
-          if ( k === 'label' && elements[elementTagName].hasInnerLabel === true ) {
+          if ( k === 'label' && ref.hasInnerLabel === true ) {
             el.appendChild(document.createTextNode(String(val)));
           } else {
             el.setAttribute('data-' + k, String(val));

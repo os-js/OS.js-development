@@ -45,9 +45,13 @@
     <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
       <gui-hbox>
         <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
-          <gui-text data-id="PropertyValue" />
+          <gui-text data-id="PropertyValueInput" />
+          <gui-select data-id="PropertyValueSelect" />
         </gui-hbox-container>
 
+        <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+          <gui-button data-icon="stock://16x16/actions/editclear.png" data-id="PropertyButtonNull" />
+        </gui-hbox-container>
         <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
           <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
         </gui-hbox-container>

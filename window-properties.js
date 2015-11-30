@@ -84,6 +84,8 @@
       app.onPropertySelected(ev.detail.entries[0].data, sel);
     });
 
+    this._scheme.find(this, 'PropertyValueSelect').hide();
+
     return root;
   };
 
@@ -96,7 +98,8 @@
     this._scheme.find(this, 'Properties').clear();
     this._scheme.find(this, 'SelectFragment').clear();
     this._scheme.find(this, 'Statusbar').set('value', '');
-    this._scheme.find(this, 'PropertyValue').set('value', '');
+    this._scheme.find(this, 'PropertyValueInput').set('value', '');
+    this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
   };
 
   ApplicationIDEPropertiesWindow.prototype.load = function() {
@@ -110,8 +113,16 @@
     treeView.set('selected', xpath, 'path', {scroll:true});
   };
 
-  ApplicationIDEPropertiesWindow.prototype.selectProperty = function(property, value) {
-    this._scheme.find(this, 'PropertyValue').set('value', String(value));
+  ApplicationIDEPropertiesWindow.prototype.selectProperty = function(property, value, tagName) {
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var type = this._app.currentProject.getElementPropertyType(elements[tagName], property);
+
+    var val = value;
+    if ( val === null || typeof val === 'undefined') {
+      val = '(null)';
+    }
+    var input = this._scheme.find(this, 'PropertyValueInput').set('value', val);
+    var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, tagName, properties) {
@@ -119,7 +130,8 @@
     var project = app.currentProject;
     var elements = OSjs.Applications.ApplicationIDE.Elements;
 
-    this._scheme.find(this, 'PropertyValue').set('value', '');
+    this._scheme.find(this, 'PropertyValueInput').set('value', '');
+    this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
 
     var statusBar = this._scheme.find(this, 'Statusbar');
     statusBar.set('value', '/' + (typeof xpath === 'string' ? (xpath || '') : (xpath || 'null')));
@@ -130,9 +142,9 @@
     if ( properties ) {
       var rows = [];
       listView.set('columns', [
-        {label: 'Name', basis: '80px', grow: 0, shrink: 1},
-        {label: 'Type', basis: '70px', grow: 0, shrink: 1},
-        {label: 'Value', grow: 1, shrink: 0}
+        {label: 'Name', basis: '80px', grow: 0, shrink: 0},
+        {label: 'Type', basis: '70px', grow: 0, shrink: 0},
+        {label: 'Value', grow: 1, shrink: 1}
       ]);
 
       Object.keys(properties).forEach(function(k) {
@@ -192,7 +204,6 @@
     function traverse(root, riter) {
       if ( root.children ) {
         root.children.forEach(function(c) {
-
           var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
             isContainer: false,
             icon: 'status/dialog-question.png'
@@ -215,7 +226,10 @@
           };
 
           riter.entries.push(niter);
-          traverse(c, niter);
+
+          if ( !el.special ) {
+            traverse(c, niter);
+          }
         });
       }
     }
