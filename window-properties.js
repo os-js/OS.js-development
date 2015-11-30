@@ -95,7 +95,6 @@
     this._scheme.find(this, 'PropertyValueSelect').hide();
 
     function applyValue(value) {
-      console.warn("XXX", self.currentPath, self.currentProperty, value);
       app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
     }
 
@@ -103,8 +102,11 @@
       applyValue(null); // TODO
     });
 
+    var input = this._scheme.find(this, 'PropertyValueInput');
+    var select = this._scheme.find(this, 'PropertyValueSelect');
     this._scheme.find(this, 'PropertyButtonNull').on('click', function() {
-      applyValue(null);
+      input.set('value', '(null)');
+      select.set('value', 'null');
     });
 
     return root;
@@ -158,6 +160,17 @@
 
     var input = this._scheme.find(this, 'PropertyValueInput').set('value', val);
     var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
+
+    console.warn("XXX", type);
+    if ( type === 'boolean' ) {
+      input.hide();
+
+      select.show().add([
+        {label: 'NULL', value: 'null'},
+        {label: 'true', value: 'true'},
+        {label: 'false', value: 'false'}
+      ]).set('value', String(value));
+    }
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, tagName, properties) {

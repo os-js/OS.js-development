@@ -176,13 +176,7 @@
   var elements = {
     'application-window': {
       skip: true,
-      isContainer: true/*,
-      properties: {
-        x: null,
-        y: null,
-        width: null,
-        height: null
-      }*/
+      isContainer: true
     },
 
     //
@@ -295,7 +289,7 @@
         }
       },
       properties: {
-        progress: ''
+        progress: 0
       }
     },
     'gui-color-box': {
@@ -405,7 +399,7 @@
   };
 
   Project.prototype.getElementPropertyType = function(el, property) {
-    return getPropertyTypes(el)[property] || 'unknown';
+    return (getPropertyTypes(el)[property] || {}).type || 'unknown';
   };
 
   Project.prototype.getElementProperties = function(xpath, tagName, el) {
