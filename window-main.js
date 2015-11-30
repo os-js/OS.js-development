@@ -83,6 +83,10 @@
     });
 
     var menuMap = {
+      MenuNew:            function() { app.onNew(); },
+      MenuOpen:           function() { app.onOpen(); },
+      MenuSave:           function() { app.onSave(); },
+      MenuSaveAs:         function() { app.onSaveAs(); },
       MenuClose:          function() { self._close(); },
       MenuDesignerWindow: function() { app.toggleDesignerWindow(); },
       MenuPropertyWindow: function() { app.togglePropertiesWindow(); },
@@ -95,6 +99,7 @@
       }
       self.update();
     }
+    this._scheme.find(this, 'SubmenuFile').on('select', menuEvent);
     this._scheme.find(this, 'SubmenuView').on('select', menuEvent);
 
     this.update();

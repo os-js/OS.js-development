@@ -376,6 +376,24 @@
   };
 
   //
+  // MAIN EVENTS
+  //
+
+  ApplicationIDE.prototype.onNew = function() {
+  };
+
+  ApplicationIDE.prototype.onOpen = function() {
+  };
+
+  ApplicationIDE.prototype.onSave = function() {
+    console.warn(this.currentProject.getHTML());
+  };
+
+  ApplicationIDE.prototype.onSaveAs = function() {
+    console.warn(this.currentProject.getHTML());
+  };
+
+  //
   // GETTERS
   //
 
