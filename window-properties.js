@@ -43,6 +43,13 @@
       width: 350,
       height: 740
     }, app, scheme]);
+
+    this.currentPath = null;
+    this.currentProperty = {
+      name: null,
+      tagName: null,
+      value: null
+    };
   }
 
   ApplicationIDEPropertiesWindow.prototype = Object.create(Window.prototype);
@@ -75,6 +82,7 @@
     treeView.on('select', function(ev) {
       var entry = ev.detail.entries[0].data;
       app.onElementSelected(entry.path, entry.tagName);
+      self.currentPath = entry.path;
     });
 
     iconView.on('select', function(ev) {
@@ -86,6 +94,19 @@
 
     this._scheme.find(this, 'PropertyValueSelect').hide();
 
+    function applyValue(value) {
+      console.warn("XXX", self.currentPath, self.currentProperty, value);
+      app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
+    }
+
+    this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
+      applyValue(null); // TODO
+    });
+
+    this._scheme.find(this, 'PropertyButtonNull').on('click', function() {
+      applyValue(null);
+    });
+
     return root;
   };
 
@@ -94,6 +115,13 @@
   };
 
   ApplicationIDEPropertiesWindow.prototype.clear = function() {
+    this.currentPath = null;
+    this.currentProperty = {
+      name: null,
+      tagName: null,
+      value: null
+    };
+
     this._scheme.find(this, 'Tree').clear();
     this._scheme.find(this, 'Properties').clear();
     this._scheme.find(this, 'SelectFragment').clear();
@@ -111,6 +139,8 @@
   ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
     var treeView = this._scheme.find(this, 'Tree');
     treeView.set('selected', xpath, 'path', {scroll:true});
+
+    this.currentPath = xpath;
   };
 
   ApplicationIDEPropertiesWindow.prototype.selectProperty = function(property, value, tagName) {
@@ -121,6 +151,11 @@
     if ( val === null || typeof val === 'undefined') {
       val = '(null)';
     }
+
+    this.currentProperty.name = property;
+    this.currentProperty.tagName = tagName;
+    this.currentProperty.value = value;
+
     var input = this._scheme.find(this, 'PropertyValueInput').set('value', val);
     var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
   };

@@ -151,6 +151,29 @@
   // PROPERTY EVENTS
   //
 
+  ApplicationIDE.prototype.onPropertyApply = function(xpath, tagName, property, originalValue, value) {
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var target = null;
+    var ttarget = null;
+    var elementTagName = null;
+
+    console.group('ApplicationIDE::onPropertyApply()');
+    console.log('Xpath', xpath);
+    console.log('Value', originalValue, value);
+    console.log('Element', tagName, elements[tagName]);
+    console.log('Target', target);
+    console.log('Template Target', ttarget);
+    console.log('Teplate Element', elementTagName, elements[elementTagName]);
+    console.groupEnd();
+
+    this.onElementSelected(xpath, tagName);
+
+    var propWin = this.getPropertiesWindow();
+    if ( propWin ) {
+      propWin.selectElement(xpath, tagName, true);
+    }
+  };
+
   ApplicationIDE.prototype.onPropertySelected = function(property, item) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
@@ -158,19 +181,21 @@
       return;
     }
 
+    var value;
+    var tagName;
+
     if ( property && item ) {
       var elements = OSjs.Applications.ApplicationIDE.Elements;
-      var tagName = item.tagName;
+      tagName = item.tagName;
 
-      var value;
       if ( item.path ) {
         value = this.currentProject.getElementProperty(item.path, tagName, elements[tagName], property);
       } else {
         value = property === 'id' ? this.currentProject.getFragmentName() : null;
       }
-
-      propWin.selectProperty(property, value, tagName);
     }
+
+    propWin.selectProperty(property, value, tagName);
   };
 
   ApplicationIDE.prototype.onDeleteElementClick = function(xpath, tagName) {
