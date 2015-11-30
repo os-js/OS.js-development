@@ -35,12 +35,16 @@
       </gui-select>
     </gui-vbox-container>
     <gui-vbox-container data-grow="1" data-shrink="0" data-basis="30%" data-fill="true">
-      <gui-tree-view data-expanded="true" data-id="Tree">
-      </gui-tree-view>
-    </gui-vbox-container>
-    <gui-vbox-container data-grow="1" data-shrink="0" data-fill="true">
-      <gui-list-view data-id="Properties">
-      </gui-list-view>
+      <gui-paned-view data-orientation="vertical">
+        <gui-paned-view-container data-basis="60%" data-fill="true">
+          <gui-tree-view data-expanded="true" data-id="Tree">
+          </gui-tree-view>
+        </gui-paned-view-container>
+        <gui-paned-view-container data-grow="1" data-fill="true">
+          <gui-list-view data-id="Properties">
+          </gui-list-view>
+        </gui-paned-view-container>
+      </gui-paned-view>
     </gui-vbox-container>
     <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
       <gui-hbox>
