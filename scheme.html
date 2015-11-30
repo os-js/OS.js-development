@@ -11,6 +11,13 @@
             <gui-menu-entry data-id="MenuClose" data-label="LBL_CLOSE"></gui-menu-entry>
           </gui-menu>
         </gui-menu-bar-entry>
+        <gui-menu-bar-entry data-label="LBL_VIEW">
+          <gui-menu data-id="SubmenuView">
+            <gui-menu-entry data-id="MenuPropertyWindow" data-type="checkbox" data-label="Property Window"></gui-menu-entry>
+            <gui-menu-entry data-id="MenuDesignerWindow" data-type="checkbox" data-label="Designer Window"></gui-menu-entry>
+            <gui-menu-entry data-id="MenuFileBrowser" data-type="checkbox" data-label="File Browser"></gui-menu-entry>
+          </gui-menu>
+        </gui-menu-bar-entry>
       </gui-menu-bar>
     </gui-vbox-container>
 
@@ -23,6 +30,10 @@
 
 <application-window data-id="IDEPropertiesWindow">
   <gui-vbox>
+    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto" data-expand="true">
+      <gui-select data-id="SelectFragment">
+      </gui-select>
+    </gui-vbox-container>
     <gui-vbox-container data-grow="1" data-shrink="0" data-basis="30%" data-fill="true">
       <gui-tree-view data-expanded="true" data-id="Tree">
       </gui-tree-view>

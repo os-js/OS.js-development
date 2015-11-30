@@ -122,7 +122,7 @@
   ApplicationIDEDesignerWindow.prototype.load = function() {
     var app = this._app;
     var project = app.currentProject;
-    var windowName = project.windows[0];
+    var windowName = project.getFragmentName();
 
     this._setTitle(windowName + '@' + project.name, true);
     this.render();
@@ -133,7 +133,7 @@
 
     var app = this._app;
     var project = app.currentProject;
-    var windowName = project.windows[0];
+    var windowName = project.getFragmentName();
 
     var root = this._$root;
     Utils.$empty(root);
@@ -145,13 +145,12 @@
     function traverse(el) {
       if ( el.children ) {
         el.children.forEach(function(sel) {
+          sel.setAttribute('data-ide-window', windowName);
+
           var tagName = sel.tagName.toLowerCase();
           if ( elements[tagName] ) {
             var cn = elements[tagName].isContainer;
             if ( cn ) {
-              //console.group('ApplicationIDEDesignerWindow::render()->traverse()');
-              //console.debug('Creating droppable in', sel, 'with', cn);
-
               sel.setAttribute('data-ide-container', 'true');
 
               if ( cn === true ) {
@@ -171,7 +170,6 @@
             } else {
               sel.setAttribute('data-ide-element', 'true');
             }
-            //console.groupEnd();
           }
 
           traverse(sel);

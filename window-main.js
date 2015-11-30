@@ -82,11 +82,37 @@
       button = null;
     });
 
+    var menuMap = {
+      MenuClose:          function() { self._close(); },
+      MenuDesignerWindow: function() { app.toggleDesignerWindow(); },
+      MenuPropertyWindow: function() { app.togglePropertiesWindow(); },
+      MenuFileBrowser:    function() { app.toggleFileBrowserWindow(); },
+    };
+
+    function menuEvent(ev) {
+      if ( menuMap[ev.detail.id] ) {
+        menuMap[ev.detail.id]();
+      }
+      self.update();
+    }
+    this._scheme.find(this, 'SubmenuView').on('select', menuEvent);
+
+    this.update();
+
     return root;
   };
 
   ApplicationIDEWindow.prototype.destroy = function() {
     Window.prototype.destroy.apply(this, arguments);
+  };
+
+  ApplicationIDEWindow.prototype.update = function() {
+    var viewMenu = this._scheme.find(this, 'SubmenuView');
+    var app = this._app;
+
+    viewMenu.set('checked', 'MenuDesignerWindow', !!app.getDesignerWindow());
+    viewMenu.set('checked', 'MenuPropertyWindow', !!app.getPropertiesWindow());
+    viewMenu.set('checked', 'MenuFileBrowser',    !!app.getFileBrowserWindow());
   };
 
   ApplicationIDEWindow.prototype.clear = function() {

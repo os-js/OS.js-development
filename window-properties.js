@@ -94,6 +94,7 @@
   ApplicationIDEPropertiesWindow.prototype.clear = function() {
     this._scheme.find(this, 'Tree').clear();
     this._scheme.find(this, 'Properties').clear();
+    this._scheme.find(this, 'SelectFragment').clear();
     this._scheme.find(this, 'Statusbar').set('value', '');
     this._scheme.find(this, 'PropertyValue').set('value', '');
   };
@@ -101,6 +102,7 @@
   ApplicationIDEPropertiesWindow.prototype.load = function() {
     this.renderTree();
     this.renderProperties();
+    this.renderWindowList();
   };
 
   ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
@@ -128,19 +130,18 @@
     if ( properties ) {
       var rows = [];
       listView.set('columns', [
-        {label: 'Name', basis: '100px', grow: 1, shrink: 1},
-        {label: 'Value', grow: 0, shrink: 0}
+        {label: 'Name', basis: '80px', grow: 0, shrink: 1},
+        {label: 'Type', basis: '70px', grow: 0, shrink: 1},
+        {label: 'Value', grow: 1, shrink: 0}
       ]);
 
       Object.keys(properties).forEach(function(k) {
-        var val = String(properties[k]);
-        var key = k;
-
         rows.push({
           value: k,
           columns: [
-            {label: key},
-            {label: val}
+            {label: k},
+            {label: properties[k].type},
+            {label: String(properties[k].value)}
           ]
         });
       });
@@ -149,11 +150,28 @@
     }
   };
 
+  ApplicationIDEPropertiesWindow.prototype.renderWindowList = function() {
+    var select = this._scheme.find(this, 'SelectFragment');
+    select.clear();
+
+    var project = this._app.currentProject;
+    var list = [];
+
+    project.getFragments().forEach(function(name, idx) {
+      list.push({
+        label: name,
+        value: idx
+      });
+    });
+
+    select.add(list);
+  };
+
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
     var app = this._app;
     var project = app.currentProject;
-    var windowName = project.windows[0];
-    var rootWindow = project.getWindow(windowName);
+    var windowName = project.getFragmentName();
+    var rootWindow = project.getFragment();
 
     var treeView = this._scheme.find(this, 'Tree');
     treeView.clear();

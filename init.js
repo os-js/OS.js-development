@@ -342,10 +342,11 @@
   /////////////////////////////////////////////////////////////////////////////
 
   function Project(name) {
-    this.scheme  = GUI.createScheme(null);
-    this.windows = [];
-    this.name    = name;
-    this.dom     = null;
+    this.scheme          = GUI.createScheme(null);
+    this.fragments         = [];
+    this.currentWindow   = 0;
+    this.name            = name;
+    this.dom             = null;
   }
 
   Project.prototype.load = function(cb) {
@@ -358,11 +359,11 @@
           return cb(err);
         }
 
-        var windows = [];
-        result.firstChild.getElementsByTagName('application-window').forEach(function(s) {
-          windows.push(s.getAttribute('data-id'));
+        var fragments = [];
+        result.firstChild.children.forEach(function(s) {
+          fragments.push(s.getAttribute('data-id'));
         });
-        self.windows = windows;
+        self.fragments = fragments;
         self.dom = result;
 
         cb(false, true);
@@ -374,19 +375,9 @@
     cb();
   };
 
-  Project.prototype.getWindow = function(name) {
-    var result = null;
-    this.dom.firstChild.getElementsByTagName('application-window').forEach(function(s) {
-      if ( s.getAttribute('data-id') === name ) {
-        result = s;
-      }
-      return !!result;
-    });
-    return result;
-  };
-
   Project.prototype.getElement = function(xpath) {
-    xpath = '/div[1]/application-window[1]/' + xpath.replace(/^\//, ''); // FIXME
+    var idx = this.currentWindow + 1;
+    xpath = '/div[1]/application-window[' + String(idx) + ']/' + xpath.replace(/^\//, ''); // FIXME
 
     var ttarget = null;
     try {
@@ -397,8 +388,16 @@
     return ttarget;
   };
 
-  Project.prototype.getWindow = function() {
-    return this.dom.firstChild.getElementsByTagName('application-window')[0];
+  Project.prototype.getFragmentName = function() {
+    return this.fragments[this.currentWindow];
+  };
+
+  Project.prototype.getFragment = function() {
+    return this.dom.firstChild.children[this.currentWindow];
+  };
+
+  Project.prototype.getFragments = function() {
+    return this.fragments;
   };
 
   Project.prototype.getElementProperty = function(xpath, tagName, el, property) {
@@ -410,12 +409,12 @@
     var props = getProperties.call(this, xpath, tagName, el);
     var elementPropTypes = getPropertyTypes(el);
     Object.keys(props).forEach(function(p) {
-      var type = (elementPropTypes[p] || {}).type || 'unknown';
+      var type = (elementPropTypes[p] || {}).type;
       var value = props[p];
-      if ( typeof value === 'string' && !value.length ) {
-        value = '(empty)';
-      }
-      props[p] = type + ':' + value;
+      props[p] = {
+        value: value,
+        type: type || typeof value
+      };
     });
     return props;
   };

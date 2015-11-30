@@ -15,7 +15,7 @@ In progress, but nowhere near usable. Currently experimenting and prototyping/la
 * [x] GUI Element toolbar
 * [ ] Proper project loading and sessions
 * [ ] Project saving
-* [ ] Multiple window support
+* [x] Multiple window support
 * [x] Adding elements
 * [x] Removing elements
 * [x] Parameter viewing

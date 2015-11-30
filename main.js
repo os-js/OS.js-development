@@ -31,7 +31,7 @@
   'use strict';
 
   /////////////////////////////////////////////////////////////////////////////
-  // APPLICATION
+  // APPLICATION CLASS
   /////////////////////////////////////////////////////////////////////////////
 
   function ApplicationIDE(args, metadata) {
@@ -64,9 +64,9 @@
     var url = API.getApplicationResource(this, './scheme.html');
     var scheme = GUI.createScheme(url);
     scheme.load(function(error, result) {
-      self._addWindow(new OSjs.Applications.ApplicationIDE.MainWindow(self, metadata, scheme), null, true);
       self._addWindow(new OSjs.Applications.ApplicationIDE.PropertiesWindow(self, metadata, scheme));
       self._addWindow(new OSjs.Applications.ApplicationIDE.DesignerWindow(self, metadata));
+      self._addWindow(new OSjs.Applications.ApplicationIDE.MainWindow(self, metadata, scheme), null, true);
 
       loadDefaultProject();
 
@@ -82,14 +82,25 @@
     this._setScheme(scheme);
   };
 
+  //
+  // HELPERS
+  //
+
   ApplicationIDE.prototype.windowAction = function(fn, args) {
     var mainWin = this.getMainWindow();
-    var propWin = this.getPropertiesWindow();
-    var designWin = this.getDesignerWindow();
+    if ( mainWin ) {
+      mainWin[fn].apply(mainWin, args);
+    }
 
-    mainWin[fn].apply(mainWin, args);
-    propWin[fn].apply(propWin, args);
-    designWin[fn].apply(designWin, args);
+    var propWin = this.getPropertiesWindow();
+    if ( propWin ) {
+      propWin[fn].apply(propWin, args);
+    }
+
+    var designWin = this.getDesignerWindow();
+    if ( designWin ) {
+      designWin[fn].apply(designWin, args);
+    }
   };
 
   ApplicationIDE.prototype.openProject = function(name) {
@@ -119,17 +130,130 @@
     }
   };
 
+  ApplicationIDE.prototype.toggleDesignerWindow = function() {
+    var win = this.getDesignerWindow();
+    if ( win ) {
+      win._minimize();
+    }
+  };
+
+  ApplicationIDE.prototype.togglePropertiesWindow = function() {
+    var win = this.getPropertiesWindow();
+    if ( win ) {
+      win._minimize();
+    }
+  };
+
+  ApplicationIDE.prototype.toggleFileBrowserWindow = function() {
+  };
+
+  //
+  // PROPERTY EVENTS
+  //
+
   ApplicationIDE.prototype.onPropertySelected = function(property, item) {
+    var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
+    if ( !win || !propWin ) {
+      return;
+    }
+
     if ( property && item ) {
       var elements = OSjs.Applications.ApplicationIDE.Elements;
-      var win = this.getDesignerWindow();
-      var propWin = this.getPropertiesWindow();
       var tagName = item.tagName;
-      var value = this.currentProject.getElementProperty(item.path, tagName, elements[tagName], property);
+
+      var value;
+      if ( item.path ) {
+        value = this.currentProject.getElementProperty(item.path, tagName, elements[tagName], property);
+      } else {
+        value = property === 'id' ? this.currentProject.getFragmentName() : null;
+      }
 
       propWin.selectProperty(property, value);
     }
   };
+
+  ApplicationIDE.prototype.onDeleteElementClick = function(xpath, tagName) {
+    var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
+    if ( !win ) {
+      return;
+    }
+
+    console.group('ApplicationIDE::onDeleteElementClick()');
+
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var target = win.getElement(xpath);
+    var ttarget = this.currentProject.getElement(xpath);
+
+    console.log('Xpath', xpath);
+    console.log('Element', tagName, elements[tagName]);
+    console.log('Target', target);
+    console.log('Template Target', ttarget);
+    console.groupEnd();
+
+    if ( target && ttarget ) {
+      Utils.$remove(ttarget);
+
+      if ( win ) {
+        win.render();
+      }
+      if ( propWin ) {
+        propWin.load();
+      }
+    }
+  };
+
+  ApplicationIDE.prototype.onElementSelected = function(xpath, tagName) {
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
+
+    if ( !win || !propWin ) {
+      return;
+    }
+
+    var target = null;
+    var ttarget = null;
+    var props = null;
+
+    if ( xpath ) {
+      target = win.getElement(xpath);
+      ttarget = this.currentProject.getElement(xpath);
+    } else {
+      target = win._$root;
+      ttarget = this.currentProject.getFragment();
+      tagName = 'application-window';
+    }
+
+    console.group('ApplicationIDE::onElementSelected()');
+    console.log('Xpath', xpath);
+    console.log('Element', tagName, elements[tagName]);
+    console.log('Target', target);
+    console.log('Template Target', ttarget);
+    console.groupEnd();
+
+    var props = {};
+    if ( target ) {
+      win.selectElement(target);
+      if ( xpath ) {
+        props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName], win);
+      } else {
+        props = {
+          id: {
+            type: 'string',
+            value: this.currentProject.getFragmentName()
+          }
+        };
+      }
+    }
+
+    propWin.renderProperties(xpath, tagName, props);
+  };
+
+  //
+  // GLOBAL EVENTS
+  //
 
   ApplicationIDE.prototype.onDOMElementClicked = function(ev, target) {
     function isValid(el) {
@@ -151,8 +275,18 @@
     }
   };
 
+  //
+  // DESIGNER EVENTS
+  //
+
   ApplicationIDE.prototype.onElementClicked = function(target) {
     var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
+
+    if ( !win ) {
+      return;
+    }
+
     var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
     var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(target).replace(rootPath + '/', '');
     var tagName = target.tagName.toLowerCase();
@@ -163,67 +297,14 @@
 
     this.onElementSelected(xpath, tagName);
 
-    var propWin = this.getPropertiesWindow(xpath, tagName);
-    propWin.selectElement(xpath, tagName, true);
-  };
-
-  ApplicationIDE.prototype.onElementSelected = function(xpath, tagName) {
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var propWin = this.getPropertiesWindow();
-    var win = this.getDesignerWindow();
-
-    var target = null;
-    var ttarget = null;
-    var props = null;
-
-    if ( xpath ) {
-      target = win.getElement(xpath);
-      ttarget = this.currentProject.getElement(xpath);
-    } else {
-      target = win._$root;
-      ttarget = this.currentProject.getWindow();
-      tagName = 'application-window';
-    }
-
-    console.group('ApplicationIDE::onElementSelected()');
-    console.log('Xpath', xpath);
-    console.log('Element', tagName, elements[tagName]);
-    console.log('Target', target);
-    console.log('Template Target', ttarget);
-    console.groupEnd();
-
-    if ( target ) {
-      win.selectElement(target);
-
-      var props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName], win);
-      propWin.renderProperties(xpath, tagName, props);
-    }
-  };
-
-  ApplicationIDE.prototype.onDeleteElementClick = function(xpath, tagName) {
-    console.group('ApplicationIDE::onDeleteElementClick()');
-
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var win = this.getDesignerWindow();
-    var target = win.getElement(xpath);
-    var ttarget = this.currentProject.getElement(xpath);
-
-    console.log('Xpath', xpath);
-    console.log('Element', tagName, elements[tagName]);
-    console.log('Target', target);
-    console.log('Template Target', ttarget);
-    console.groupEnd();
-
-    if ( target && ttarget ) {
-      Utils.$remove(ttarget);
-
-      win.render();
-      this.getPropertiesWindow().load();
+    if ( propWin ) {
+      propWin.selectElement(xpath, tagName, true);
     }
   };
 
   ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName) {
     var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
 
     var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
     xpath = xpath.replace(rootPath, '');
@@ -260,12 +341,21 @@
 
       ttarget.appendChild(el);
 
-      win.render()
-      this.getPropertiesWindow().load();
+      if ( win ) {
+        win.render()
+      }
+
+      if ( propWin ) {
+        propWin.load();
+      }
     }
 
     console.groupEnd();
   };
+
+  //
+  // GETTERS
+  //
 
   ApplicationIDE.prototype.getMainWindow = function() {
     return this._getWindow(null);
@@ -278,6 +368,11 @@
   ApplicationIDE.prototype.getPropertiesWindow = function() {
     return this._getWindowsByTag('properties')[0];
   };
+
+  ApplicationIDE.prototype.getFileBrowserWindow = function() {
+    return this._getWindowsByTag('filebrowser')[0];
+  };
+
 
   /////////////////////////////////////////////////////////////////////////////
   // EXPORTS
