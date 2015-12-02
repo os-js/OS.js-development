@@ -151,7 +151,6 @@
 
   function boxProperties() {
     return {
-      skip: true,
       isContainer: true,
       propertyTypes: {
         grow: {
@@ -183,7 +182,6 @@
 
   var elements = {
     'application-window': {
-      skip: true,
       isContainer: true,
       propertyTypes: {
         width: {
@@ -224,8 +222,10 @@
       isContainer: true,
       icon: 'widget-gtk-toolbar.png'
     },
-
-    'separator1' : null,
+    'gui-expander': {
+      isContainer: true,
+      icon: 'widget-gtk-expander.png'
+    },
 
     //
     // MEDIA
@@ -234,12 +234,11 @@
     'gui-audio': getMediaProperties('status/dialog-question.png'),
     'gui-video': getMediaProperties('status/dialog-question.png'),
     'gui-image': getMediaProperties('widget-gtk-image.png'),
+    'gui-iframe': getMediaProperties('widget-gtk-custom.png'),
     'gui-canvas': {
       isContainer: false,
       icon: 'widget-gtk-drawingarea.png'
     },
-
-    'separator2' : null,
 
     //
     // INPUTS
@@ -268,8 +267,6 @@
       }
     },
 
-    'separator3' : null,
-
     //
     // VIEWS
     //
@@ -291,13 +288,10 @@
       icon: 'widget-gtk-filefilter.png'
     },
 
-    'separator4' : null,
-
     //
     // MISC
     //
 
-    'gui-iframe': getMediaProperties('widget-gtk-custom.png'),
     'gui-progress-bar': {
       isContainer: false,
       icon: 'widget-gtk-progressbar.png',
@@ -326,14 +320,12 @@
       special: true
     },
       'gui-menu-entry': {
-        skip: true
       },
     'gui-menu-bar': {
       isContainer: false,
       icon: 'widget-gtk-menubar.png'
     },
       'gui-menu-bar-entry': {
-        skip: true
       },
     'gui-statusbar': {
       isContainer: false,
@@ -349,6 +341,29 @@
     }
 
   };
+
+  var categories = [
+    {
+      label: 'Containers',
+      items: ['gui-hbox', 'gui-vbox', 'gui-paned-view', 'gui-tabs', 'gui-toolbar', 'gui-button-bar', 'gui-expander']
+    },
+    {
+      label: 'Media',
+      items: ['gui-audio', 'gui-video', 'gui-image', 'gui-canvas', 'gui-iframe']
+    },
+    {
+      label: 'Input',
+      items: ['gui-label', 'gui-button', 'gui-switch', 'gui-radio', 'gui-checkbox', 'gui-select', 'gui-select-list', 'gui-slider', 'gui-text', 'gui-password', 'gui-textarea', 'gui-richtext']
+    },
+    {
+      label: 'Views',
+      items: ['gui-tree-view', 'gui-icon-view', 'gui-list-view', 'gui-file-view']
+    },
+    {
+      label: 'Misc',
+      items: ['gui-progress-bar', 'gui-color-swatch', 'gui-menu', 'gui-menu-bar', 'gui-statusbar', 'gui-file-upload', 'gui-input-modal', 'gui-color-box']
+    }
+  ];
 
   /////////////////////////////////////////////////////////////////////////////
   // INIT
@@ -479,6 +494,7 @@
   OSjs.Applications = OSjs.Applications || {};
   OSjs.Applications.ApplicationIDE = OSjs.Applications.ApplicationIDE || {};
   OSjs.Applications.ApplicationIDE.Elements = elements;
+  OSjs.Applications.ApplicationIDE.Categories = categories;
   OSjs.Applications.ApplicationIDE.Project = Project;
   OSjs.Applications.ApplicationIDE.getElementByXpath = getElementByXpath;
   OSjs.Applications.ApplicationIDE.getXpathByElement = getXpathByElement;

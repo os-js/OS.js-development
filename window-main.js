@@ -55,31 +55,32 @@
     scheme.render(this, 'IDEWindow', root);
 
     var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var categories = OSjs.Applications.ApplicationIDE.Categories;
 
     var toolbar = scheme.find(this, 'Buttons');
-    Object.keys(elements).forEach(function(name) {
-      var el = elements[name];
-      if ( el === null ) {
-        toolbar.append(document.createElement('div'));
-        return;
-      }
-      if ( el.skip === true ) {
-        return;
-      }
 
-      var button = scheme.create(self, 'gui-button', {
-        icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
-        tooltip: name,
-        name: name
+    categories.forEach(function(c) {
+      var expander = scheme.create(this, 'gui-expander', {
+        label: c.label
       }, toolbar);
 
-      API.createDraggable(button.$element, {
-        data: {
-          tagName: name
-        }
-      });
+      c.items.forEach(function(name) {
+        var el = elements[name];
 
-      button = null;
+        var button = scheme.create(self, 'gui-button', {
+          icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
+          tooltip: name,
+          name: name
+        }, expander);
+
+        API.createDraggable(button.$element, {
+          data: {
+            tagName: name
+          }
+        });
+
+        button = null;
+      });
     });
 
     var menuMap = {
