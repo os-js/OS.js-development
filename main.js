@@ -52,7 +52,7 @@
     return Application.prototype.destroy.apply(this, arguments);
   };
 
-  ApplicationIDE.prototype.init = function(settings, metadata, onInited) {
+  ApplicationIDE.prototype.init = function(settings, metadata) {
     Application.prototype.init.apply(this, arguments);
 
     var self = this;
@@ -69,8 +69,6 @@
       self._addWindow(new OSjs.Applications.ApplicationIDE.MainWindow(self, metadata, scheme), null, true);
 
       loadDefaultProject();
-
-      onInited();
     });
 
     this.globalClickEvent = function(ev) {
