@@ -2,7 +2,7 @@
 
 This repository contains Development packages for [OS.js](https://github.com/os-js/OS.js).
 
-Follow [the official instructions](http://os.js.org/doc/manuals/man-package-manager.html) on how to add this repository.
+Follow [the official instructions](https://os.js.org/doc/manuals/man-package-manager.html) on how to add this repository.
 
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/os-js/OS.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Tips](https://img.shields.io/gratipay/os-js.svg)](https://gratipay.com/os-js/)
