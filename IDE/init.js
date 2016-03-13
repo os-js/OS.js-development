@@ -369,34 +369,111 @@
   // INIT
   /////////////////////////////////////////////////////////////////////////////
 
-  function Project(name) {
+  function Project(name, path) {
     this.scheme          = GUI.createScheme(null);
-    this.fragments         = [];
+    this.fragments       = [];
     this.currentWindow   = 0;
-    this.name            = name;
+    this.name            = name || 'Unknown';
+    this.path            = path;
     this.dom             = null;
+    this.data            = {};
   }
 
-  Project.prototype.load = function(cb) {
+  Project.prototype.load = function(app, cb) {
     var self = this;
-    var file = new VFS.File('osjs://packages/' + this.name + '/scheme.html');
 
-    VFS.read(file, function(error, content) {
-      self.scheme.loadString(content, function(err, result) {
-        if ( err ) {
-          return cb(err);
+    function replaceTemplateVariables(content) {
+      return (content || '').replace(/EXAMPLE/g, self.name);
+    }
+
+    function loadScheme(fname) {
+      var file = new VFS.File(fname);
+      console.warn('IDE', 'Loading scheme', file);
+
+      VFS.read(file, function(error, content) {
+        self.scheme.loadString(content, function(err, result) {
+          if ( err ) {
+            return cb(err);
+          }
+
+          var fragments = [];
+          result.firstChild.children.forEach(function(s) {
+            fragments.push(s.getAttribute('data-id'));
+          });
+          self.fragments = fragments;
+          self.dom = result;
+
+          cb(false, true);
+        });
+      }, {type: 'text'});
+    }
+
+    function loadProject(path) {
+      var proj = new VFS.File(path + '/project.oproj');
+
+      console.warn('IDE', 'Loading project', proj);
+      VFS.read(proj, function(error, content) {
+        if ( error ) {
+          return cb(error);
         }
 
-        var fragments = [];
-        result.firstChild.children.forEach(function(s) {
-          fragments.push(s.getAttribute('data-id'));
-        });
-        self.fragments = fragments;
-        self.dom = result;
+        var pdata = JSON.parse(content);
+        var spath = path + '/' + pdata.scheme;
 
-        cb(false, true);
+        self.data = pdata;
+        self.name = pdata.name;
+
+        loadScheme(spath);
+      }, {type: 'text'});
+    }
+
+    function createFromTemplate(cb) {
+      var templatePath = 'osjs://' + API.getApplicationResource(app, 'template');
+      var templateFile = templatePath + '/template.oproj';
+      var storagePath  = 'home:///IDEProjects';
+      var projectPath  = storagePath + '/' + self.name;
+
+      function enqueueFiles(list, done) {
+        function _next(i) {
+          if ( i >= list.length ) {
+            return done();
+          }
+
+          var iter = list[i];
+          console.warn('---->', iter);
+          VFS.read(templatePath + '/' + iter, function(err, content) {
+            content = replaceTemplateVariables(content);
+            VFS.write(projectPath + '/' + iter, content, function() {
+              _next(i+1);
+            });
+          }, {type: 'text'});
+        }
+
+        _next(0);
+      }
+
+      console.warn(templatePath, templateFile, storagePath, projectPath);
+      VFS.delete(projectPath, function() {
+        VFS.mkdir(storagePath, function() {
+          VFS.mkdir(projectPath, function() {
+            VFS.read(templateFile, function(err, content) {
+              var d = JSON.parse(replaceTemplateVariables(content || '{}'));
+              VFS.write(projectPath + '/project.oproj', JSON.stringify(d), function() {
+                enqueueFiles(d.files || [], function() {
+                  cb(projectPath);
+                });
+              });
+            }, {type: 'text'});
+          });
+        });
       });
-    }, {type: 'text'});
+    }
+
+    if ( !this.path ) {
+      createFromTemplate(function(path) {
+        loadProject(path);
+      });
+    }
   };
 
   Project.prototype.save = function(cb) {

@@ -1,9 +1,12 @@
 {
   "className":  "ApplicationIDE",
   "name":       "IDE",
-  "mime":       null,
+  "mime": [
+    "osjs\\/project"
+  ],
   "icon":       "categories/gnome-devel.png",
   "singular":   true,
+  "category":   "development",
   "preload":    [
     {"src": "init.js", "type": "javascript"},
     {"src": "main.js", "type": "javascript"},

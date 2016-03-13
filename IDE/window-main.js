@@ -40,7 +40,7 @@
       icon: metadata.icon,
       title: metadata.name + ' - Main Window',
       width: 175,
-      height: 355
+      height: 420
     }, app, scheme]);
   }
 
@@ -90,8 +90,7 @@
       MenuSaveAs:         function() { app.onSaveAs(); },
       MenuClose:          function() { self._close(); },
       MenuDesignerWindow: function() { app.toggleDesignerWindow(); },
-      MenuPropertyWindow: function() { app.togglePropertiesWindow(); },
-      MenuFileBrowser:    function() { app.toggleFileBrowserWindow(); },
+      MenuPropertyWindow: function() { app.togglePropertiesWindow(); }
     };
 
     function menuEvent(ev) {
@@ -118,7 +117,6 @@
 
     viewMenu.set('checked', 'MenuDesignerWindow', !!app.getDesignerWindow());
     viewMenu.set('checked', 'MenuPropertyWindow', !!app.getPropertiesWindow());
-    viewMenu.set('checked', 'MenuFileBrowser',    !!app.getFileBrowserWindow());
   };
 
   ApplicationIDEWindow.prototype.clear = function() {

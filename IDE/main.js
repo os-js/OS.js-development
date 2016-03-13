@@ -58,7 +58,7 @@
     var self = this;
 
     function loadDefaultProject() {
-      self.openProject('default/FileManager');
+      self.openProject('MyProject', null);
     }
 
     var url = API.getApplicationResource(this, './scheme.html');
@@ -101,18 +101,18 @@
     }
   };
 
-  ApplicationIDE.prototype.openProject = function(name) {
+  ApplicationIDE.prototype.openProject = function(name, path) {
     var self = this;
 
     this.currentProject = null;
     this.windowAction('_toggleLoading', [true]);
     this.windowAction('clear', []);
 
-    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name);
-    this.currentProject.load(function(err) {
+    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name, path);
+    this.currentProject.load(this, function(err) {
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
-        self.windowAction('load', []);
+        self.windowAction('load', [self.currentProject]);
       }
     });
   };
@@ -140,9 +140,6 @@
     if ( win ) {
       win._minimize();
     }
-  };
-
-  ApplicationIDE.prototype.toggleFileBrowserWindow = function() {
   };
 
   //
@@ -405,10 +402,6 @@
 
   ApplicationIDE.prototype.getPropertiesWindow = function() {
     return this._getWindowsByTag('properties')[0];
-  };
-
-  ApplicationIDE.prototype.getFileBrowserWindow = function() {
-    return this._getWindowsByTag('filebrowser')[0];
   };
 
 

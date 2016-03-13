@@ -15,7 +15,6 @@
           <gui-menu data-id="SubmenuView">
             <gui-menu-entry data-id="MenuPropertyWindow" data-type="checkbox" data-label="Property Window"></gui-menu-entry>
             <gui-menu-entry data-id="MenuDesignerWindow" data-type="checkbox" data-label="Designer Window"></gui-menu-entry>
-            <gui-menu-entry data-id="MenuFileBrowser" data-type="checkbox" data-label="File Browser"></gui-menu-entry>
           </gui-menu>
         </gui-menu-bar-entry>
       </gui-menu-bar>
@@ -30,41 +29,63 @@
 
 <application-window data-id="IDEPropertiesWindow">
   <gui-vbox>
-    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto" data-expand="true">
-      <gui-select data-id="SelectFragment">
-      </gui-select>
-    </gui-vbox-container>
-    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="30%" data-fill="true">
-      <gui-paned-view data-orientation="vertical">
-        <gui-paned-view-container data-basis="60%" data-fill="true">
-          <gui-tree-view data-expanded="true" data-id="Tree">
-          </gui-tree-view>
-        </gui-paned-view-container>
-        <gui-paned-view-container data-grow="1" data-fill="true">
-          <gui-list-view data-id="Properties">
-          </gui-list-view>
-        </gui-paned-view-container>
-      </gui-paned-view>
-    </gui-vbox-container>
-    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
-      <gui-hbox>
-        <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
-          <gui-text data-id="PropertyValueInput" />
-          <gui-select data-id="PropertyValueSelect" />
-        </gui-hbox-container>
+    <gui-vbox-container data-grow="1" data-shrink="0" data-basis="auto" data-fill="true">
+      <gui-tabs>
+        <gui-tab-container data-label="LBL_PROPERTIES">
+          <gui-vbox>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto" data-expand="true">
+              <gui-select data-id="SelectFragment">
+              </gui-select>
+            </gui-vbox-container>
+            <gui-vbox-container data-grow="1" data-shrink="0" data-basis="30%" data-fill="true">
+              <gui-paned-view data-orientation="vertical">
+                <gui-paned-view-container data-basis="60%" data-fill="true">
+                  <gui-tree-view data-expanded="true" data-id="Tree">
+                  </gui-tree-view>
+                </gui-paned-view-container>
+                <gui-paned-view-container data-grow="1" data-fill="true">
+                  <gui-list-view data-id="Properties">
+                  </gui-list-view>
+                </gui-paned-view-container>
+              </gui-paned-view>
+            </gui-vbox-container>
 
-        <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
-          <gui-button data-icon="stock://16x16/actions/editclear.png" data-id="PropertyButtonNull" />
-        </gui-hbox-container>
-        <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
-          <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
-        </gui-hbox-container>
-      </gui-hbox>
-    </gui-vbox-container>
-    <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
-      <gui-statusbar data-id="Statusbar"></gui-statusbar>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+              <gui-hbox>
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                  <gui-text data-id="PropertyValueInput" />
+                  <gui-select data-id="PropertyValueSelect" />
+                </gui-hbox-container>
+
+                <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                  <gui-button data-icon="stock://16x16/actions/editclear.png" data-id="PropertyButtonNull" />
+                </gui-hbox-container>
+                <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                  <gui-button data-icon="stock://16x16/actions/system-run.png" data-id="PropertyButtonApply" />
+                </gui-hbox-container>
+              </gui-hbox>
+            </gui-vbox-container>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+              <gui-statusbar data-id="Statusbar"></gui-statusbar>
+            </gui-vbox-container>
+          </gui-vbox>
+        </gui-tab-container>
+
+        <gui-tab-container data-label="LBL_FILES">
+          <gui-vbox>
+            <gui-vbox-container data-grow="1" data-shrink="0" data-fill="true">
+              <gui-tree-view data-expanded="true" data-id="Files">
+              </gui-tree-view>
+            </gui-vbox-container>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+              <gui-statusbar data-id="Statusbar"></gui-statusbar>
+            </gui-vbox-container>
+          </gui-vbox>
+        </gui-tab-container>
+      </gui-itabs>
     </gui-vbox-container>
   </gui-vbox>
+
 </application-window>
 
 <application-window data-id="IDEDesignerWindow">

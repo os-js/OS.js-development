@@ -132,10 +132,11 @@
     this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
   };
 
-  ApplicationIDEPropertiesWindow.prototype.load = function() {
+  ApplicationIDEPropertiesWindow.prototype.load = function(project) {
     this.renderTree();
     this.renderProperties();
     this.renderWindowList();
+    this.renderFileList(project);
   };
 
   ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
@@ -207,6 +208,41 @@
 
       listView.add(rows);
     }
+  };
+
+  ApplicationIDEPropertiesWindow.prototype.renderFileList = function(project) {
+    console.warn(project);
+
+    var self = this;
+
+    var treeView = this._scheme.find(this, 'Files');
+    treeView.clear();
+
+    var entries = (function() {
+      var result = [];
+      project.data.files.forEach(function(f) {
+        result.push({
+          label: f,
+          icon: API.getApplicationResource(self._app, 'icons/widget-gtk-window.png'),
+          value: {
+            filename: f
+          }
+        });
+      });
+      return result;
+    })();
+
+    var tree = [{
+      label: project.data.name,
+      icon: API.getApplicationResource(self._app, 'icons/widget-gtk-window.png'),
+      value: {
+        tagName: 'application-window',
+        path: ''
+      },
+      entries: entries
+    }];
+
+    treeView.add(tree);
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderWindowList = function() {
