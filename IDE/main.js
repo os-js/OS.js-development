@@ -310,6 +310,11 @@
   };
 
   ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName) {
+    if ( !xpath ) {
+      console.warn('onElementDropped()', 'NO XPATH');
+      return;
+    }
+
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
 
