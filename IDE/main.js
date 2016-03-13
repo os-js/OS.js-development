@@ -57,18 +57,12 @@
 
     var self = this;
 
-    function loadDefaultProject() {
-      self.openProject('MyProject', null);
-    }
-
     var url = API.getApplicationResource(this, './scheme.html');
     var scheme = GUI.createScheme(url);
     scheme.load(function(error, result) {
       self._addWindow(new OSjs.Applications.ApplicationIDE.PropertiesWindow(self, metadata, scheme));
       self._addWindow(new OSjs.Applications.ApplicationIDE.DesignerWindow(self, metadata));
       self._addWindow(new OSjs.Applications.ApplicationIDE.MainWindow(self, metadata, scheme), null, true);
-
-      loadDefaultProject();
     });
 
     this.globalClickEvent = function(ev) {
@@ -101,14 +95,14 @@
     }
   };
 
-  ApplicationIDE.prototype.openProject = function(name, path) {
+  ApplicationIDE.prototype.createProject = function(name) {
     var self = this;
 
     this.currentProject = null;
     this.windowAction('_toggleLoading', [true]);
     this.windowAction('clear', []);
 
-    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name, path);
+    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name);
     this.currentProject.load(this, function(err) {
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
@@ -375,6 +369,7 @@
   //
 
   ApplicationIDE.prototype.onNew = function() {
+    this.createProject('MyProject');
   };
 
   ApplicationIDE.prototype.onOpen = function() {

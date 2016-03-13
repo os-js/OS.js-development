@@ -220,12 +220,12 @@
 
     var entries = (function() {
       var result = [];
-      project.data.files.forEach(function(f) {
+      project.data.preload.forEach(function(iter) {
         result.push({
-          label: f,
-          icon: API.getApplicationResource(self._app, 'icons/widget-gtk-window.png'),
+          label: iter.src,
+          icon: API.getIcon('mimetypes/binary.png'),
           value: {
-            filename: f
+            filename: iter.src
           }
         });
       });
@@ -234,12 +234,24 @@
 
     var tree = [{
       label: project.data.name,
-      icon: API.getApplicationResource(self._app, 'icons/widget-gtk-window.png'),
+      icon: API.getIcon('categories/applications-development.png'),
       value: {
         tagName: 'application-window',
         path: ''
       },
-      entries: entries
+      entries: [{
+        label: 'Project',
+        entries: [{
+          icon: API.getIcon('mimetypes/binary.png'),
+          label: 'metadata.json'
+        }, {
+          icon: API.getApplicationResource(self._app, 'icons/widget-gtk-window.png'),
+          label: 'scheme.html'
+        }]
+      }, {
+        label: 'Preload',
+        entries: entries
+      }]
     }];
 
     treeView.add(tree);

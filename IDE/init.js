@@ -409,7 +409,7 @@
     }
 
     function loadProject(path) {
-      var proj = new VFS.File(path + '/project.oproj');
+      var proj = new VFS.File(path + '/metadata.json');
 
       console.warn('IDE', 'Loading project', proj);
       VFS.read(proj, function(error, content) {
@@ -418,7 +418,7 @@
         }
 
         var pdata = JSON.parse(content);
-        var spath = path + '/' + pdata.scheme;
+        var spath = path + '/scheme.html';
 
         self.data = pdata;
         self.name = pdata.name;
@@ -429,18 +429,25 @@
 
     function createFromTemplate(cb) {
       var templatePath = 'osjs://' + API.getApplicationResource(app, 'template');
-      var templateFile = templatePath + '/template.oproj';
+      var templateFile = templatePath + '/metadata.json';
       var storagePath  = 'home:///IDEProjects';
       var projectPath  = storagePath + '/' + self.name;
 
       function enqueueFiles(list, done) {
+        var result = [];
+
         function _next(i) {
-          if ( i >= list.length ) {
-            return done();
+          if ( i >= (list.length-1) ) {
+            return done(result);
           }
 
-          var iter = list[i];
-          console.warn('---->', iter);
+          var iter = list[i].src;
+          console.warn('---->', iter, list[i]);
+
+          if ( iter.match(/^(https?|ftp)\:/) ) {
+            return _next(i+1);
+          }
+
           VFS.read(templatePath + '/' + iter, function(err, content) {
             content = replaceTemplateVariables(content);
             VFS.write(projectPath + '/' + iter, content, function() {
@@ -458,8 +465,12 @@
           VFS.mkdir(projectPath, function() {
             VFS.read(templateFile, function(err, content) {
               var d = JSON.parse(replaceTemplateVariables(content || '{}'));
-              VFS.write(projectPath + '/project.oproj', JSON.stringify(d), function() {
-                enqueueFiles(d.files || [], function() {
+              VFS.write(projectPath + '/metadata.json', JSON.stringify(d), function() {
+                var files = d.preload;
+                files.push({type: 'scheme', src: 'scheme.html'});
+                files.push({type: 'metadata', src: 'metadata.json'});
+
+                enqueueFiles(files || [], function() {
                   cb(projectPath);
                 });
               });
