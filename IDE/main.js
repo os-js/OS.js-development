@@ -207,13 +207,15 @@
     console.groupEnd();
 
     if ( target && ttarget ) {
+      // TODO: Remove actual scheme element
       Utils.$remove(ttarget);
 
       if ( win ) {
         win.render();
       }
+
       if ( propWin ) {
-        propWin.load();
+        propWin.load(this.currentProject);
       }
     }
   };
@@ -357,7 +359,7 @@
       }
 
       if ( propWin ) {
-        propWin.load();
+        propWin.load(this.currentProject);
       }
     }
 
@@ -376,11 +378,20 @@
   };
 
   ApplicationIDE.prototype.onSave = function() {
-    console.warn(this.currentProject.getHTML());
+    var self = this;
+
+    if ( !this.currentProject ) {
+      return;
+    }
+
+    this.windowAction('_toggleLoading', [true]);
+    this.currentProject.save(function() {
+      self.windowAction('_toggleLoading', [false]);
+    });
   };
 
   ApplicationIDE.prototype.onSaveAs = function() {
-    console.warn(this.currentProject.getHTML());
+    this.onSave();
   };
 
   //

@@ -469,6 +469,7 @@
                 var files = d.preload;
                 files.push({type: 'scheme', src: 'scheme.html'});
                 files.push({type: 'metadata', src: 'metadata.json'});
+                self.path = projectPath;
 
                 enqueueFiles(files || [], function() {
                   cb(projectPath);
@@ -488,7 +489,12 @@
   };
 
   Project.prototype.save = function(cb) {
-    cb();
+    var path = this.path + '/scheme.html';
+    var content = this.getHTML();
+
+    VFS.write(path, content, function(err) {
+      cb(err);
+    });
   };
 
   Project.prototype.getElement = function(xpath) {
