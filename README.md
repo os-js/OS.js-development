@@ -29,10 +29,10 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [x] Window Rendering
 * [x] GUI Element toolbar
 * [x] Proper project loading and sessions
-* [-] Project saving
-* [x] Multiple window support
+* [x] Project saving
+* [ ] Multiple window support
 * [x] Adding elements
 * [x] Removing elements
 * [x] Parameter viewing
 * [x] Parameter setting
-* [-] File Browser
+* [ ] File Browser
