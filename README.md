@@ -19,7 +19,7 @@ This is my second attempt at creating a Interface Designer and IDE for OS.js.
 
 #### Status
 
-In progress, but nowhere near usable. Currently experimenting and prototyping/laying groundwork
+In progress, basic interface designing works. You can create, save and load projects.
 
 #### TODO
 
