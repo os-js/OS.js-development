@@ -171,12 +171,20 @@
       propWin.selectElement(xpath, tagName, true);
     }
 
-    if ( ttarget && elements[tagName] && typeof elements[tagName].onpropertyupdate === 'function' ) {
-      var result = elements[tagName].onpropertyupdate(ttarget, tagName, property, value);
-      win.render();
+    if ( ttarget && elements[tagName] ) {
+      var result;
+      if ( typeof elements[tagName].onpropertyupdate === 'function' ) {
+        result = elements[tagName].onpropertyupdate(ttarget, tagName, property, value);
+      } else {
+        result = OSjs.Applications.ApplicationIDE.setProperty(ttarget, tagName, property, value);
+      }
 
-      if ( propWin ) {
-        propWin.load(this.currentProject);
+      if ( result ) {
+        win.render();
+
+        if ( propWin ) {
+          propWin.load(this.currentProject);
+        }
       }
 
       this.onElementSelected(xpath, tagName);

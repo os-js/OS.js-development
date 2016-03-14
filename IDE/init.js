@@ -42,7 +42,7 @@
   function setProperty(el, tagName, property, value) {
     var innerLabelElement = ['gui-button'];
 
-    if ( elements[tagName] && elements[tagName].propertyTypes[property] ) {
+    if ( elements[tagName] && (property === 'id' || elements[tagName].propertyTypes[property]) ) {
       if ( property === 'label' && elements[tagName].hasInnerLabel ) {
         Utils.$empty(el);
         el.appendChild(document.createTextNode(value));
@@ -132,9 +132,6 @@
       properties: {
         disabled: null,
         placeholder : ''
-      },
-      onpropertyupdate: function(el, tagName, property, value) {
-        return setProperty(el, tagName, property, value);
       }
     };
 
@@ -254,9 +251,6 @@
         basis: null,
         expand: null,
         fill: null
-      },
-      onpropertyupdate: function(el, tagName, property, value) {
-        return setProperty(el, tagName, property, value);
       }
     };
   }
@@ -308,9 +302,6 @@
         },
         properties: {
           label: 'Tab'
-        },
-        onpropertyupdate: function(el, tagName, property, value) {
-          return setProperty(el, tagName, property, value);
         }
       },
 
@@ -656,6 +647,7 @@
   OSjs.Applications.ApplicationIDE.Project = Project;
   OSjs.Applications.ApplicationIDE.getElementByXpath = getElementByXpath;
   OSjs.Applications.ApplicationIDE.getXpathByElement = getXpathByElement;
+  OSjs.Applications.ApplicationIDE.setProperty = setProperty;
 
 
 
