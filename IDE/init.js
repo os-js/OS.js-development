@@ -38,6 +38,15 @@
     });
   }
 
+  function setProperty(el, tagName, property, value) {
+    if ( elements[tagName] && elements[tagName].propertyTypes[property] ) {
+      el.setAttribute('data-' + property, String(value));
+      return true;
+    }
+
+    return false;
+  }
+
   function getProperties(xpath, tagName, el) {
     var target = xpath ? this.getElement(xpath) : null;
     var elementPropTypes = getPropertyTypes(el);
@@ -112,6 +121,9 @@
       properties: {
         disabled: null,
         placeholder : ''
+      },
+      onpropertyupdate: function(el, tagName, property, value) {
+        return setProperty(el, tagName, property, value);
       }
     };
 
@@ -133,6 +145,32 @@
   }
 
   function getBoxContainerProperties(name, icon) {
+    function updateBoxChildren(el, tagName, size) {
+      size = parseInt(size, 10);
+      var current = el.children.length;
+
+      if ( !isNaN(size) ) {
+        if ( size < current ) {
+          var removeNumber = current - size;
+          if ( removeNumber > 0 ) {
+            while ( el.children.length > (current-removeNumber) ) {
+              Utils.$remove(el.children[el.children.length - 1]);
+            }
+          }
+        } else {
+          var addNumber = size - current;
+          if ( addNumber > 0 ) {
+            for ( var a = 0; a < addNumber; a++ ) {
+              el.appendChild(GUI.Helpers.createElement(tagName + '-container', {
+                shrink: 1,
+                grow: 1
+              }));
+            }
+          }
+        }
+      }
+    }
+
     return {
       isContainer: name + '-container',
       icon: icon,
@@ -147,6 +185,19 @@
             grow: 1
           }));
         }
+      },
+      onpropertyupdate: function(el, tagName, property, value) {
+        if ( setProperty(el, tagName, property, value) ) {
+
+          if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' ) {
+            if ( property === '_size' ) {
+              updateBoxChildren(el, tagName, value);
+            }
+          }
+
+          return true;
+        }
+        return false;
       },
       propertyTypes: {
         _size: {

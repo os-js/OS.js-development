@@ -148,26 +148,43 @@
   //
 
   ApplicationIDE.prototype.onPropertyApply = function(xpath, tagName, property, originalValue, value) {
+    var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
+    if ( !win ) {
+      return;
+    }
+
     var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var target = null;
-    var ttarget = null;
-    var elementTagName = null;
+    var target = win.getElement(xpath);
+    var ttarget = this.currentProject.getElement(xpath);
 
     console.group('ApplicationIDE::onPropertyApply()');
     console.log('Xpath', xpath);
+    console.log('Property', property);
     console.log('Value', originalValue, value);
     console.log('Element', tagName, elements[tagName]);
     console.log('Target', target);
     console.log('Template Target', ttarget);
-    console.log('Teplate Element', elementTagName, elements[elementTagName]);
     console.groupEnd();
 
-    this.onElementSelected(xpath, tagName);
-
-    var propWin = this.getPropertiesWindow();
     if ( propWin ) {
       propWin.selectElement(xpath, tagName, true);
     }
+
+    if ( ttarget && elements[tagName] && typeof elements[tagName].onpropertyupdate === 'function' ) {
+      var result = elements[tagName].onpropertyupdate(ttarget, tagName, property, value);
+      win.render();
+
+      if ( propWin ) {
+        propWin.load(this.currentProject);
+      }
+
+      this.onElementSelected(xpath, tagName);
+
+      return result;
+    }
+
+    return true;
   };
 
   ApplicationIDE.prototype.onPropertySelected = function(property, item) {

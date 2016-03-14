@@ -101,8 +101,7 @@
     this._scheme.find(this, 'PropertyValueSelect').hide();
 
     this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
-      console.warn("XXXX", input.get('value'));
-      applyValue(null);
+      applyValue(input.get('value'));
     });
 
     this._scheme.find(this, 'PropertyButtonNull').on('click', function() {
