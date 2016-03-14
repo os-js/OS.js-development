@@ -40,8 +40,15 @@
   }
 
   function setProperty(el, tagName, property, value) {
+    var innerLabelElement = ['gui-button'];
+
     if ( elements[tagName] && elements[tagName].propertyTypes[property] ) {
-      el.setAttribute('data-' + property, String(value));
+      if ( property === 'label' && elements[tagName].hasInnerLabel ) {
+        Utils.$empty(el);
+        el.appendChild(document.createTextNode(value));
+      } else {
+        el.setAttribute('data-' + property, String(value));
+      }
       return true;
     }
 
@@ -73,13 +80,16 @@
       defaultProps[k] = value;
     });
 
-
     if ( target ) {
       var attributes = target.attributes;
       var attrib;
       for ( var i = 0; i < attributes.length; i++ ) {
         attrib = attributes[i];
         elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
+      }
+
+      if ( elements[tagName] && elements[tagName].hasInnerLabel ) {
+        elementProps.label = target.innerHTML;
       }
     }
 
