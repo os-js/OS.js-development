@@ -256,6 +256,7 @@
   function boxProperties() {
     return {
       isContainer: true,
+      icon: 'widget-gtk-container.png',
       propertyTypes: {
         grow: {
           type: 'number'
@@ -316,6 +317,7 @@
 
     'gui-tabs': getBoxContainerProperties('gui-tabs', 'widget-gtk-notebook.png'),
       'gui-tab-container': {
+        icon: 'widget-gtk-container.png',
         propertyTypes: {
           label: {
             type: 'string'
@@ -454,6 +456,7 @@
       icon: 'widget-gtk-menubar.png'
     },
       'gui-menu-bar-entry': {
+        icon: 'widget-gtk-label.png'
       },
     'gui-statusbar': {
       isContainer: false,
