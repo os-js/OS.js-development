@@ -340,7 +340,8 @@
         var ref = elements[elementTagName];
 
         if ( typeof setProps[k] === 'function' ) {
-          val = setProps[k](null, elementTagName);
+          //val = setProps[k](null, elementTagName);
+          return;
         }
 
         if ( (ref.propertyTypes || {})[k] && typeof ref.propertyTypes[k].defaultValue !== 'undefined' ) {
@@ -355,6 +356,10 @@
           }
         }
       });
+
+      if ( typeof elements[elementTagName].oncreate === 'function' ) {
+        elements[elementTagName].oncreate(el, ttarget, elementTagName);
+      }
 
       ttarget.appendChild(el);
 

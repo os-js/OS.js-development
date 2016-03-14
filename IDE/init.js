@@ -136,6 +136,18 @@
     return {
       isContainer: name + '-container',
       icon: icon,
+      oncreate: function(el, par, tagName) {
+        if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' ) {
+          el.appendChild(GUI.Helpers.createElement(tagName + '-container', {
+            shrink: 1,
+            grow: 1
+          }));
+          el.appendChild(GUI.Helpers.createElement(tagName + '-container', {
+            shrink: 1,
+            grow: 1
+          }));
+        }
+      },
       propertyTypes: {
         _size: {
           type: 'number'
@@ -144,7 +156,7 @@
       properties: {
         _size: function(el, tagName) {
           if ( !el || !el.parentNode ) {
-            return 0;
+            return -1;
           }
 
           return el.parentNode.getElementsByTagName(tagName + '-container').length || 0;
