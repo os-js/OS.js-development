@@ -147,6 +147,24 @@
   // PROPERTY EVENTS
   //
 
+  ApplicationIDE.prototype.onSelectFragment = function(index) {
+    if ( !this.currentProject ) {
+      return;
+    }
+
+    this.currentProject.currentWindow = index;
+
+    var win = this.getDesignerWindow();
+    if ( win ) {
+      win.render()
+    }
+
+    var propWin = this.getPropertiesWindow();
+    if ( propWin ) {
+      propWin.load(this.currentProject);
+    }
+  };
+
   ApplicationIDE.prototype.onPropertyApply = function(xpath, tagName, property, originalValue, value) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();

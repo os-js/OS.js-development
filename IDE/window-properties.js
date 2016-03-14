@@ -66,6 +66,7 @@
     var iconView = this._scheme.find(this, 'Properties');
     var input = this._scheme.find(this, 'PropertyValueInput');
     var select = this._scheme.find(this, 'PropertyValueSelect');
+    var selectFragment = this._scheme.find(this, 'SelectFragment');
 
     function applyValue(value) {
       app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
@@ -96,6 +97,11 @@
       sel = (sel[0] || {}).data || null;
 
       app.onPropertySelected(ev.detail.entries[0].data, sel);
+    });
+
+    selectFragment.on('change', function(ev) {
+      var idx = parseInt(ev.detail, 10) || 0;
+      app.onSelectFragment(idx);
     });
 
     this._scheme.find(this, 'PropertyValueSelect').hide();
@@ -139,7 +145,7 @@
   ApplicationIDEPropertiesWindow.prototype.load = function(project) {
     this.renderTree();
     this.renderProperties();
-    this.renderWindowList();
+    this.renderWindowList(project);
     this.renderFileList(project);
   };
 
@@ -215,8 +221,6 @@
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderFileList = function(project) {
-    console.warn(project);
-
     var self = this;
 
     var treeView = this._scheme.find(this, 'Files');
@@ -261,7 +265,7 @@
     treeView.add(tree);
   };
 
-  ApplicationIDEPropertiesWindow.prototype.renderWindowList = function() {
+  ApplicationIDEPropertiesWindow.prototype.renderWindowList = function(project) {
     var select = this._scheme.find(this, 'SelectFragment');
     select.clear();
 
@@ -275,7 +279,7 @@
       });
     });
 
-    select.add(list);
+    select.add(list).set('value', String(project.currentWindow));
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
@@ -283,6 +287,7 @@
     var project = app.currentProject;
     var windowName = project.getFragmentName();
     var rootWindow = project.getFragment();
+    var wid = String(project.currentWindow + 1);
 
     var treeView = this._scheme.find(this, 'Tree');
     treeView.clear();
@@ -301,7 +306,7 @@
     var tree = [rootIter];
 
     function traverse(root, riter) {
-      if ( root.children ) {
+      if ( root && root.children ) {
         root.children.forEach(function(c) {
           var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
             isContainer: false,
@@ -319,7 +324,7 @@
             icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
             value: {
               tagName: c.tagName.toLowerCase(),
-              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow).replace('/div[1]/application-window[1]/', '')
+              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow).replace('/div[1]/application-window[' + wid + ']/', '')
             },
             entries: []
           };
