@@ -382,10 +382,6 @@
   Project.prototype.load = function(app, cb) {
     var self = this;
 
-    function replaceTemplateVariables(content) {
-      return (content || '').replace(/EXAMPLE/g, self.name);
-    }
-
     function loadScheme(fname) {
       var file = new VFS.File(fname);
       console.warn('IDE', 'Loading scheme', file);
@@ -428,56 +424,15 @@
     }
 
     function createFromTemplate(cb) {
-      var templatePath = 'osjs://' + API.getApplicationResource(app, 'template');
-      var templateFile = templatePath + '/metadata.json';
-      var storagePath  = 'home:///IDEProjects';
-      var projectPath  = storagePath + '/' + self.name;
+      var projectPath = 'home:///IDEProjects/' + self.name;
 
-      function enqueueFiles(list, done) {
-        var result = [];
-
-        function _next(i) {
-          if ( i >= (list.length-1) ) {
-            return done(result);
-          }
-
-          var iter = list[i].src;
-          console.warn('---->', iter, list[i]);
-
-          if ( iter.match(/^(https?|ftp)\:/) ) {
-            return _next(i+1);
-          }
-
-          VFS.read(templatePath + '/' + iter, function(err, content) {
-            content = replaceTemplateVariables(content);
-            VFS.write(projectPath + '/' + iter, content, function() {
-              _next(i+1);
-            });
-          }, {type: 'text'});
-        }
-
-        _next(0);
-      }
-
-      console.warn(templatePath, templateFile, storagePath, projectPath);
-      VFS.delete(projectPath, function() {
-        VFS.mkdir(storagePath, function() {
-          VFS.mkdir(projectPath, function() {
-            VFS.read(templateFile, function(err, content) {
-              var d = JSON.parse(replaceTemplateVariables(content || '{}'));
-              VFS.write(projectPath + '/metadata.json', JSON.stringify(d), function() {
-                var files = d.preload;
-                files.push({type: 'scheme', src: 'scheme.html'});
-                files.push({type: 'metadata', src: 'metadata.json'});
-                self.path = projectPath;
-
-                enqueueFiles(files || [], function() {
-                  cb(projectPath);
-                });
-              });
-            }, {type: 'text'});
-          });
-        });
+      app._call('createProject', {
+        name: self.name,
+        template: 'osjs://' + API.getApplicationResource(app, 'template'),
+        destination: projectPath
+      }, function(response) {
+        self.path = projectPath;
+        cb(projectPath);
       });
     }
 
