@@ -405,25 +405,32 @@
 
   ApplicationIDE.prototype.onNew = function() {
     var self = this;
-    var name = 'MyProject';
-    var projectPath = 'home:///IDEProjects/' + name;
 
     this._setArgument('file', null);
 
-    VFS.exists(projectPath, function(err, res) {
-      if ( err || res ) {
-        API.createDialog('Confirm', {
-          message: 'Overwrite project with the name ' + name + '?',
-          buttons: ['yes', 'no']
-        }, function(ev, button, result) {
-          if ( button === 'ok' || button === 'yes' ) {
-            self.loadProject(name);
-          }
-        });
-        return;
-      }
+    API.createDialog('Input', {
+      message: 'Please enter the name of your project',
+      value: 'MyProject'
+    }, function(ev, btn, name) {
+      if ( btn === 'ok' && name ) {
+        var projectPath = 'home:///IDEProjects/' + name;
 
-      self.loadProject(name);
+        VFS.exists(projectPath, function(err, res) {
+          if ( err || res ) {
+            API.createDialog('Confirm', {
+              message: 'Overwrite project with the name ' + name + '?',
+              buttons: ['yes', 'no']
+            }, function(ev, button, result) {
+              if ( button === 'ok' || button === 'yes' ) {
+                self.loadProject(name);
+              }
+            });
+            return;
+          }
+
+          self.loadProject(name);
+        });
+      }
     });
   };
 
