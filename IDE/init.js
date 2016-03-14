@@ -47,9 +47,11 @@
     }
 
     if ( elements[tagName] && (property === 'id' || elements[tagName].propertyTypes[property]) ) {
-      if ( property === 'label' && elements[tagName].hasInnerLabel ) {
-        Utils.$empty(el);
-        el.appendChild(document.createTextNode(value));
+      var il = elements[tagName].hasInnerLabel;
+      if ( property === 'label' && il ) {
+        var lel = (il === true) ? el : el.querySelector(il);
+        Utils.$empty(lel);
+        lel.appendChild(document.createTextNode(value));
       } else {
         el.setAttribute('data-' + property, String(value));
       }
@@ -334,7 +336,23 @@
     },
     'gui-expander': {
       isContainer: true,
-      icon: 'widget-gtk-expander.png'
+      icon: 'widget-gtk-expander.png',
+      propertyTypes: {
+        label: {
+          type: 'string'
+        }
+      },
+      properties: {
+        label: function(el, tagName) {
+          if ( el ) {
+            return el.getAttribute('data-label');
+          }
+          return '';
+        }
+      },
+      oncreate: function(el, par, tagName) {
+        el.setAttribute('data-label', 'Expander');
+      }
     },
 
     //
