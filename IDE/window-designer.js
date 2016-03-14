@@ -153,9 +153,9 @@
           if ( elements[tagName] ) {
             var cn = elements[tagName].isContainer;
             if ( cn ) {
-              sel.setAttribute('data-ide-container', 'true');
 
               if ( cn === true ) {
+                sel.setAttribute('data-ide-container', 'true');
                 createDroppable(sel, function(data) {
                   var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(sel, self._$root);
                   app.onElementDropped(xpath, tagName, data.tagName);

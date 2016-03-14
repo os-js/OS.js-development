@@ -31,6 +31,7 @@
   'use strict';
 
   function getPropertyTypes(el) {
+    el = el || {};
     return Utils.argumentDefaults(el.propertyTypes || {}, {
       id: {
         type: 'string'
@@ -52,11 +53,11 @@
     var elementPropTypes = getPropertyTypes(el);
     var defaultProps = {};
     var elementProps = {};
-    var refProps = el.properties || {};
+    var refProps = (el || {}).properties || {};
 
     if ( xpath ) {
       elementProps = {
-        id: target.getAttribute('data-id')
+        id: target ? target.getAttribute('data-id') : null
       };
     } else {
       elementProps = {
@@ -289,6 +290,20 @@
         }));
       }
     },
+      'gui-tab-container': {
+        propertyTypes: {
+          label: {
+            type: 'string'
+          }
+        },
+        properties: {
+          label: 'Tab'
+        },
+        onpropertyupdate: function(el, tagName, property, value) {
+          return setProperty(el, tagName, property, value);
+        }
+      },
+
     'gui-toolbar': {
       isContainer: true,
       icon: 'widget-gtk-toolbar.png'
