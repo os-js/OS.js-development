@@ -101,7 +101,11 @@
     this._scheme.find(this, 'PropertyValueSelect').hide();
 
     this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
-      applyValue(input.get('value'));
+      if ( input.$element.style.display === 'none' ) {
+        applyValue(select.get('value'));
+      } else {
+        applyValue(input.get('value'));
+      }
     });
 
     this._scheme.find(this, 'PropertyButtonNull').on('click', function() {

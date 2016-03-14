@@ -243,6 +243,9 @@
         basis: null,
         expand: null,
         fill: null
+      },
+      onpropertyupdate: function(el, tagName, property, value) {
+        return setProperty(el, tagName, property, value);
       }
     };
   }
@@ -279,7 +282,12 @@
 
     'gui-tabs': {
       isContainer: 'gui-tab-container',
-      icon: 'widget-gtk-notebook.png'
+      icon: 'widget-gtk-notebook.png',
+      oncreate: function(el, par, tagName) {
+        el.appendChild(GUI.Helpers.createElement('gui-tab-container', {
+          label: 'Tab'
+        }));
+      }
     },
     'gui-toolbar': {
       isContainer: true,
