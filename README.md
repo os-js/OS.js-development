@@ -23,15 +23,16 @@ In progress, but nowhere near usable. Currently experimenting and prototyping/la
 
 #### TODO
 
+It is somewhat usable, but the base design is not finished and needs some refactoring. Also some elements are not finished in "edit mode"
+
 * [x] Simple project loading
 * [x] Window Rendering
 * [x] GUI Element toolbar
-* [ ] Proper project loading and sessions
-* [ ] Project saving
+* [x] Proper project loading and sessions
+* [-] Project saving
 * [x] Multiple window support
 * [x] Adding elements
 * [x] Removing elements
 * [x] Parameter viewing
-* [ ] Parameter setting
-* [ ] File Browser
-* [ ] Project File Format
+* [x] Parameter setting
+* [-] File Browser
