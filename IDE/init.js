@@ -379,6 +379,20 @@
     this.data            = {};
   }
 
+  Project.prototype._createProject = function(app, cb) {
+    var self = this;
+    var projectPath = 'home:///IDEProjects/' + self.name;
+
+    app._call('createProject', {
+      name: self.name,
+      template: 'osjs://' + API.getApplicationResource(app, 'template'),
+      destination: projectPath
+    }, function(response) {
+      self.path = projectPath;
+      cb(projectPath);
+    });
+  };
+
   Project.prototype.load = function(app, cb) {
     var self = this;
 
@@ -423,21 +437,11 @@
       }, {type: 'text'});
     }
 
-    function createFromTemplate(cb) {
-      var projectPath = 'home:///IDEProjects/' + self.name;
 
-      app._call('createProject', {
-        name: self.name,
-        template: 'osjs://' + API.getApplicationResource(app, 'template'),
-        destination: projectPath
-      }, function(response) {
-        self.path = projectPath;
-        cb(projectPath);
-      });
-    }
-
-    if ( !this.path ) {
-      createFromTemplate(function(path) {
+    if ( this.path ) {
+      loadProject(this.path);
+    } else {
+      this._createProject(app, function(path) {
         loadProject(path);
       });
     }

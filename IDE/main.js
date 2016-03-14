@@ -95,14 +95,14 @@
     }
   };
 
-  ApplicationIDE.prototype.createProject = function(name) {
+  ApplicationIDE.prototype.loadProject = function(name, path) {
     var self = this;
 
     this.currentProject = null;
     this.windowAction('_toggleLoading', [true]);
     this.windowAction('clear', []);
 
-    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name);
+    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name, path);
     this.currentProject.load(this, function(err) {
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
@@ -376,10 +376,38 @@
   //
 
   ApplicationIDE.prototype.onNew = function() {
-    this.createProject('MyProject');
+    var self = this;
+    var name = 'MyProject';
+    var projectPath = 'home:///IDEProjects/' + name;
+
+    VFS.exists(projectPath, function(err, res) {
+      if ( err || res ) {
+        API.createDialog('Confirm', {
+          message: 'Overwrite project with the name ' + name + '?',
+          buttons: ['yes', 'no']
+        }, function(ev, button, result) {
+          if ( button === 'ok' || button === 'yes' ) {
+            self.loadProject(name);
+          }
+        });
+        return;
+      }
+
+      self.loadProject(name);
+    });
   };
 
   ApplicationIDE.prototype.onOpen = function() {
+    var self = this;
+
+    API.createDialog('File', {
+      file: new VFS.File('home:///IDEProjects'),
+      select: 'dir'
+    }, function(ev, button, result) {
+      if ( button === 'ok' && result ) {
+        self.loadProject(null, result.path);
+      }
+    });
   };
 
   ApplicationIDE.prototype.onSave = function() {
