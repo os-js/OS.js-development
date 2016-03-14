@@ -89,8 +89,8 @@
     var self = this;
 
     // Load and set up scheme (GUI) here
-    createDroppable(root, function() {
-      app.onElementDropped(null, null);
+    createDroppable(root, function(data) {
+      app.onElementDropped(null, 'application-window', data.tagName);
     });
 
     return root;

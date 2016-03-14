@@ -143,6 +143,10 @@
       },
       properties: {
         _size: function(el, tagName) {
+          if ( !el || !el.parentNode ) {
+            return 0;
+          }
+
           return el.parentNode.getElementsByTagName(tagName + '-container').length || 0;
         }
       }
@@ -458,7 +462,12 @@
 
   Project.prototype.getElement = function(xpath) {
     var idx = this.currentWindow + 1;
-    xpath = '/div[1]/application-window[' + String(idx) + ']/' + xpath.replace(/^\//, ''); // FIXME
+    var root = '/div[1]/application-window[' + String(idx) + ']';
+    if ( xpath ) {
+      xpath = root + '/' + xpath.replace(/^\//, ''); // FIXME
+    } else {
+      xpath = root;
+    }
 
     var ttarget = null;
     try {

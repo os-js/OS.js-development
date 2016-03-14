@@ -207,7 +207,6 @@
     console.groupEnd();
 
     if ( target && ttarget ) {
-      // TODO: Remove actual scheme element
       Utils.$remove(ttarget);
 
       if ( win ) {
@@ -311,18 +310,18 @@
 
   ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName) {
     if ( !xpath ) {
-      console.warn('onElementDropped()', 'NO XPATH');
-      return;
+      console.error('onElementDropped()', 'NO XPATH', xpath);
+      //return;
     }
 
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
 
     var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
-    xpath = xpath.replace(rootPath, '');
+    xpath = (xpath || '').replace(rootPath, '');
 
     var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var target = win.getElement(xpath.replace(/^\//, ''));
+    var target = win.getElement(xpath.replace(/^\//, '')) || win._$root;
     var ttarget = this.currentProject.getElement(xpath);
 
     console.group('ApplicationIDE::onElementDropped()');
@@ -341,7 +340,7 @@
         var ref = elements[elementTagName];
 
         if ( typeof setProps[k] === 'function' ) {
-          setProps[k](null, elementTagName);
+          val = setProps[k](null, elementTagName);
         }
 
         if ( (ref.propertyTypes || {})[k] && typeof ref.propertyTypes[k].defaultValue !== 'undefined' ) {
