@@ -64,6 +64,12 @@
 
     var treeView = this._scheme.find(this, 'Tree');
     var iconView = this._scheme.find(this, 'Properties');
+    var input = this._scheme.find(this, 'PropertyValueInput');
+    var select = this._scheme.find(this, 'PropertyValueSelect');
+
+    function applyValue(value) {
+      app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
+    }
 
     treeView.on('contextmenu', function(ev) {
       var entry = ev.detail.entries[0].data;
@@ -94,16 +100,11 @@
 
     this._scheme.find(this, 'PropertyValueSelect').hide();
 
-    function applyValue(value) {
-      app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
-    }
-
     this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
-      applyValue(null); // TODO
+      console.warn("XXXX", input.get('value'));
+      applyValue(null);
     });
 
-    var input = this._scheme.find(this, 'PropertyValueInput');
-    var select = this._scheme.find(this, 'PropertyValueSelect');
     this._scheme.find(this, 'PropertyButtonNull').on('click', function() {
       input.set('value', '(null)');
       select.set('value', 'null');

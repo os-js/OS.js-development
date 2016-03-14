@@ -63,6 +63,11 @@
       self._addWindow(new OSjs.Applications.ApplicationIDE.PropertiesWindow(self, metadata, scheme));
       self._addWindow(new OSjs.Applications.ApplicationIDE.DesignerWindow(self, metadata));
       self._addWindow(new OSjs.Applications.ApplicationIDE.MainWindow(self, metadata, scheme), null, true);
+
+      var file = self._getArgument('file');
+      if ( file ) {
+        self.loadProject(null, file.path);
+      }
     });
 
     this.globalClickEvent = function(ev) {
@@ -107,6 +112,8 @@
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
         self.windowAction('load', [self.currentProject]);
+
+        self._setArgument('file', new VFS.File(self.currentProject.path));
       }
     });
   };
@@ -384,6 +391,8 @@
     var name = 'MyProject';
     var projectPath = 'home:///IDEProjects/' + name;
 
+    this._setArgument('file', null);
+
     VFS.exists(projectPath, function(err, res) {
       if ( err || res ) {
         API.createDialog('Confirm', {
@@ -420,6 +429,8 @@
     if ( !this.currentProject ) {
       return;
     }
+
+    this._setArgument('file', new VFS.File(this.currentProject.path));
 
     this.windowAction('_toggleLoading', [true]);
     this.currentProject.save(function() {
