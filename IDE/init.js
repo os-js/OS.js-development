@@ -42,6 +42,10 @@
   function setProperty(el, tagName, property, value) {
     var innerLabelElement = ['gui-button'];
 
+    if ( property.substr(0, 1) === '_' ) {
+      return true;
+    }
+
     if ( elements[tagName] && (property === 'id' || elements[tagName].propertyTypes[property]) ) {
       if ( property === 'label' && elements[tagName].hasInnerLabel ) {
         Utils.$empty(el);
@@ -153,9 +157,29 @@
   }
 
   function getBoxContainerProperties(name, icon) {
+    function getContainerParentName(tagName) {
+      tagName = tagName || name;
+      if ( tagName === 'gui-tabs' ) {
+        return 'gui-tab-container';
+      }
+      return name + '-container';
+    }
+
     function updateBoxChildren(el, tagName, size) {
       size = parseInt(size, 10);
       var current = el.children.length;
+      var args = {};
+
+      if ( tagName === 'gui-tabs' ) {
+        args = {
+          label: 'Tab'
+        };
+      } else {
+        args = {
+          shrink: 1,
+          grow: 1
+        };
+      }
 
       if ( !isNaN(size) ) {
         if ( size < current ) {
@@ -169,10 +193,7 @@
           var addNumber = size - current;
           if ( addNumber > 0 ) {
             for ( var a = 0; a < addNumber; a++ ) {
-              el.appendChild(GUI.Helpers.createElement(tagName + '-container', {
-                shrink: 1,
-                grow: 1
-              }));
+              el.appendChild(GUI.Helpers.createElement(getContainerParentName(tagName), args));
             }
           }
         }
@@ -180,24 +201,27 @@
     }
 
     return {
-      isContainer: name + '-container',
+      isContainer: getContainerParentName(),
       icon: icon,
       oncreate: function(el, par, tagName) {
         if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' ) {
-          el.appendChild(GUI.Helpers.createElement(tagName + '-container', {
+          el.appendChild(GUI.Helpers.createElement(getContainerParentName(tagName), {
             shrink: 1,
             grow: 1
           }));
-          el.appendChild(GUI.Helpers.createElement(tagName + '-container', {
+          el.appendChild(GUI.Helpers.createElement(getContainerParentName(tagName), {
             shrink: 1,
             grow: 1
+          }));
+        } else if ( tagName === 'gui-tabs' ) {
+          el.appendChild(GUI.Helpers.createElement('gui-tab-container', {
+            label: 'Tab'
           }));
         }
       },
       onpropertyupdate: function(el, tagName, property, value) {
         if ( setProperty(el, tagName, property, value) ) {
-
-          if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' ) {
+          if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' || tagName === 'gui-tabs' ) {
             if ( property === '_size' ) {
               updateBoxChildren(el, tagName, value);
             }
@@ -218,6 +242,9 @@
             return -1;
           }
 
+          if ( tagName === 'gui-tabs' ) {
+            return el.parentNode.getElementsByTagName('gui-tab-container').length || 0;
+          }
           return el.parentNode.getElementsByTagName(tagName + '-container').length || 0;
         }
       }
@@ -285,15 +312,7 @@
     'gui-paned-view': getBoxContainerProperties('gui-paned-view', 'widget-gtk-hpaned.png'),
       'gui-paned-view-container': boxProperties(),
 
-    'gui-tabs': {
-      isContainer: 'gui-tab-container',
-      icon: 'widget-gtk-notebook.png',
-      oncreate: function(el, par, tagName) {
-        el.appendChild(GUI.Helpers.createElement('gui-tab-container', {
-          label: 'Tab'
-        }));
-      }
-    },
+    'gui-tabs': getBoxContainerProperties('gui-tabs', 'widget-gtk-notebook.png'),
       'gui-tab-container': {
         propertyTypes: {
           label: {

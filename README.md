@@ -40,3 +40,8 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [ ] Menu Editor
 * [ ] Dropdown Editor
 * [ ] Metadata Editor
+
+
+**BUGS**
+
+* [ ] Save currently selected tab element so desiging tabs are less of a pain
