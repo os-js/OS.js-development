@@ -36,3 +36,7 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [x] Parameter viewing
 * [x] Parameter setting
 * [ ] File Browser
+* [ ] Source Editor Window
+* [ ] Menu Editor
+* [ ] Dropdown Editor
+* [ ] Metadata Editor
