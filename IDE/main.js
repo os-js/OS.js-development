@@ -147,6 +147,31 @@
   // PROPERTY EVENTS
   //
 
+  ApplicationIDE.prototype.onAddFragment = function() {
+    if ( !this.currentProject ) {
+      return;
+    }
+  };
+
+  ApplicationIDE.prototype.onRemoveFragment = function() {
+    if ( !this.currentProject ) {
+      return;
+    }
+
+    var idx = this.currentProject.currentWindow;
+    if ( this.currentProject.removeFragment(idx) ) {
+      var win = this.getDesignerWindow();
+      if ( win ) {
+        win.render()
+      }
+
+      var propWin = this.getPropertiesWindow();
+      if ( propWin ) {
+        propWin.load(this.currentProject);
+      }
+    }
+  };
+
   ApplicationIDE.prototype.onSelectFragment = function(index) {
     if ( !this.currentProject ) {
       return;

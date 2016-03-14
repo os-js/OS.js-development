@@ -119,6 +119,13 @@
       select.set('value', 'null');
     });
 
+    this._scheme.find(this, 'AddFragment').on('click', function() {
+      app.onAddFragment();
+    });
+    this._scheme.find(this, 'RemoveFragment').on('click', function() {
+      app.onRemoveFragment();
+    });
+
     return root;
   };
 
@@ -270,9 +277,10 @@
     select.clear();
 
     var project = this._app.currentProject;
+    var fragments = project.getFragments();
     var list = [];
 
-    project.getFragments().forEach(function(name, idx) {
+    fragments.forEach(function(name, idx) {
       list.push({
         label: name,
         value: idx
@@ -280,6 +288,8 @@
     });
 
     select.add(list).set('value', String(project.currentWindow));
+
+    this._scheme.find(this, 'RemoveFragment').set('disabled', project.currentWindow === 0 || list.length <= 1);
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {

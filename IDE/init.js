@@ -590,7 +590,8 @@
   Project.prototype.getElement = function(xpath) {
     var idx = this.currentWindow + 1;
     var root = '/div[1]/application-window[' + String(idx) + ']';
-    if ( xpath ) {
+
+    if ( xpath && typeof xpath !== 'number' ) {
       xpath = root + '/' + xpath.replace(/^\//, ''); // FIXME
     } else {
       xpath = root;
@@ -602,6 +603,7 @@
     } catch ( e ) {
       console.warn('Error getting target', e.stack, e);
     }
+
     return ttarget;
   };
 
@@ -615,6 +617,23 @@
 
   Project.prototype.getFragments = function() {
     return this.fragments;
+  };
+
+  Project.prototype.removeFragment = function(idx) {
+    var f = this.getElement(idx);
+    if ( f ) {
+      f = Utils.$remove(f);
+
+      if ( this.currentWindow === idx ) {
+        this.currentWindow = 0;
+      }
+
+      this.fragments.splice(idx, 1);
+
+      return true;
+    }
+
+    return false;
   };
 
   Project.prototype.getElementProperty = function(xpath, tagName, el, property) {

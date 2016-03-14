@@ -33,9 +33,23 @@
       <gui-tabs>
         <gui-tab-container data-label="LBL_PROPERTIES">
           <gui-vbox>
-            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto" data-expand="true">
-              <gui-select data-id="SelectFragment">
-              </gui-select>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+
+              <gui-hbox>
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                  <gui-select data-id="SelectFragment">
+                  </gui-select>
+                </gui-hbox-container>
+
+                <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                  <gui-button data-icon="stock://16x16/actions/remove.png" data-id="RemoveFragment" />
+                </gui-hbox-container>
+
+                <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                  <gui-button data-icon="stock://16x16/actions/add.png" data-id="AddFragment" />
+                </gui-hbox-container>
+              </gui-hbox>
+
             </gui-vbox-container>
             <gui-vbox-container data-grow="1" data-shrink="0" data-basis="30%" data-fill="true">
               <gui-paned-view data-orientation="vertical">
