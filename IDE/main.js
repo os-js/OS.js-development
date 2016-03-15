@@ -193,6 +193,8 @@
   ApplicationIDE.prototype.onPropertyApply = function(xpath, tagName, property, originalValue, value) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
+    var self = this;
+
     if ( !win ) {
       return;
     }
@@ -201,6 +203,7 @@
     var target = win.getElement(xpath);
     var ttarget = this.currentProject.getElement(xpath);
 
+    console.clear();
     console.group('ApplicationIDE::onPropertyApply()');
     console.log('Xpath', xpath);
     console.log('Property', property);
@@ -210,16 +213,16 @@
     console.log('Template Target', ttarget);
     console.groupEnd();
 
-    if ( propWin ) {
-      propWin.selectElement(xpath, tagName, true);
-    }
-
     if ( ttarget && elements[tagName] ) {
       var result;
       if ( typeof elements[tagName].onpropertyupdate === 'function' ) {
         result = elements[tagName].onpropertyupdate(ttarget, tagName, property, value);
       } else {
         result = OSjs.Applications.ApplicationIDE.setProperty(ttarget, tagName, property, value);
+      }
+
+      if ( tagName === 'application-window' ) {
+        this.currentProject.updateFragments();
       }
 
       if ( result ) {
@@ -230,7 +233,13 @@
         }
       }
 
-      this.onElementSelected(xpath, tagName);
+      setTimeout(function() {
+        self.onElementSelected(xpath, tagName);
+
+        if ( propWin ) {
+          propWin.selectElement(xpath, tagName, true);
+        }
+      }, 100);
 
       return result;
     }
@@ -269,6 +278,7 @@
       return;
     }
 
+    console.clear();
     console.group('ApplicationIDE::onDeleteElementClick()');
 
     var elements = OSjs.Applications.ApplicationIDE.Elements;
@@ -399,6 +409,7 @@
     var target = win.getElement(xpath.replace(/^\//, '')) || win._$root;
     var ttarget = this.currentProject.getElement(xpath);
 
+    console.clear();
     console.group('ApplicationIDE::onElementDropped()');
     console.log('Xpath', xpath);
     console.log('Element', tagName, elements[tagName]);
@@ -427,7 +438,9 @@
           if ( k === 'label' && ref.hasInnerLabel === true ) {
             el.appendChild(document.createTextNode(String(val)));
           } else {
-            el.setAttribute('data-' + k, String(val));
+            if ( k.substr(0, 1) !== '_' ) {
+              el.setAttribute('data-' + k, String(val));
+            }
           }
         }
       });

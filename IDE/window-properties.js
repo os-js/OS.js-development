@@ -110,7 +110,10 @@
       if ( input.$element.style.display === 'none' ) {
         applyValue(select.get('value'));
       } else {
-        applyValue(input.get('value'));
+        var val = input.get('value');
+        if ( val !== '(null)' ) {
+          applyValue(val);
+        }
       }
     });
 
@@ -180,13 +183,20 @@
     var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
 
     if ( type === 'boolean' ) {
-      input.hide();
-
-      select.show().add([
-        {label: 'NULL', value: 'null'},
+      var items = [
         {label: 'true', value: 'true'},
         {label: 'false', value: 'false'}
-      ]).set('value', String(value));
+      ];
+
+      if ( (['true', 'false']).indexOf(String(value)) < 0 ) {
+        items.unshift({label: 'NULL', value: 'null'});
+      }
+
+      input.hide();
+      select.show().add(items).set('value', String(value));
+    } else {
+      input.show();
+      select.hide().clear();
     }
   };
 

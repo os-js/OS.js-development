@@ -45,6 +45,7 @@
     if ( property.substr(0, 1) === '_' ) {
       return true;
     }
+    console.warn(property);
 
     if ( elements[tagName] && (property === 'id' || elements[tagName].propertyTypes[property]) ) {
       var il = elements[tagName].hasInnerLabel;
@@ -62,7 +63,7 @@
   }
 
   function getProperties(xpath, tagName, el) {
-    var target = xpath ? this.getElement(xpath) : null;
+    var target = this.getElement(xpath);
     var elementPropTypes = getPropertyTypes(el);
     var defaultProps = {};
     var elementProps = {};
@@ -294,12 +295,33 @@
         },
         height: {
           type: 'number'
+        },
+        allow_maximize: {
+          type: 'boolean'
+        },
+        allow_minimize: {
+          type: 'boolean'
+        },
+        allow_close: {
+          type: 'boolean'
+        },
+        allow_resize: {
+          type: 'boolean'
         }
       },
       properties: {
         width: null,
-        height: null
+        height: null,
+        allow_maximize: true,
+        allow_minimize: true,
+        allow_close: true,
+        allow_resize: true
       }
+    },
+
+    'application-fragment': {
+      isExternal: true,
+      isContainer: true
     },
 
     //
@@ -537,12 +559,8 @@
             return cb(err);
           }
 
-          var fragments = [];
-          result.firstChild.children.forEach(function(s) {
-            fragments.push(s.getAttribute('data-id'));
-          });
-          self.fragments = fragments;
           self.dom = result;
+          self.updateFragments();
 
           cb(false, true);
         });
@@ -634,6 +652,14 @@
     }
 
     return false;
+  };
+
+  Project.prototype.updateFragments = function() {
+    var fragments = [];
+    this.dom.firstChild.children.forEach(function(s) {
+      fragments.push(s.getAttribute('data-id'));
+    });
+    this.fragments = fragments;
   };
 
   Project.prototype.getElementProperty = function(xpath, tagName, el, property) {
