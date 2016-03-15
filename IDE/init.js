@@ -45,7 +45,6 @@
     if ( property.substr(0, 1) === '_' ) {
       return true;
     }
-    console.warn(property);
 
     if ( elements[tagName] && (property === 'id' || elements[tagName].propertyTypes[property]) ) {
       var il = elements[tagName].hasInnerLabel;
@@ -92,7 +91,9 @@
       var attrib;
       for ( var i = 0; i < attributes.length; i++ ) {
         attrib = attributes[i];
-        elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
+        if ( attrib.name.substr(0, 1) !== '_' ) {
+          elementProps[attrib.name.replace(/^data\-/, '')] = attrib.value;
+        }
       }
 
       if ( elements[tagName] && elements[tagName].hasInnerLabel ) {
@@ -246,9 +247,9 @@
           }
 
           if ( tagName === 'gui-tabs' ) {
-            return el.parentNode.getElementsByTagName('gui-tab-container').length || 0;
+            return el.getElementsByTagName('gui-tab-container').length || 0;
           }
-          return el.parentNode.getElementsByTagName(tagName + '-container').length || 0;
+          return el.getElementsByTagName(tagName + '-container').length || 0;
         }
       }
     };
