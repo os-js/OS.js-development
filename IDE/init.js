@@ -204,28 +204,67 @@
       }
     }
 
+    var ptypes = {
+      _size: {
+        type: 'number'
+      }
+    };
+
+    var ps = {
+      _size: function(el, tagName) {
+        if ( !el || !el.parentNode ) {
+          return -1;
+        }
+
+        if ( tagName === 'gui-tabs' ) {
+          return el.getElementsByTagName('gui-tab-container').length || 0;
+        }
+        return el.getElementsByTagName(tagName + '-container').length || 0;
+      }
+    };
+
+    if ( name === 'gui-paned-view' ) {
+      ptypes.orientation = {
+        type: 'mixed',
+        values: [{label: 'Horizontal', value: 'horizontal'}, {label: 'Vertical', value: 'vertical'}]
+      };
+      ps.orientation = function(el, tagName) {
+        if ( el ) {
+          return el.getAttribute('data-orientation');
+        }
+        return null;
+      };
+    }
+
     return {
       isContainer: getContainerParentName(),
       icon: icon,
       oncreate: function(el, par, tagName) {
+        function createContainer(t, num, a) {
+          for ( var i = 0; i < num; i++ ) {
+            el.appendChild(GUI.Helpers.createElement(t, a));
+          }
+        }
+
         if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' ) {
-          el.appendChild(GUI.Helpers.createElement(getContainerParentName(tagName), {
+          createContainer(getContainerParentName(tagName), 2, {
             shrink: 1,
             grow: 1
-          }));
-          el.appendChild(GUI.Helpers.createElement(getContainerParentName(tagName), {
+          });
+        } else if ( tagName === 'gui-paned-view' ) {
+          createContainer('gui-paned-view-container', 2, {
             shrink: 1,
             grow: 1
-          }));
+          });
         } else if ( tagName === 'gui-tabs' ) {
-          el.appendChild(GUI.Helpers.createElement('gui-tab-container', {
+          createContainer('gui-tab-container', 1, {
             label: 'Tab'
-          }));
+          });
         }
       },
       onpropertyupdate: function(el, tagName, property, value) {
         if ( setProperty(el, tagName, property, value) ) {
-          if ( tagName === 'gui-vbox' || tagName === 'gui-hbox' || tagName === 'gui-tabs' ) {
+          if ( (['gui-vbox', 'gui-hbox', 'gui-tabs', 'gui-paned-view']).indexOf(tagName) >= 0 ) {
             if ( property === '_size' ) {
               updateBoxChildren(el, tagName, value);
             }
@@ -235,23 +274,8 @@
         }
         return false;
       },
-      propertyTypes: {
-        _size: {
-          type: 'number'
-        }
-      },
-      properties: {
-        _size: function(el, tagName) {
-          if ( !el || !el.parentNode ) {
-            return -1;
-          }
-
-          if ( tagName === 'gui-tabs' ) {
-            return el.getElementsByTagName('gui-tab-container').length || 0;
-          }
-          return el.getElementsByTagName(tagName + '-container').length || 0;
-        }
-      }
+      propertyTypes: ptypes,
+      properties: ps
     };
   }
 
@@ -267,8 +291,7 @@
           type: 'number'
         },
         basis: {
-          type: 'mixed',
-          values: [null, 'auto']
+          type: 'string'
         },
         expand: {
           type: 'boolean'

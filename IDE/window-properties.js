@@ -198,11 +198,17 @@
     var input = this._scheme.find(this, 'PropertyValueInput').set('value', val);
     var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
 
-    if ( type === 'boolean' ) {
-      var items = [
-        {label: 'true', value: 'true'},
-        {label: 'false', value: 'false'}
-      ];
+    if ( type === 'boolean' || type === 'mixed' ) {
+      var items = [];
+
+      try {
+        items = Array.prototype.slice.call(type === 'mixed' ? elements[tagName].propertyTypes[property].values : [
+          {label: 'true', value: 'true'},
+          {label: 'false', value: 'false'}
+        ]);
+      } catch ( e ) {
+        console.warn(e);
+      }
 
       if ( (['true', 'false']).indexOf(String(value)) < 0 ) {
         items.unshift({label: 'NULL', value: 'null'});
