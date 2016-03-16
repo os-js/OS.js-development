@@ -126,7 +126,6 @@
     var project = app.currentProject;
     var windowName = project.getFragmentName();
 
-    this._setTitle(windowName + '@' + project.name, true);
     this.render();
   };
 
@@ -136,6 +135,8 @@
     var app = this._app;
     var project = app.currentProject;
     var windowName = project.getFragmentName();
+
+    this._setTitle(windowName + '@' + project.name, true);
 
     var root = this._$root;
     Utils.$empty(root);

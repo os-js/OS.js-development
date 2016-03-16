@@ -143,6 +143,11 @@
     this.currentProject.applyMetadata(metadata);
 
     this.onSave('metadata');
+
+    var win = this.getDesignerWindow();
+    if ( win ) {
+      win.render()
+    }
   };
 
   ApplicationIDE.prototype.onAddFragment = function() {
