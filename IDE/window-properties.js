@@ -157,6 +157,7 @@
     this.renderProperties();
     this.renderWindowList(project);
     this.renderFileList(project);
+    this.renderMetadata(project);
   };
 
   ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
@@ -276,6 +277,12 @@
       }, {
         label: 'Preload',
         entries: entries
+      }, {
+        label: 'Server',
+        entries: [{
+          icon: API.getIcon('mimetypes/binary.png'),
+          label: 'api.js'
+        }]
       }]
     }];
 
@@ -360,6 +367,14 @@
 
     traverse(rootWindow, rootIter);
     treeView.add(tree);
+  };
+
+  ApplicationIDEPropertiesWindow.prototype.renderMetadata = function(project) {
+    this._scheme.find(this, 'MetadataClassName').set('value', project.data.className);
+    this._scheme.find(this, 'MetadataName').set('value', project.data.name);
+    this._scheme.find(this, 'MetadataIcon').set('value', project.data.icon);
+    this._scheme.find(this, 'MetadataCategory').set('value', project.data.category);
+    this._scheme.find(this, 'MetadataSingular').set('value', project.data.singular === true);
   };
 
   /////////////////////////////////////////////////////////////////////////////

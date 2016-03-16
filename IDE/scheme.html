@@ -31,7 +31,7 @@
   <gui-vbox>
     <gui-vbox-container data-grow="1" data-shrink="0" data-basis="auto" data-fill="true">
       <gui-tabs>
-        <gui-tab-container data-label="LBL_PROPERTIES">
+        <gui-tab-container data-label="Properties">
           <gui-vbox>
             <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
 
@@ -82,16 +82,124 @@
           </gui-vbox>
         </gui-tab-container>
 
-        <gui-tab-container data-label="LBL_FILES">
+        <gui-tab-container data-label="Files">
           <gui-vbox>
             <gui-vbox-container data-grow="1" data-shrink="0" data-fill="true">
               <gui-tree-view data-expanded="true" data-id="Files">
               </gui-tree-view>
             </gui-vbox-container>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+              <gui-hbox>
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                  <gui-text data-id="FileAddName" data-placeholder="Filename or URL" />
+                </gui-hbox-container>
+              </gui-hbox>
+            </gui-vbox-container>
+            <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
+              <gui-hbox>
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                  <gui-select data-id="FileAddType">
+                    <gui-select-option data-value=""></gui-select-option>
+                    <gui-select-option data-value="Preload">Preload</gui-select-option>
+                    <gui-select-option data-value="Server">Server</gui-select-option>
+                  </gui-select>
+                </gui-hbox-container>
+                <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                  <gui-button data-icon="stock://16x16/actions/remove.png" data-id="FileRemove" />
+                </gui-hbox-container>
+                <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                  <gui-button data-icon="stock://16x16/actions/add.png" data-id="FileAdd" />
+                </gui-hbox-container>
+              </gui-hbox>
+            </gui-vbox-container>
           </gui-vbox>
         </gui-tab-container>
 
-        <gui-tab-container data-label="LBL_METADATA">
+        <gui-tab-container data-label="Metadata">
+          <gui-vbox>
+            <gui-vbox-container data-grow="0" data-shrink="0">
+              <gui-expander data-label="Basic Information">
+
+                <gui-vbox>
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-label>Class Name</gui-label>
+                  </gui-vbox-container>
+                  <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
+                    <gui-text data-id="MetadataClassName" />
+                  </gui-vbox-container>
+
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-label>Name</gui-label>
+                  </gui-vbox-container>
+                  <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
+                    <gui-text data-id="MetadataName" />
+                  </gui-vbox-container>
+
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-label>Category</gui-label>
+                  </gui-vbox-container>
+                  <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
+                    <gui-select data-id="MetadataCategory">
+                      <gui-select-option data-value="development">Development</gui-select-option>
+                      <gui-select-option data-value="education">Education</gui-select-option>
+                      <gui-select-option data-value="games">Games</gui-select-option>
+                      <gui-select-option data-value="graphics">Graphics</gui-select-option>
+                      <gui-select-option data-value="network">Network</gui-select-option>
+                      <gui-select-option data-value="multimedia">Multimedia </gui-select-option>
+                      <gui-select-option data-value="office">Office</gui-select-option>
+                      <gui-select-option data-value="system">System</gui-select-option>
+                      <gui-select-option data-value="utilities">Utilities</gui-select-option>
+                      <gui-select-option data-value="unknown">Other</gui-select-option>
+                    </gui-select>
+                  </gui-vbox-container>
+
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-label>Icon</gui-label>
+                  </gui-vbox-container>
+                  <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
+                    <gui-text data-id="MetadataIcon" />
+                  </gui-vbox-container>
+
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-label>Singular</gui-label>
+                  </gui-vbox-container>
+                  <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
+                    <gui-checkbox data-id="MetadataSingular" />
+                  </gui-vbox-container>
+                </gui-vbox>
+
+              </gui-expander>
+            </gui-vbox-container>
+            <gui-vbox-container data-grow="1" data-shrink="0" data-fill="true">
+              <gui-expander data-label="MIME Support">
+
+                <gui-vbox>
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-hbox>
+                      <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                        <gui-text data-value="Some MIME type here" />
+                      </gui-hbox-container>
+                      <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                        <gui-button data-icon="stock://16x16/actions/remove.png" />
+                      </gui-hbox-container>
+                    </gui-hbox>
+                  </gui-vbox-container>
+
+                  <gui-vbox-container data-grow="0" data-shrink="1">
+                    <gui-hbox>
+                      <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                        <gui-text data-id="MetadataAddMimeValue" data-placeholder="Regexp" />
+                      </gui-hbox-container>
+                      <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
+                        <gui-button data-icon="stock://16x16/actions/add.png" data-id="MetadataAddMime" />
+                      </gui-hbox-container>
+                    </gui-hbox>
+                  </gui-vbox-container>
+                </gui-vbox>
+
+              </gui-expander>
+            </gui-vbox-container>
+          </gui-vbox>
         </gui-tab-container>
       </gui-itabs>
     </gui-vbox-container>

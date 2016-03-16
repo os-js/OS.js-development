@@ -32,6 +32,8 @@
   module.exports = {
     createProject: function(args, callback, request, response, config, handler) {
       var _vfs = handler.instance._vfs;
+      var template = args.template + '/metadata.json';
+      var destination = args.destination + '/metadata.json';
 
       function replaceTemplateVariables(content) {
         return content.toString().replace(/EXAMPLE/g, args.name);
@@ -61,9 +63,15 @@
         _next(0);
       }
 
+      function copyResources(done) {
+        var src = args.template + '/api.js';
+        var dest = args.destination + '/api.js';
 
-      var template = args.template + '/metadata.json';
-      var destination = args.destination + '/metadata.json';
+        _vfs.copy({src: src, dest: dest}, function() {
+          done();
+        }, config);
+      }
+
 
       _vfs.delete({path: args.destination}, request, function() {
         _vfs.mkdir({path: args.destination}, request, function() {
@@ -73,8 +81,11 @@
               var files = JSON.parse(d).preload || [];
               files.push({type: 'scheme', src: 'scheme.html'});
               files.push({type: 'metadata', src: 'metadata.json'});
+
               enqueueFiles(files, function() {
-                callback(false, true);
+                copyResources(function() {
+                  callback(false, true);
+                });
               });
             }, config);
           }, config);
