@@ -41,6 +41,8 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [ ] Dropdown Editor
 * [x] Metadata Editor (not finished)
 * [x] Inline fragment support
+* [ ] Set default window attributes
+* [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
 
 
 **BUGS**
