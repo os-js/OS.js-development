@@ -87,7 +87,6 @@
       MenuNew:            function() { app.onNew(); },
       MenuOpen:           function() { app.onOpen(); },
       MenuSave:           function() { app.onSave(); },
-      MenuSaveAs:         function() { app.onSaveAs(); },
       MenuClose:          function() { self._close(); },
       MenuDesignerWindow: function() { app.toggleDesignerWindow(); },
       MenuPropertyWindow: function() { app.togglePropertiesWindow(); }

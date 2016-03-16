@@ -527,12 +527,18 @@
 
     this.windowAction('_toggleLoading', [true]);
     this.currentProject.save(type, function() {
-      self.windowAction('_toggleLoading', [false]);
-    });
-  };
+      var pm = OSjs.Core.getPackageManager();
 
-  ApplicationIDE.prototype.onSaveAs = function() {
-    this.onSave();
+      function done() {
+        self.windowAction('_toggleLoading', [false]);
+      }
+
+      if ( pm ) {
+        pm.generateUserMetadata(done);
+      } else {
+        done();
+      }
+    });
   };
 
   //
