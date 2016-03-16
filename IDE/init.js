@@ -345,7 +345,8 @@
 
     'application-fragment': {
       isExternal: true,
-      isContainer: true
+      isContainer: true,
+      icon: 'widget-gtk-frame.png'
     },
 
     //
@@ -522,7 +523,7 @@
   var categories = [
     {
       label: 'Containers',
-      items: ['gui-hbox', 'gui-vbox', 'gui-paned-view', 'gui-tabs', 'gui-toolbar', 'gui-button-bar', 'gui-expander']
+      items: ['gui-hbox', 'gui-vbox', 'gui-paned-view', 'gui-tabs', 'gui-toolbar', 'gui-button-bar', 'gui-expander', 'application-fragment']
     },
     {
       label: 'Media',

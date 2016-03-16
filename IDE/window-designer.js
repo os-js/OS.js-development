@@ -139,7 +139,9 @@
 
     var root = this._$root;
     Utils.$empty(root);
-    project.scheme.render(this, windowName, root);
+    project.scheme.render(this, windowName, root, null, function() {}, {
+      resolve: false
+    });
 
     var elements = OSjs.Applications.ApplicationIDE.Elements;
     var thispath = OSjs.Applications.ApplicationIDE.getXpathByElement(this._$root);

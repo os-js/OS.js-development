@@ -40,7 +40,7 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [ ] Menu Editor
 * [ ] Dropdown Editor
 * [x] Metadata Editor (not finished)
-* [ ] Inline fragment support
+* [x] Inline fragment support
 
 
 **BUGS**

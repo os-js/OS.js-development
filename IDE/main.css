@@ -38,6 +38,13 @@
 /**
  * Overrides
  */
+.ApplicationIDEDesignerWindow application-fragment {
+  background : green !important;
+  min-width : 100%;
+  min-height : 100%;
+  display : block;
+};
+
 .ApplicationIDEDesignerWindow gui-vbox-container {
   min-height : 16px;
 }
