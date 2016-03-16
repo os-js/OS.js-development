@@ -67,11 +67,10 @@
         var src = args.template + '/api.js';
         var dest = args.destination + '/api.js';
 
-        _vfs.copy({src: src, dest: dest}, function() {
+        _vfs.copy({src: src, dest: dest}, request, function() {
           done();
         }, config);
       }
-
 
       _vfs.delete({path: args.destination}, request, function() {
         _vfs.mkdir({path: args.destination}, request, function() {

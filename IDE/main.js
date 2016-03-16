@@ -477,7 +477,7 @@
       value: 'MyProject'
     }, function(ev, btn, name) {
       if ( btn === 'ok' && name ) {
-        var projectPath = 'home:///IDEProjects/' + name;
+        var projectPath = 'home:///.packages/' + name;
 
         VFS.exists(projectPath, function(err, res) {
           if ( err || res ) {
@@ -486,7 +486,9 @@
               buttons: ['yes', 'no']
             }, function(ev, button, result) {
               if ( button === 'ok' || button === 'yes' ) {
-                self.loadProject(name);
+                VFS.mkdir('home:///.packages', function() {
+                  self.loadProject(name);
+                });
               }
             });
             return;
@@ -502,7 +504,7 @@
     var self = this;
 
     API.createDialog('File', {
-      file: new VFS.File('home:///IDEProjects'),
+      file: new VFS.File('home:///.packages'),
       select: 'dir'
     }, function(ev, button, result) {
       if ( button === 'ok' && result ) {

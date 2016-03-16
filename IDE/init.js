@@ -535,7 +535,7 @@
 
   Project.prototype._createProject = function(app, cb) {
     var self = this;
-    var projectPath = 'home:///IDEProjects/' + self.name;
+    var projectPath = 'home:///.packages/' + self.name;
 
     app._call('createProject', {
       name: self.name,
