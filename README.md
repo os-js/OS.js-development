@@ -30,16 +30,16 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [x] GUI Element toolbar
 * [x] Proper project loading and sessions
 * [x] Project saving
-* [ ] Multiple window support
+* [x] Multiple window support (not finished: adding)
 * [x] Adding elements
 * [x] Removing elements
 * [x] Parameter viewing
 * [x] Parameter setting
-* [ ] File Browser
+* [x] File Browser (not finished)
 * [ ] Source Editor Window
 * [ ] Menu Editor
 * [ ] Dropdown Editor
-* [ ] Metadata Editor
+* [x] Metadata Editor (not finished)
 * [ ] Inline fragment support
 
 

@@ -597,9 +597,26 @@
     }
   };
 
-  Project.prototype.save = function(cb) {
+  Project.prototype.save = function(type, cb) {
+    if ( !type || type === 'scheme' ) {
+      this.saveScheme(cb);
+    } else if ( type === 'metadata' ) {
+      this.saveMetadata(cb);
+    }
+  };
+
+  Project.prototype.saveScheme = function(cb) {
     var path = this.path + '/scheme.html';
     var content = this.getHTML();
+
+    VFS.write(path, content, function(err) {
+      cb(err);
+    });
+  };
+
+  Project.prototype.saveMetadata = function(cb) {
+    var path = this.path + '/metadata.json';
+    var content = JSON.stringify(this.data, null, 2);
 
     VFS.write(path, content, function(err) {
       cb(err);
@@ -661,6 +678,15 @@
       fragments.push(s.getAttribute('data-id'));
     });
     this.fragments = fragments;
+  };
+
+  Project.prototype.applyMetadata = function(metadata) {
+    var self = this;
+    Object.keys(metadata).forEach(function(k) {
+      self.data[k] = metadata[k];
+    });
+
+    this.name = this.data.name;
   };
 
   Project.prototype.getElementProperty = function(xpath, tagName, el, property) {

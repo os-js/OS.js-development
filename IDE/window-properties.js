@@ -39,7 +39,7 @@
       tag: 'properties',
       gravity: 'nort-east',
       icon: metadata.icon,
-      title: metadata.name + ' - Properties',
+      title: metadata.name + ' - Project',
       width: 350,
       height: 740
     }, app, scheme]);
@@ -70,6 +70,17 @@
 
     function applyValue(value) {
       app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
+    }
+
+    function applyMetadata() {
+      app.onApplyMetadata({
+        className: self._scheme.find(self, 'MetadataClassName').get('value'),
+        name: self._scheme.find(self, 'MetadataName').get('value'),
+        icon: self._scheme.find(self, 'MetadataIcon').get('value'),
+        singular: self._scheme.find(self, 'MetadataSingular').get('value'),
+        category: self._scheme.find(self, 'MetadataCategory').get('value'),
+        mime: []
+      });
     }
 
     treeView.on('contextmenu', function(ev) {
@@ -127,6 +138,10 @@
     });
     this._scheme.find(this, 'RemoveFragment').on('click', function() {
       app.onRemoveFragment();
+    });
+
+    this._scheme.find(this, 'MetadataApply').on('click', function() {
+      applyMetadata();
     });
 
     return root;

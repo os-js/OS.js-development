@@ -118,17 +118,6 @@
     });
   };
 
-  ApplicationIDE.prototype.saveProject = function(cb) {
-    if ( this.currentProject ) {
-      this.windowAction('_toggleLoading', [true]);
-      this.currentProject.save(function(err) {
-        self.windowAction('_toggleLoading', [false]);
-
-        cb(err);
-      });
-    }
-  };
-
   ApplicationIDE.prototype.toggleDesignerWindow = function() {
     var win = this.getDesignerWindow();
     if ( win ) {
@@ -146,6 +135,15 @@
   //
   // PROPERTY EVENTS
   //
+
+  ApplicationIDE.prototype.onApplyMetadata = function(metadata) {
+    if ( !this.currentProject ) {
+      return;
+    }
+    this.currentProject.applyMetadata(metadata);
+
+    this.onSave('metadata');
+  };
 
   ApplicationIDE.prototype.onAddFragment = function() {
     if ( !this.currentProject ) {
@@ -513,7 +511,7 @@
     });
   };
 
-  ApplicationIDE.prototype.onSave = function() {
+  ApplicationIDE.prototype.onSave = function(type) {
     var self = this;
 
     if ( !this.currentProject ) {
@@ -523,7 +521,7 @@
     this._setArgument('file', new VFS.File(this.currentProject.path));
 
     this.windowAction('_toggleLoading', [true]);
-    this.currentProject.save(function() {
+    this.currentProject.save(type, function() {
       self.windowAction('_toggleLoading', [false]);
     });
   };

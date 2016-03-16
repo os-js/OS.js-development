@@ -118,8 +118,9 @@
         <gui-tab-container data-label="Metadata">
           <gui-vbox>
             <gui-vbox-container data-grow="0" data-shrink="0">
-              <gui-expander data-label="Basic Information">
 
+              <!-- EXPANDER -->
+              <gui-expander data-label="Basic Information">
                 <gui-vbox>
                   <gui-vbox-container data-grow="0" data-shrink="1">
                     <gui-label>Class Name</gui-label>
@@ -167,12 +168,15 @@
                     <gui-checkbox data-id="MetadataSingular" />
                   </gui-vbox-container>
                 </gui-vbox>
-
               </gui-expander>
-            </gui-vbox-container>
-            <gui-vbox-container data-grow="1" data-shrink="0" data-fill="true">
-              <gui-expander data-label="MIME Support">
+              <!-- //EXPANDER -->
 
+            </gui-vbox-container>
+
+            <gui-vbox-container data-grow="0" data-shrink="0">
+
+              <!-- EXPANDER -->
+              <gui-expander data-label="MIME Support">
                 <gui-vbox>
                   <gui-vbox-container data-grow="0" data-shrink="1">
                     <gui-hbox>
@@ -196,13 +200,22 @@
                     </gui-hbox>
                   </gui-vbox-container>
                 </gui-vbox>
-
               </gui-expander>
+              <!-- //EXPANDER -->
+
+            </gui-vbox-container>
+
+            <gui-vbox-container data-grow="1" data-shrink="0">
+            </gui-vbox-container>
+
+            <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
+              <gui-button data-id="MetadataApply">Apply</gui-button>
             </gui-vbox-container>
           </gui-vbox>
         </gui-tab-container>
-      </gui-itabs>
+      </gui-tabs>
     </gui-vbox-container>
+
     <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
       <gui-statusbar data-id="Statusbar"></gui-statusbar>
     </gui-vbox-container>
