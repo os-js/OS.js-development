@@ -112,6 +112,10 @@
     background : rgba(255, 0, 0, .1) !important;
     border : 1px solid red;
     pointer-events : none;
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
   }
   .ApplicationIDEDesignerWindow *[data-ide-element='true'].ide-selected:after {
     background : rgba(0, 255, 0, .1) !important;

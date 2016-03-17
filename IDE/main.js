@@ -402,13 +402,19 @@
       //return;
     }
 
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+
+    if ( elements[tagName] && (elements[tagName].isExternal || !elements[tagName].isContainer) ) {
+      console.warn('Invalid target');
+      return;
+    }
+
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
 
     var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
     xpath = (xpath || '').replace(rootPath, '');
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
     var target = win.getElement(xpath.replace(/^\//, '')) || win._$root;
     var ttarget = this.currentProject.getElement(xpath);
 
