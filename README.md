@@ -23,8 +23,6 @@ In progress, basic interface designing works. You can create, save and load proj
 
 #### TODO
 
-It is somewhat usable, but the base design is not finished and needs some refactoring. Also some elements are not finished in "edit mode"
-
 * [x] Simple project loading
 * [x] Window Rendering
 * [x] GUI Element toolbar
@@ -43,6 +41,7 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [x] Inline fragment support
 * [ ] Element movement in the property window
 * [ ] Add tooltips/overlays (helpers) on elements that does not render (like when you don't set your flexboxes right)
+* [ ] Add all elements and correct properties
 
 
 **BUGS**
