@@ -41,6 +41,8 @@ It is somewhat usable, but the base design is not finished and needs some refact
 * [ ] Dropdown Editor
 * [x] Metadata Editor (not finished)
 * [x] Inline fragment support
+* [ ] Element movement in the property window
+* [ ] Add tooltips/overlays (helpers) on elements that does not render (like when you don't set your flexboxes right)
 
 
 **BUGS**
