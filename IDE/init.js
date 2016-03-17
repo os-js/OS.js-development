@@ -343,10 +343,16 @@
       }
     },
 
-    'application-fragment': {
+    'gui-fragment': {
       isExternal: true,
       isContainer: true,
-      icon: 'widget-gtk-frame.png'
+      icon: 'widget-gtk-frame.png',
+      properties: {
+        'fragment-id': null
+      },
+      propertyTypes: {
+        'fragment-id': 'string'
+      }
     },
 
     //
@@ -523,7 +529,7 @@
   var categories = [
     {
       label: 'Containers',
-      items: ['gui-hbox', 'gui-vbox', 'gui-paned-view', 'gui-tabs', 'gui-toolbar', 'gui-button-bar', 'gui-expander', 'application-fragment']
+      items: ['gui-hbox', 'gui-vbox', 'gui-paned-view', 'gui-tabs', 'gui-toolbar', 'gui-button-bar', 'gui-expander', 'gui-fragment']
     },
     {
       label: 'Media',
@@ -649,7 +655,7 @@
 
   Project.prototype.getElement = function(xpath) {
     var idx = this.currentWindow + 1;
-    var root = '/div[1]/application-window[' + String(idx) + ']';
+    var root = '/div[1]/*[' + String(idx) + ']';
 
     if ( xpath && typeof xpath !== 'number' ) {
       xpath = root + '/' + xpath.replace(/^\//, ''); // FIXME

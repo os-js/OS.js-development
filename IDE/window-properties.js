@@ -372,7 +372,9 @@
             icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
             value: {
               tagName: c.tagName.toLowerCase(),
-              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow).replace('/div[1]/application-window[' + wid + ']/', '')
+              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow)
+                .replace(/\/div\[1\]\/application\-window\[\d+\]\//, '')
+                .replace(/\/div\[1\]\/application\-fragment\[\d+\]\//, '')
             },
             entries: []
           };

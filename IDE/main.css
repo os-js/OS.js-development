@@ -35,15 +35,34 @@
   white-space : nowrap;
 }
 
+.ApplicationIDEDesignerWindow gui-tab-container,
+.ApplicationIDEDesignerWindow gui-paned-view-container,
+.ApplicationIDEDesignerWindow gui-vbox-container,
+.ApplicationIDEDesignerWindow gui-hbox-container {
+  outline : 1px dotted blue;
+  outline-offset : -1px;
+}
+
 /**
  * Overrides
  */
-.ApplicationIDEDesignerWindow application-fragment {
-  background : green !important;
+.ApplicationIDEDesignerWindow gui-fragment {
   min-width : 100%;
   min-height : 100%;
   display : block;
-};
+}
+.ApplicationIDEDesignerWindow gui-fragment:before {
+  position : absolute;
+  top : 0;
+  left : 0;
+  right : 0;
+  bottom : 0;
+  color : #fff;
+  content : 'FRAGMENTS ARE NOT RENDERED';
+  background : green !important;
+  box-sizing : border-box;
+  padding : 5px;
+}
 
 .ApplicationIDEDesignerWindow gui-vbox-container {
   min-height : 16px;
@@ -69,6 +88,7 @@
  */
 .ApplicationIDEDesignerWindow  gui-file-view[data-ide-element='true'] > *,
 .ApplicationIDEDesignerWindow  gui-paned-view-handle,
+.ApplicationIDEDesignerWindow  *[data-ide-element='true'] select,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] input,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] textarea,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] iframe,
