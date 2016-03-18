@@ -360,14 +360,15 @@
     var destTarget = this.currentProject.getElement(data.dest.path.replace(/^\//, ''));
 
     if ( sourceTarget && destTarget ) {
-      var valid = OSjs.Applications.ApplicationIDE.isValidTarget(
-        sourceTarget.tagName.toLowerCase(), 
-        destTarget.tagName.toLowerCase() );
-      if ( !valid ) {
-        return;
-      }
 
       if ( data.dest.isContainer ) {
+        var valid = OSjs.Applications.ApplicationIDE.isValidTarget(
+          sourceTarget.tagName.toLowerCase(), 
+          destTarget.tagName.toLowerCase() );
+        if ( !valid ) {
+          return;
+        }
+
         destTarget.appendChild(sourceTarget);
       } else {
         destTarget.parentNode.insertBefore(sourceTarget, destTarget);
