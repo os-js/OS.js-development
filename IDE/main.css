@@ -93,6 +93,8 @@
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] textarea,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] iframe,
 .ApplicationIDEDesignerWindow  gui-switch[data-ide-element='true'] div,
+.ApplicationIDEDesignerWindow  gui-checkbox[data-ide-element='true'] label,
+.ApplicationIDEDesignerWindow  gui-radio[data-ide-element='true'] label,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] button {
   pointer-events : none;
 }
