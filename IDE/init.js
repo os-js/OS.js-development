@@ -111,6 +111,7 @@
   function getMediaProperties(icon) {
     return {
       isContainer: false,
+      allowInnerContainers: false,
       icon: icon,
       properties: {
         src: ''
@@ -128,6 +129,7 @@
 
     var defaults = {
       isContainer: false,
+      allowInnerContainers: false,
       icon: icon,
       propertyTypes: {
         disabled: {
@@ -237,6 +239,7 @@
     }
 
     return {
+      allowChildren: [getContainerParentName()],
       isContainer: getContainerParentName(),
       icon: icon,
       oncreate: function(el, par, tagName) {
@@ -279,10 +282,11 @@
     };
   }
 
-  function boxProperties() {
+  function boxProperties(allowParent) {
     return {
       isContainer: true,
       icon: 'widget-gtk-container.png',
+      allowParents: allowParent ? [allowParent] : null,
       propertyTypes: {
         grow: {
           type: 'number'
@@ -346,6 +350,7 @@
     'gui-fragment': {
       isExternal: true,
       isContainer: true,
+      allowInnerContainers: false,
       icon: 'widget-gtk-frame.png',
       properties: {
         'fragment-id': null
@@ -360,10 +365,10 @@
     //
 
     'gui-hbox': getBoxContainerProperties('gui-hbox', 'widget-gtk-hbox.png'),
-      'gui-hbox-container': boxProperties(),
+      'gui-hbox-container': boxProperties('gui-hbox'),
 
     'gui-vbox': getBoxContainerProperties('gui-vbox', 'widget-gtk-vbox.png'),
-      'gui-vbox-container': boxProperties(),
+      'gui-vbox-container': boxProperties('gui-vbox'),
 
     'gui-paned-view': getBoxContainerProperties('gui-paned-view', 'widget-gtk-hpaned.png'),
       'gui-paned-view-container': boxProperties(),
@@ -371,6 +376,8 @@
     'gui-tabs': getBoxContainerProperties('gui-tabs', 'widget-gtk-notebook.png'),
       'gui-tab-container': {
         icon: 'widget-gtk-container.png',
+        allowParents: ['gui-tabs'],
+        invalidChildren: ['gui-tab-container'],
         propertyTypes: {
           label: {
             type: 'string'
@@ -383,10 +390,12 @@
 
     'gui-toolbar': {
       isContainer: true,
+      allowInnerContainers: false,
       icon: 'widget-gtk-toolbar.png'
     },
     'gui-button-bar': {
       isContainer: true,
+      allowInnerContainers: false,
       icon: 'widget-gtk-toolbar.png'
     },
     'gui-expander': {
@@ -444,6 +453,7 @@
     }, true),
     'gui-richtext': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-textview.png',
       properties: {
         value: ''
@@ -456,18 +466,22 @@
 
     'gui-tree-view': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-treeview.png'
     },
     'gui-icon-view': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-iconview.png'
     },
     'gui-list-view': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-list.png'
     },
     'gui-file-view': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-filefilter.png'
     },
 
@@ -477,6 +491,7 @@
 
     'gui-progress-bar': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-progressbar.png',
       propertyTypes: {
         progress: {
@@ -491,10 +506,12 @@
     },
     'gui-color-box': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-colorbutton.png'
     },
     'gui-color-swatch': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-colorselection.png'
     },
     'gui-menu': {
@@ -506,6 +523,7 @@
       },
     'gui-menu-bar': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-menubar.png'
     },
       'gui-menu-bar-entry': {
@@ -513,6 +531,7 @@
       },
     'gui-statusbar': {
       isContainer: false,
+      allowInnerContainers: false,
       icon: 'widget-gtk-statusbar.png',
       properties: {
         value: ''
@@ -778,6 +797,40 @@
     return path;
   }
 
+  function isValidTarget(srcTagName, destTagName) {
+    var se = elements[srcTagName];
+    var de = elements[destTagName];
+
+    if ( !se || !de ) {
+      return true;
+    }
+
+    // allowChildren
+    if ( de.allowChildren && de.allowChildren.indexOf(srcTagName) === -1 ) {
+      console.warn(destTagName, 'does not allow (allowChildren)', srcTagName);
+      return false;
+    }
+    // allowParents
+    if ( se.allowParents && se.allowParents.indexOf(destTagName) === -1 ) {
+      console.warn(srcTagName, 'does not allow (allowParents)', destTagName);
+      return false;
+    }
+
+    // invalidChildren
+    if ( de.invalidChildren && de.invalidChildren.indexOf(srcTagName) >= 0 ) {
+      console.warn(destTagName, 'does not allow (invalidChildren)', srcTagName);
+      return false;
+    }
+
+    // allowInnerContainers
+    if ( de.allowInnerContainers === false && se.isContainer ) {
+      console.warn(destTagName, 'does not allow (allowInnerContainers)', srcTagName);
+      return false;
+    }
+
+    return true;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // EXPORTS
   /////////////////////////////////////////////////////////////////////////////
@@ -790,6 +843,7 @@
   OSjs.Applications.ApplicationIDE.getElementByXpath = getElementByXpath;
   OSjs.Applications.ApplicationIDE.getXpathByElement = getXpathByElement;
   OSjs.Applications.ApplicationIDE.setProperty = setProperty;
+  OSjs.Applications.ApplicationIDE.isValidTarget = isValidTarget;
 
 
 

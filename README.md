@@ -41,7 +41,8 @@ In progress, basic interface designing works. You can create, save and load proj
 * [ ] Dropdown Editor
 * [x] Metadata Editor (not finished)
 * [x] Inline fragment support
-* [ ] Element movement in the property window
+* [x] Element movement in the property window
+* [ ] DnD from main window to property window tree
 * [ ] Add tooltips/overlays (helpers) on elements that does not render (like when you don't set your flexboxes right)
 * [ ] Add all elements and correct properties
 
@@ -52,3 +53,11 @@ In progress, basic interface designing works. You can create, save and load proj
 * [ ] Set default window attributes (width/height does not reflect actual result by default)
 * [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
 * [ ] https://bugzilla.mozilla.org/show_bug.cgi?id=568313
+
+#### How to use
+
+Just select `File -> New` to create a new project. It will be saved in `home:///.packages/ProjectName`.
+
+You can drag-and drop elements from the pallette into the designer window, then edit the properties in the property window. You can also re-arrange elements in the property window tree by dragging-and-dropping (dropping on a container will insert at the end, dropping on a container element will make it insert before).
+
+Every time you save the project the package manager will be updated so you can run your app from the `Launcher Menu`.

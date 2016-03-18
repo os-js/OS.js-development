@@ -31,8 +31,15 @@
   'use strict';
 
   var timeout;
-  function createDroppable(root, onDrop) {
-    onDrop = onDrop || function() {};
+  function createDroppable(root, done) {
+    function onDrop(data) {
+      var destTagName = root.tagName.toLowerCase();
+      var valid = OSjs.Applications.ApplicationIDE.isValidTarget(data.tagName, destTagName);
+      if ( !valid ) {
+        return;
+      }
+      (done = done || function() {}).apply(this, arguments);
+    }
 
     API.createDroppable(root, {
       onEnter: function(ev) {

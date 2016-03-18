@@ -31,7 +31,7 @@
   'use strict';
 
   /////////////////////////////////////////////////////////////////////////////
-  // WINDOWS
+  // WINDOW INHERITANCE
   /////////////////////////////////////////////////////////////////////////////
 
   function ApplicationIDEPropertiesWindow(app, metadata, scheme) {
@@ -40,6 +40,7 @@
       gravity: 'nort-east',
       icon: metadata.icon,
       title: metadata.name + ' - Project',
+      allow_maximize: false,
       width: 350,
       height: 740
     }, app, scheme]);
@@ -97,6 +98,10 @@
       }
     });
 
+    treeView.on('drop', function(ev) {
+      app.onTreeElementDropped(ev.detail);
+    });
+
     treeView.on('select', function(ev) {
       var entry = ev.detail.entries[0].data;
       app.onElementSelected(entry.path, entry.tagName);
@@ -151,6 +156,10 @@
     Window.prototype.destroy.apply(this, arguments);
   };
 
+  /////////////////////////////////////////////////////////////////////////////
+  // IDE METHODS
+  /////////////////////////////////////////////////////////////////////////////
+
   ApplicationIDEPropertiesWindow.prototype.clear = function() {
     this.currentPath = null;
     this.currentProperty = {
@@ -174,6 +183,10 @@
     this.renderFileList(project);
     this.renderMetadata(project);
   };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // UI ACTIONS
+  /////////////////////////////////////////////////////////////////////////////
 
   ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
     var treeView = this._scheme.find(this, 'Tree');
@@ -222,6 +235,10 @@
     }
   };
 
+  /////////////////////////////////////////////////////////////////////////////
+  // PROPERTIES
+  /////////////////////////////////////////////////////////////////////////////
+
   ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, tagName, properties) {
     var app = this._app;
     var project = app.currentProject;
@@ -258,6 +275,76 @@
       listView.add(rows);
     }
   };
+
+  ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
+    var app = this._app;
+    var project = app.currentProject;
+    var windowName = project.getFragmentName();
+    var rootWindow = project.getFragment();
+    var wid = String(project.currentWindow + 1);
+
+    var treeView = this._scheme.find(this, 'Tree');
+    treeView.clear();
+
+    var elements = OSjs.Applications.ApplicationIDE.Elements;
+    var rootIter = {
+      label: windowName,
+      icon: API.getApplicationResource(app, 'icons/widget-gtk-window.png'),
+      dropable: true,
+      value: {
+        tagName: 'application-window',
+        path: ''
+      },
+      entries: []
+    };
+
+    var tree = [rootIter];
+
+    function traverse(root, riter) {
+      if ( root && root.children ) {
+        root.children.forEach(function(c) {
+          var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
+            isContainer: false,
+            icon: 'status/dialog-question.png'
+          });
+
+          var name = c.tagName.toLowerCase();
+          var id = c.getAttribute('data-id') || null;
+          if ( id ) {
+            name = name + ' (' + id + ')';
+          }
+
+          var niter = {
+            label: name,
+            icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
+            draggable: true,
+            droppable: true,
+            value: {
+              isContainer: el.isContainer,
+              tagName: c.tagName.toLowerCase(),
+              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow)
+                .replace(/\/div\[1\]\/application\-window\[\d+\]\//, '')
+                .replace(/\/div\[1\]\/application\-fragment\[\d+\]\//, '')
+            },
+            entries: []
+          };
+
+          riter.entries.push(niter);
+
+          if ( !el.special ) {
+            traverse(c, niter);
+          }
+        });
+      }
+    }
+
+    traverse(rootWindow, rootIter);
+    treeView.add(tree);
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // FILES
+  /////////////////////////////////////////////////////////////////////////////
 
   ApplicationIDEPropertiesWindow.prototype.renderFileList = function(project) {
     var self = this;
@@ -310,6 +397,10 @@
     treeView.add(tree);
   };
 
+  /////////////////////////////////////////////////////////////////////////////
+  // WINDOW LIST
+  /////////////////////////////////////////////////////////////////////////////
+
   ApplicationIDEPropertiesWindow.prototype.renderWindowList = function(project) {
     var select = this._scheme.find(this, 'SelectFragment');
     select.clear();
@@ -330,67 +421,9 @@
     this._scheme.find(this, 'RemoveFragment').set('disabled', project.currentWindow === 0 || list.length <= 1);
   };
 
-  ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
-    var app = this._app;
-    var project = app.currentProject;
-    var windowName = project.getFragmentName();
-    var rootWindow = project.getFragment();
-    var wid = String(project.currentWindow + 1);
-
-    var treeView = this._scheme.find(this, 'Tree');
-    treeView.clear();
-
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var rootIter = {
-      label: windowName,
-      icon: API.getApplicationResource(app, 'icons/widget-gtk-window.png'),
-      value: {
-        tagName: 'application-window',
-        path: ''
-      },
-      entries: []
-    };
-
-    var tree = [rootIter];
-
-    function traverse(root, riter) {
-      if ( root && root.children ) {
-        root.children.forEach(function(c) {
-          var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
-            isContainer: false,
-            icon: 'status/dialog-question.png'
-          });
-
-          var name = c.tagName.toLowerCase();
-          var id = c.getAttribute('data-id') || null;
-          if ( id ) {
-            name = name + ' (' + id + ')';
-          }
-
-          var niter = {
-            label: name,
-            icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
-            value: {
-              tagName: c.tagName.toLowerCase(),
-              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow)
-                .replace(/\/div\[1\]\/application\-window\[\d+\]\//, '')
-                .replace(/\/div\[1\]\/application\-fragment\[\d+\]\//, '')
-            },
-            entries: []
-          };
-
-          riter.entries.push(niter);
-
-          if ( !el.special ) {
-            traverse(c, niter);
-          }
-        });
-      }
-    }
-
-    traverse(rootWindow, rootIter);
-    treeView.add(tree);
-  };
+  /////////////////////////////////////////////////////////////////////////////
+  // METADATA
+  /////////////////////////////////////////////////////////////////////////////
 
   ApplicationIDEPropertiesWindow.prototype.renderMetadata = function(project) {
     this._scheme.find(this, 'MetadataClassName').set('value', project.data.className);

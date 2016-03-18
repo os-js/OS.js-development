@@ -39,6 +39,7 @@
       gravity: 'north-west',
       icon: metadata.icon,
       title: metadata.name + ' - Main Window',
+      allow_maximize: false,
       width: 175,
       height: 420
     }, app, scheme]);

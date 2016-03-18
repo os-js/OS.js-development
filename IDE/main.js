@@ -345,6 +345,43 @@
     propWin.renderProperties(xpath, tagName, props);
   };
 
+  ApplicationIDE.prototype.onTreeElementDropped = function(data) {
+    var win = this.getDesignerWindow();
+    if ( !win || !data.src || !data.dest || (data.src.path === data.dest.path) ) {
+      return;
+    }
+
+    // TODO: DnD design elements to insert from other window
+    if ( typeof data.src.path === 'undefined' || typeof data.dest.path === 'undefined' ) {
+      return;
+    }
+
+    var sourceTarget = this.currentProject.getElement(data.src.path.replace(/^\//, ''));
+    var destTarget = this.currentProject.getElement(data.dest.path.replace(/^\//, ''));
+
+    if ( sourceTarget && destTarget ) {
+      var valid = OSjs.Applications.ApplicationIDE.isValidTarget(
+        sourceTarget.tagName.toLowerCase(), 
+        destTarget.tagName.toLowerCase() );
+      if ( !valid ) {
+        return;
+      }
+
+      if ( data.dest.isContainer ) {
+        destTarget.appendChild(sourceTarget);
+      } else {
+        destTarget.parentNode.insertBefore(sourceTarget, destTarget);
+      }
+
+      win.render()
+
+      var propWin = this.getPropertiesWindow();
+      if ( propWin ) {
+        propWin.load(this.currentProject);
+      }
+    }
+  };
+
   //
   // GLOBAL EVENTS
   //
