@@ -21,6 +21,8 @@ This is my second attempt at creating a Interface Designer and IDE for OS.js.
 
 In progress, basic interface designing works. You can create, save and load projects.
 
+**Does not work properly in firefox due to a [bug](https://bugzilla.mozilla.org/show_bug.cgi?id=568313) in the browser**
+
 #### TODO
 
 * [x] Simple project loading
@@ -49,3 +51,4 @@ In progress, basic interface designing works. You can create, save and load proj
 * [ ] Save currently selected tab element so desiging tabs are less of a pain
 * [ ] Set default window attributes (width/height does not reflect actual result by default)
 * [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
+* [ ] https://bugzilla.mozilla.org/show_bug.cgi?id=568313
