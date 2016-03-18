@@ -437,8 +437,8 @@
     //
 
     'gui-label': getInputProperties('widget-gtk-label.png', true, 'Label'),
-    'gui-radio': getInputProperties('widget-gtk-radiotoolbutton.png'),
-    'gui-checkbox': getInputProperties('widget-gtk-radiotoolbutton.png'),
+    'gui-radio': getInputProperties('widget-gtk-radiotoolbutton.png', true),
+    'gui-checkbox': getInputProperties('widget-gtk-radiotoolbutton.png', true),
     'gui-file-upload': getInputProperties('widget-gtk-filechooserbutton.png'),
     'gui-input-modal': getInputProperties('widget-gtk-comboboxentry.png'),
     'gui-select': getInputProperties('widget-gtk-combobox.png'),
