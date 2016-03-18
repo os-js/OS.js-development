@@ -44,7 +44,7 @@ In progress, basic interface designing works. You can create, save and load proj
 * [x] Element movement in the property window
 * [ ] DnD from main window to property window tree
 * [ ] Add all elements and correct properties
-
+* [ ] Add support for 'unit' type (px, percentage, etc.)
 
 **BUGS**
 
