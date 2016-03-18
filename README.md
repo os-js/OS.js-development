@@ -60,4 +60,6 @@ Just select `File -> New` to create a new project. It will be saved in `home:///
 
 You can drag-and drop elements from the pallette into the designer window, then edit the properties in the property window. You can also re-arrange elements in the property window tree by dragging-and-dropping (dropping on a container will insert at the end, dropping on a container element will make it insert before).
 
+If you click an element twice you will select the parent element.
+
 Every time you save the project the package manager will be updated so you can run your app from the `Launcher Menu`.
