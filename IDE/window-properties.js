@@ -63,6 +63,7 @@
     // Load and set up scheme (GUI) here
     scheme.render(this, 'IDEPropertiesWindow', root);
 
+    var fileView = this._scheme.find(this, 'Files');
     var treeView = this._scheme.find(this, 'Tree');
     var iconView = this._scheme.find(this, 'Properties');
     var input = this._scheme.find(this, 'PropertyValueInput');
@@ -147,6 +148,19 @@
 
     this._scheme.find(this, 'MetadataApply').on('click', function() {
       applyMetadata();
+    });
+
+    fileView.on('activate', function(ev) {
+      if ( ev.detail && ev.detail.entries ) {
+        ev.detail.entries.forEach(function(e) {
+          if ( e && e.data ) {
+            console.warn("XXX", e.data);
+            API.open(new VFS.File(e.data.filename, e.data.mime), {
+              forceList: true
+            });
+          }
+        });
+      }
     });
 
     return root;
@@ -355,11 +369,22 @@
     var entries = (function() {
       var result = [];
       project.data.preload.forEach(function(iter) {
+        var mime = 'text/plain';
+        var types = {
+          stylesheet: 'text/css',
+          javascript: 'application/javascript'
+        };
+
+        if ( types[iter.type] ) {
+          mime = types[iter.type];
+        }
+
         result.push({
           label: iter.src,
           icon: API.getIcon('mimetypes/binary.png'),
           value: {
-            filename: iter.src
+            filename: project.path + '/' + iter.src,
+            mime: mime
           }
         });
       });
@@ -389,7 +414,11 @@
         label: 'Server',
         entries: [{
           icon: API.getIcon('mimetypes/binary.png'),
-          label: 'api.js'
+          label: 'api.js',
+          value: {
+            filename: project.path + '/api.js',
+            mime: 'application/javascript'
+          }
         }]
       }]
     }];

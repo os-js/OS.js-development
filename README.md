@@ -30,12 +30,12 @@ In progress, basic interface designing works. You can create, save and load proj
 * [x] GUI Element toolbar
 * [x] Proper project loading and sessions
 * [x] Project saving
-* [x] Multiple window support (not finished: adding)
+* [x] Multiple fragment support (not finished: adding)
 * [x] Adding elements
 * [x] Removing elements
 * [x] Parameter viewing
 * [x] Parameter setting
-* [x] File Browser (not finished)
+* [x] File Browser (not finished: adding)
 * [ ] Source Editor Window
 * [ ] Menu Editor
 * [ ] Dropdown Editor
@@ -43,7 +43,6 @@ In progress, basic interface designing works. You can create, save and load proj
 * [x] Inline fragment support
 * [x] Element movement in the property window
 * [ ] DnD from main window to property window tree
-* [ ] Add tooltips/overlays (helpers) on elements that does not render (like when you don't set your flexboxes right)
 * [ ] Add all elements and correct properties
 
 
