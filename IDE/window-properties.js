@@ -154,7 +154,6 @@
       if ( ev.detail && ev.detail.entries ) {
         ev.detail.entries.forEach(function(e) {
           if ( e && e.data ) {
-            console.warn("XXX", e.data);
             API.open(new VFS.File(e.data.filename, e.data.mime), {
               forceList: true
             });

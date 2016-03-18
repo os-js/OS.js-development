@@ -92,6 +92,7 @@
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] input,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] textarea,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] iframe,
+.ApplicationIDEDesignerWindow  gui-switch[data-ide-element='true'] div,
 .ApplicationIDEDesignerWindow  *[data-ide-element='true'] button {
   pointer-events : none;
 }
