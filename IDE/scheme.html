@@ -65,9 +65,33 @@
 
             <gui-vbox-container data-grow="0" data-shrink="1" data-basis="auto">
               <gui-hbox>
-                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true" data-id="VBoxEmpty">
+                </gui-hbox-container>
+
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true" data-id="VBoxInput">
                   <gui-text data-id="PropertyValueInput" />
+                </gui-hbox-container>
+
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true" data-id="VBoxSelect">
                   <gui-select data-id="PropertyValueSelect" />
+                </gui-hbox-container>
+
+                <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-id="VBoxTyped">
+                  <gui-hbox>
+                    <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+                      <gui-text data-id="PropertyValueTypedInput" />
+                    </gui-hbox-container>
+                    <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto" data-expand="true">
+                      <gui-select data-id="PropertyValueTypedSelect">
+                        <gui-select-option data-value="px">px</gui-select-option>
+                        <gui-select-option data-value="%">%</gui-select-option>
+                        <gui-select-option data-value="pt">pt</gui-select-option>
+                        <gui-select-option data-value="em">em</gui-select-option>
+                        <gui-select-option data-value="rem">rem</gui-select-option>
+                        <gui-select-option data-value="auto">[AUTO]</gui-select-option>
+                      </gui-select>
+                    </gui-hbox-container>
+                  </gui-hbox>
                 </gui-hbox-container>
 
                 <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">

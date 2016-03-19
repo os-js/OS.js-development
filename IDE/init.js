@@ -295,7 +295,7 @@
           type: 'number'
         },
         basis: {
-          type: 'string'
+          type: 'unit'
         },
         expand: {
           type: 'boolean'

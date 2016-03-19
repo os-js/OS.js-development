@@ -67,6 +67,8 @@
     var treeView = this._scheme.find(this, 'Tree');
     var iconView = this._scheme.find(this, 'Properties');
     var input = this._scheme.find(this, 'PropertyValueInput');
+    var inputTyped = this._scheme.find(this, 'PropertyValueTypedInput');
+    var selectTyped = this._scheme.find(this, 'PropertyValueTypedSelect');
     var select = this._scheme.find(this, 'PropertyValueSelect');
     var selectFragment = this._scheme.find(this, 'SelectFragment');
 
@@ -121,14 +123,24 @@
       app.onSelectFragment(idx);
     });
 
-    this._scheme.find(this, 'PropertyValueSelect').hide();
+    this._scheme.find(this, 'VBoxSelect').hide();
+    this._scheme.find(this, 'VBoxTyped').hide();
+    this._scheme.find(this, 'VBoxEmpty').show();
 
     this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
-      if ( input.$element.style.display === 'none' ) {
+      var val;
+      if ( scheme.find(self, 'VBoxInput').$element.style.display !== 'none' ) {
         applyValue(select.get('value'));
-      } else {
-        var val = input.get('value');
+      } else if ( scheme.find(self, 'VBoxSelect').$element.style.display !== 'none' ) {
+        val = input.get('value');
         if ( val !== '(null)' ) {
+          applyValue(val);
+        }
+      } else {
+        if ( inputTyped.get('value') === 'auto' || selectTyped.get('value') === 'auto' ) {
+          applyValue('auto');
+        } else {
+          val = String(inputTyped.get('value')) + String(selectTyped.get('value'));
           applyValue(val);
         }
       }
@@ -221,12 +233,20 @@
     this.currentProperty.tagName = tagName;
     this.currentProperty.value = value;
 
-    var input = this._scheme.find(this, 'PropertyValueInput').set('value', val);
-    var select = this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
+    var input = this._scheme.find(this, 'PropertyValueInput').set('value', '');
+    var select = this._scheme.find(this, 'PropertyValueSelect').clear();
+    var inputTyped = this._scheme.find(this, 'PropertyValueTypedInput').set('value', '');
+    var selectTyped = this._scheme.find(this, 'PropertyValueTypedSelect').set('value', 'px');
+
+    var noopContainer = this._scheme.find(this, 'VBoxEmpty').hide();
+    var normalContainer = this._scheme.find(this, 'VBoxInput').hide();
+    var selectContainer = this._scheme.find(this, 'VBoxSelect').hide();
+    var typedContainer  = this._scheme.find(this, 'VBoxTyped').hide();
 
     if ( type === 'boolean' || type === 'mixed' ) {
-      var items = [];
+      selectContainer.show();
 
+      var items = [];
       try {
         items = Array.prototype.slice.call(type === 'mixed' ? elements[tagName].propertyTypes[property].values : [
           {label: 'true', value: 'true'},
@@ -240,11 +260,21 @@
         items.unshift({label: 'NULL', value: 'null'});
       }
 
-      input.hide();
-      select.show().add(items).set('value', String(value));
+      select.add(items).set('value', String(value));
+    } else if ( type === 'unit' ) {
+      typedContainer.show();
+
+      var vspl = String(val).match(/([0-9\.]+)(px|em|rem|pt|\%)?$/) || [];
+      var valt = vspl.length > 1 ? vspl[2] || 'px' : 'auto';
+      var valn = vspl.length > 0 ? vspl[1] || 0 : 'auto';
+
+      inputTyped.set('value', valn);
+      selectTyped.set('value', valt);
     } else {
-      input.show();
-      select.hide().clear();
+      normalContainer.show();
+
+      input.set('value', val);
+      select.clear();
     }
   };
 
@@ -287,6 +317,11 @@
 
       listView.add(rows);
     }
+
+    this._scheme.find(this, 'VBoxInput').show();
+    this._scheme.find(this, 'VBoxInput').hide();
+    this._scheme.find(this, 'VBoxSelect').hide();
+    this._scheme.find(this, 'VBoxTyped').hide();
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
