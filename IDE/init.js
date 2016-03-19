@@ -438,7 +438,7 @@
 
     'gui-label': getInputProperties('widget-gtk-label.png', true, 'Label'),
     'gui-radio': getInputProperties('widget-gtk-radiotoolbutton.png', true),
-    'gui-checkbox': getInputProperties('widget-gtk-radiotoolbutton.png', true),
+    'gui-checkbox': getInputProperties('widget-gtk-checkbox.png', true),
     'gui-file-upload': getInputProperties('widget-gtk-filechooserbutton.png'),
     'gui-input-modal': getInputProperties('widget-gtk-comboboxentry.png'),
     'gui-select': getInputProperties('widget-gtk-combobox.png'),
@@ -446,7 +446,7 @@
     'gui-slider': getInputProperties('widget-gtk-hscale.png'),
     'gui-switch': getInputProperties('widget-gtk-togglebutton.png'),
     'gui-text': getInputProperties('widget-gtk-entry.png'),
-    'gui-password': getInputProperties('widget-gtk-entry.png'),
+    'gui-password': getInputProperties('widget-gtk-password.png'),
     'gui-textarea': getInputProperties('widget-gtk-textview.png'),
     'gui-button': getInputProperties('widget-gtk-button.png', true, 'Button', {
       hasInnerLabel: true
