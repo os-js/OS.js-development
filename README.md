@@ -25,30 +25,16 @@ In progress, basic interface designing works. You can create, save and load proj
 
 #### TODO
 
-* [x] Simple project loading
-* [x] Window Rendering
-* [x] GUI Element toolbar
-* [x] Proper project loading and sessions
-* [x] Project saving
-* [x] Multiple fragment support (not finished: adding)
-* [x] Adding elements
-* [x] Removing elements
-* [x] Parameter viewing
-* [x] Parameter setting
-* [x] File Browser (not finished: adding)
-* [ ] Source Editor Window
+* [ ] Adding new fragments
+* [ ] Finish metadata editor
 * [ ] Menu Editor
 * [ ] Dropdown Editor
-* [x] Metadata Editor (not finished)
-* [x] Inline fragment support
-* [x] Element movement in the property window
-* [ ] DnD from main window to property window tree
 * [ ] Add all elements and correct properties
 * [ ] Add support for 'unit' type (px, percentage, etc.)
 
 **BUGS**
 
-* [ ] Save currently selected tab element so desiging tabs are less of a pain
+* [ ] Current tab gets unselected on UI change
 * [ ] Set default window attributes (width/height does not reflect actual result by default)
 * [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
 * [ ] https://bugzilla.mozilla.org/show_bug.cgi?id=568313

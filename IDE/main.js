@@ -351,7 +351,13 @@
       return;
     }
 
-    // TODO: DnD design elements to insert from other window
+    if ( data.src.isDesignerElement ) {
+      if ( data.dest.path ) {
+        this.onElementDropped(data.dest.path, data.dest.tagName, data.src.tagName);
+      }
+      return;
+    }
+
     if ( typeof data.src.path === 'undefined' || typeof data.dest.path === 'undefined' ) {
       return;
     }
