@@ -517,7 +517,8 @@
     'gui-menu': {
       isContainer: false,
       icon: 'widget-gtk-menu.png',
-      special: true
+      special: true,
+      allowParents: ['gui-menu-entry']
     },
       'gui-menu-entry': {
       },
@@ -564,7 +565,7 @@
     },
     {
       label: 'Misc',
-      items: ['gui-progress-bar', 'gui-color-swatch', 'gui-menu', 'gui-menu-bar', 'gui-statusbar', 'gui-file-upload', 'gui-input-modal', 'gui-color-box']
+      items: ['gui-progress-bar', 'gui-color-swatch', 'gui-menu-bar', 'gui-statusbar', 'gui-file-upload', 'gui-input-modal', 'gui-color-box']
     }
   ];
 
