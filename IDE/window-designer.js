@@ -168,13 +168,13 @@
                 sel.setAttribute('data-ide-container', 'true');
                 createDroppable(sel, function(data) {
                   var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(sel, self._$root);
-                  app.onElementDropped(xpath, tagName, data.tagName);
+                  app.onElementDropped(xpath, tagName, data.tagName, data);
                 });
               } else {
                 sel.getElementsByTagName(cn).forEach(function(cel) {
                   createDroppable(cel, function(data) {
                     var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
-                    app.onElementDropped(xpath, tagName, data.tagName);
+                    app.onElementDropped(xpath, tagName, data.tagName, data);
                   });
                 });
               }

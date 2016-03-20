@@ -352,6 +352,7 @@
       if ( root && root.children ) {
         root.children.forEach(function(c) {
           var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
+            source: 'tree',
             isContainer: false,
             icon: 'status/dialog-question.png'
           });
@@ -368,6 +369,7 @@
             draggable: true,
             droppable: true,
             value: {
+              source: 'tree',
               isContainer: el.isContainer,
               tagName: c.tagName.toLowerCase(),
               path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow)

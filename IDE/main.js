@@ -351,7 +351,7 @@
       return;
     }
 
-    if ( data.src.isDesignerElement ) {
+    if ( data.src.source === 'palette' ) {
       if ( data.dest.path ) {
         this.onElementDropped(data.dest.path, data.dest.tagName, data.src.tagName);
       }
@@ -440,7 +440,7 @@
     }
   };
 
-  ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName) {
+  ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName, dragData) {
     if ( !xpath ) {
       console.error('onElementDropped()', 'NO XPATH', xpath);
       //return;
@@ -455,6 +455,12 @@
 
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
+
+    // Ignore dragged elements from treeview
+    if ( dragData && dragData.source === 'tree' ) {
+      // FIXME: Move element instead of ignore
+      return;
+    }
 
     var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
     xpath = (xpath || '').replace(rootPath, '');

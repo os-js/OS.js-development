@@ -37,7 +37,6 @@ In progress, basic interface designing works. You can create, save and load proj
 * [ ] Set default window attributes (width/height does not reflect actual result by default)
 * [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
 * [ ] https://bugzilla.mozilla.org/show_bug.cgi?id=568313
-* [ ] Dragging element from Property Window treeview into Designer window will duplicate the element, not move it
 
 #### How to use
 

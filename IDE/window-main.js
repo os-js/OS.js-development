@@ -76,7 +76,7 @@
 
         API.createDraggable(button.$element, {
           data: {
-            isDesignerElement: true,
+            source: 'palette',
             tagName: name
           }
         });
