@@ -367,11 +367,17 @@
 
     if ( sourceTarget && destTarget ) {
 
+      var propWin = this.getPropertiesWindow();
+
       if ( data.dest.isContainer ) {
         var valid = OSjs.Applications.ApplicationIDE.isValidTarget(
           sourceTarget.tagName.toLowerCase(), 
           destTarget.tagName.toLowerCase() );
-        if ( !valid ) {
+
+        if ( valid !== true ) {
+          if ( propWin ) {
+            propWin._setWarning(valid);
+          }
           return;
         }
 
@@ -382,7 +388,6 @@
 
       win.render()
 
-      var propWin = this.getPropertiesWindow();
       if ( propWin ) {
         propWin.load(this.currentProject);
       }

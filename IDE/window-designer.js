@@ -31,11 +31,14 @@
   'use strict';
 
   var timeout;
-  function createDroppable(root, done) {
+  function createDroppable(win, root, done) {
     function onDrop(data) {
       var destTagName = root.tagName.toLowerCase();
       var valid = OSjs.Applications.ApplicationIDE.isValidTarget(data.tagName, destTagName);
-      if ( !valid ) {
+      if ( valid !== true ) {
+        if ( win ) {
+          win._setWarning(valid);
+        }
         return;
       }
       (done = done || function() {}).apply(this, arguments);
@@ -96,7 +99,8 @@
     var self = this;
 
     // Load and set up scheme (GUI) here
-    createDroppable(root, function(data) {
+    var propWin = app.getPropertiesWindow();
+    createDroppable(propWin, root, function(data) {
       app.onElementDropped(null, 'application-window', data.tagName);
     });
 
@@ -142,6 +146,7 @@
     var app = this._app;
     var project = app.currentProject;
     var windowName = project.getFragmentName();
+    var propWin = app.getPropertiesWindow();
 
     this._setTitle(windowName + '@' + project.name, true);
 
@@ -166,13 +171,13 @@
 
               if ( cn === true ) {
                 sel.setAttribute('data-ide-container', 'true');
-                createDroppable(sel, function(data) {
+                createDroppable(propWin, sel, function(data) {
                   var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(sel, self._$root);
                   app.onElementDropped(xpath, tagName, data.tagName, data);
                 });
               } else {
                 sel.getElementsByTagName(cn).forEach(function(cel) {
-                  createDroppable(cel, function(data) {
+                  createDroppable(propWin, cel, function(data) {
                     var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
                     app.onElementDropped(xpath, tagName, data.tagName, data);
                   });

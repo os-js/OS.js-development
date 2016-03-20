@@ -806,30 +806,32 @@
       return true;
     }
 
+    var msg =  true;
+
     // allowChildren
     if ( de.allowChildren && de.allowChildren.indexOf(srcTagName) === -1 ) {
-      console.warn(destTagName, 'does not allow (allowChildren)', srcTagName);
-      return false;
+      msg = Utils.format('{0} {1} {2}', destTagName, 'does not allow (allowChildren)', srcTagName);
     }
     // allowParents
     if ( se.allowParents && se.allowParents.indexOf(destTagName) === -1 ) {
-      console.warn(srcTagName, 'does not allow (allowParents)', destTagName);
-      return false;
+      msg = Utils.format('{0} {1} {2}', srcTagName, 'does not allow (allowParents)', destTagName);
     }
 
     // invalidChildren
     if ( de.invalidChildren && de.invalidChildren.indexOf(srcTagName) >= 0 ) {
-      console.warn(destTagName, 'does not allow (invalidChildren)', srcTagName);
-      return false;
+      msg = Utils.format('{0} {1} {2}', destTagName, 'does not allow (invalidChildren)', srcTagName);
     }
 
     // allowInnerContainers
     if ( de.allowInnerContainers === false && se.isContainer ) {
-      console.warn(destTagName, 'does not allow (allowInnerContainers)', srcTagName);
-      return false;
+      msg = Utils.format('{0} {1} {2}', destTagName, 'does not allow (allowInnerContainers)', srcTagName);
     }
 
-    return true;
+    if ( msg !== true ) {
+      console.warn(msg);
+    }
+
+    return msg;
   }
 
   /////////////////////////////////////////////////////////////////////////////
