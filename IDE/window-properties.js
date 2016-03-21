@@ -130,7 +130,7 @@
     this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
       var val;
       if ( scheme.find(self, 'VBoxInput').$element.style.display !== 'none' ) {
-        applyValue(select.get('value'));
+        applyValue(input.get('value'));
       } else if ( scheme.find(self, 'VBoxSelect').$element.style.display !== 'none' ) {
         val = input.get('value');
         if ( val !== '(null)' ) {
