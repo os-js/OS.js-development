@@ -124,6 +124,23 @@
     };
   }
 
+  function getSelectProperties(icon) {
+    return {
+      isContainer: true,
+      allowChildren: ['gui-select-option'],
+      allowInnerContainers: false,
+      icon: icon,
+      propertyTypes: {
+        disabled: {
+          type: 'boolean'
+        }
+      },
+      properties: {
+        disabled: null
+      }
+    };
+  }
+
   function getInputProperties(icon, hasLabel, defaultValue, mergeWith, hasIcon) {
     mergeWith = mergeWith || {};
 
@@ -218,10 +235,23 @@
           return -1;
         }
 
-        if ( tagName === 'gui-tabs' ) {
-          return el.getElementsByTagName('gui-tab-container').length || 0;
+        function getSize(cn) {
+          var size = 0;
+
+          el.children.forEach(function(e) {
+            if ( e.tagName.toLowerCase() === cn ) {
+              size++;
+            }
+          });
+
+          return size;
         }
-        return el.getElementsByTagName(tagName + '-container').length || 0;
+
+        if ( tagName === 'gui-tabs' ) {
+          return getSize('gui-tab-container');
+        }
+
+        return getSize(tagName + '-container');
       }
     };
 
@@ -441,8 +471,24 @@
     'gui-checkbox': getInputProperties('widget-gtk-checkbox.png', true),
     'gui-file-upload': getInputProperties('widget-gtk-filechooserbutton.png'),
     'gui-input-modal': getInputProperties('widget-gtk-comboboxentry.png'),
-    'gui-select': getInputProperties('widget-gtk-combobox.png'),
-    'gui-select-list': getInputProperties('widget-gtk-list.png'),
+    'gui-select': getSelectProperties('widget-gtk-combobox.png'),
+    'gui-select-list': getSelectProperties('widget-gtk-list.png'),
+    'gui-select-option': {
+      isContainer: false,
+      icon: 'widget-gtk-label.png',
+      propertyTypes: {
+        value: {
+          type: 'string'
+        },
+        label: {
+          type: 'string'
+        }
+      },
+      properties: {
+        value: null,
+        label: null
+      }
+    },
     'gui-slider': getInputProperties('widget-gtk-hscale.png'),
     'gui-switch': getInputProperties('widget-gtk-togglebutton.png'),
     'gui-text': getInputProperties('widget-gtk-entry.png'),
@@ -523,12 +569,26 @@
       'gui-menu-entry': {
       },
     'gui-menu-bar': {
-      isContainer: false,
+      isContainer: true,
       allowInnerContainers: false,
+      allowChildren: ['gui-menu-bar-entry'],
       icon: 'widget-gtk-menubar.png'
     },
       'gui-menu-bar-entry': {
-        icon: 'widget-gtk-label.png'
+        isContainer: false,
+        icon: 'widget-gtk-label.png',
+        propertyTypes: {
+          disabled: {
+            type: 'boolean'
+          },
+          label: {
+            type: 'string'
+          }
+        },
+        properties: {
+          disabled: null,
+          label: 'Menu Item'
+        }
       },
     'gui-statusbar': {
       isContainer: false,
@@ -566,6 +626,10 @@
     {
       label: 'Misc',
       items: ['gui-progress-bar', 'gui-color-swatch', 'gui-menu-bar', 'gui-statusbar', 'gui-file-upload', 'gui-input-modal', 'gui-color-box']
+    },
+    {
+      label: 'Entries',
+      items: ['gui-menu-bar-entry', 'gui-select-option']
     }
   ];
 
