@@ -102,6 +102,7 @@
     }
     this._scheme.find(this, 'SubmenuFile').on('select', menuEvent);
     this._scheme.find(this, 'SubmenuView').on('select', menuEvent);
+    this._scheme.find(this, 'MenuSave').set('disabled', true);
 
     this.update();
 
@@ -118,12 +119,16 @@
 
     viewMenu.set('checked', 'MenuDesignerWindow', !!app.getDesignerWindow());
     viewMenu.set('checked', 'MenuPropertyWindow', !!app.getPropertiesWindow());
+
+    this._scheme.find(this, 'MenuSave').set('disabled', app.currentProject ? false : true);
   };
 
   ApplicationIDEWindow.prototype.clear = function() {
   };
 
   ApplicationIDEWindow.prototype.load = function() {
+    var app = this._app;
+    this._scheme.find(this, 'MenuSave').set('disabled', app.currentProject ? false : true);
   };
 
   /////////////////////////////////////////////////////////////////////////////

@@ -206,6 +206,13 @@
     this._scheme.find(this, 'Statusbar').set('value', '');
     this._scheme.find(this, 'PropertyValueInput').set('value', '');
     this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
+
+    this._scheme.find(this, 'PropertyButtonNull').set('disabled', true);
+    this._scheme.find(this, 'PropertyButtonApply').set('disabled', true);
+
+    this._scheme.find(this, 'VBoxSelect').hide();
+    this._scheme.find(this, 'VBoxTyped').hide();
+    this._scheme.find(this, 'VBoxEmpty').show();
   };
 
   ApplicationIDEPropertiesWindow.prototype.load = function(project) {
@@ -225,6 +232,8 @@
     treeView.set('selected', xpath, 'path', {scroll:true});
 
     this.currentPath = xpath;
+    this._scheme.find(this, 'PropertyButtonNull').set('disabled', true);
+    this._scheme.find(this, 'PropertyButtonApply').set('disabled', true);
   };
 
   ApplicationIDEPropertiesWindow.prototype.selectProperty = function(property, value, tagName) {
@@ -283,6 +292,9 @@
       input.set('value', val);
       select.clear();
     }
+
+    this._scheme.find(this, 'PropertyButtonNull').set('disabled', false);
+    this._scheme.find(this, 'PropertyButtonApply').set('disabled', false);
   };
 
   /////////////////////////////////////////////////////////////////////////////
@@ -325,10 +337,13 @@
       listView.add(rows);
     }
 
-    this._scheme.find(this, 'VBoxInput').show();
+    this._scheme.find(this, 'VBoxEmpty').show();
     this._scheme.find(this, 'VBoxInput').hide();
     this._scheme.find(this, 'VBoxSelect').hide();
     this._scheme.find(this, 'VBoxTyped').hide();
+
+    this._scheme.find(this, 'PropertyButtonNull').set('disabled', true);
+    this._scheme.find(this, 'PropertyButtonApply').set('disabled', true);
   };
 
   ApplicationIDEPropertiesWindow.prototype.renderTree = function() {

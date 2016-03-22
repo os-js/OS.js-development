@@ -28,6 +28,7 @@ In progress, basic interface designing works. You can create, save and load proj
 * [ ] Menu Editor
 * [ ] Dropdown Editor
 * [ ] Add all elements and correct properties
+* [ ] Adding of files
 
 **BUGS**
 
