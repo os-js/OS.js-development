@@ -200,25 +200,14 @@
 
               <!-- EXPANDER -->
               <gui-expander data-label="MIME Support">
-                <gui-vbox>
-                  <gui-vbox-container data-grow="0" data-shrink="1">
-                    <gui-hbox>
-                      <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
-                        <gui-text data-value="Some MIME type here" />
-                      </gui-hbox-container>
-                      <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
-                        <gui-button data-icon="stock://16x16/actions/remove.png" data-disabled="true" />
-                      </gui-hbox-container>
-                    </gui-hbox>
-                  </gui-vbox-container>
-
+                <gui-vbox data-id="MetadataMimeContainer">
                   <gui-vbox-container data-grow="0" data-shrink="1">
                     <gui-hbox>
                       <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
                         <gui-text data-id="MetadataAddMimeValue" data-placeholder="Regexp" />
                       </gui-hbox-container>
                       <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
-                        <gui-button data-icon="stock://16x16/actions/add.png" data-id="MetadataAddMime" data-disabled="true" />
+                        <gui-button data-icon="stock://16x16/actions/add.png" data-id="MetadataAddMime" />
                       </gui-hbox-container>
                     </gui-hbox>
                   </gui-vbox-container>
@@ -232,7 +221,7 @@
             </gui-vbox-container>
 
             <gui-vbox-container data-grow="0" data-shrink="1" data-expand="true">
-              <gui-button data-id="MetadataApply">Apply</gui-button>
+              <gui-button data-id="MetadataApply">SAVE METADATA</gui-button>
             </gui-vbox-container>
           </gui-vbox>
         </gui-tab-container>
@@ -249,6 +238,19 @@
 <application-window data-id="IDEDesignerWindow">
 
 </application-window>
+
+<application-fragment data-id="MIMERowTemplate">
+  <gui-vbox-container data-grow="0" data-shrink="1">
+    <gui-hbox>
+      <gui-hbox-container data-grow="1" data-shrink="0" data-basis="auto" data-expand="true">
+        <gui-text data-value="Some MIME type here" />
+      </gui-hbox-container>
+      <gui-hbox-container data-grow="0" data-shrink="1" data-basis="auto">
+        <gui-button data-icon="stock://16x16/actions/remove.png" />
+      </gui-hbox-container>
+    </gui-hbox>
+  </gui-vbox-container>
+</application-fragment>
 
 <application-dialog data-id="Fragment">
 

@@ -82,8 +82,7 @@
         name: self._scheme.find(self, 'MetadataName').get('value'),
         icon: self._scheme.find(self, 'MetadataIcon').get('value'),
         singular: self._scheme.find(self, 'MetadataSingular').get('value'),
-        category: self._scheme.find(self, 'MetadataCategory').get('value'),
-        mime: []
+        category: self._scheme.find(self, 'MetadataCategory').get('value')
       });
     }
 
@@ -160,6 +159,14 @@
 
     this._scheme.find(this, 'MetadataApply').on('click', function() {
       applyMetadata();
+    });
+
+    this._scheme.find(this, 'MetadataAddMime').on('click', function() {
+      var value = scheme.find(self, 'MetadataAddMimeValue').get('value');
+      if ( value ) {
+        app.onAddMime(value);
+      }
+      scheme.find(self, 'MetadataAddMimeValue').set('value', '');
     });
 
     fileView.on('activate', function(ev) {
@@ -491,11 +498,36 @@
   /////////////////////////////////////////////////////////////////////////////
 
   ApplicationIDEPropertiesWindow.prototype.renderMetadata = function(project) {
+    var self = this;
+
     this._scheme.find(this, 'MetadataClassName').set('value', project.data.className);
     this._scheme.find(this, 'MetadataName').set('value', project.data.name);
     this._scheme.find(this, 'MetadataIcon').set('value', project.data.icon);
     this._scheme.find(this, 'MetadataCategory').set('value', project.data.category);
     this._scheme.find(this, 'MetadataSingular').set('value', project.data.singular === true);
+
+    var parentEl = this._scheme.find(this, 'MetadataMimeContainer');
+    var templateEl = this._scheme.getFragment('MIMERowTemplate');
+
+    while ( parentEl.$element.children.length > 1 ) {
+      parentEl.$element.removeChild(parentEl.$element.children[parentEl.$element.children.length - 1]);
+    }
+
+    (project.data.mime || []).forEach(function(m, idx) {
+      var tpl = templateEl.firstChild.cloneNode(true);
+      var row = GUI.Scheme.getElementInstance(tpl);
+      var txt = row.querySelector('gui-text', true);
+      var btn = row.querySelector('gui-button', true);
+      parentEl.append(row);
+
+      setTimeout(function() {
+        txt.set('value', m);
+        btn.on('click', function() {
+          project.removeMime(idx);
+          self.renderMetadata(project);
+        });
+      }, 0);
+    });
   };
 
   /////////////////////////////////////////////////////////////////////////////

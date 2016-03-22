@@ -741,7 +741,15 @@
     this.dom.firstChild.appendChild(el);
 
     this.updateFragments();
-  }
+  };
+
+  Project.prototype.addMime = function(str) {
+    this.data.mime.push(str);
+  };
+
+  Project.prototype.removeMime = function(idx) {
+    this.data.mime.splice(idx, 1);
+  };
 
   Project.prototype.applyMetadata = function(metadata) {
     var self = this;

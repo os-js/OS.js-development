@@ -138,6 +138,19 @@
   // PROPERTY EVENTS
   //
 
+
+  ApplicationIDE.prototype.onAddMime = function(mime) {
+    if ( !this.currentProject ) {
+      return;
+    }
+    this.currentProject.addMime(mime);
+
+    var propWin = this.getPropertiesWindow();
+    if ( propWin ) {
+      propWin.load(this.currentProject);
+    }
+  };
+
   ApplicationIDE.prototype.onApplyMetadata = function(metadata) {
     if ( !this.currentProject ) {
       return;
@@ -170,9 +183,9 @@
       if ( data.name ) {
         self.currentProject.createFragment(data.type, data.name);
 
-        if ( win ) {
+        /*if ( win ) {
           win.render()
-        }
+        }*/
 
         if ( propWin ) {
           propWin.load(self.currentProject);
