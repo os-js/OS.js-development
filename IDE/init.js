@@ -40,8 +40,6 @@
   }
 
   function setProperty(el, tagName, property, value) {
-    var innerLabelElement = ['gui-button'];
-
     if ( property.substr(0, 1) === '_' ) {
       return true;
     }
@@ -474,8 +472,12 @@
     'gui-select': getSelectProperties('widget-gtk-combobox.png'),
     'gui-select-list': getSelectProperties('widget-gtk-list.png'),
     'gui-select-option': {
+      hasInnerLabel: true,
       isContainer: false,
       icon: 'widget-gtk-label.png',
+      selectQuery: function(idx, q) {
+        return q.replace(/gui\-select\-option\[\d+\]$/, '') + 'select/option[' + String(idx+1) + ']';
+      },
       propertyTypes: {
         value: {
           type: 'string'

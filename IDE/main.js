@@ -258,7 +258,6 @@
     var target = win.getElement(xpath);
     var ttarget = this.currentProject.getElement(xpath);
 
-    console.clear();
     console.group('ApplicationIDE::onPropertyApply()');
     console.log('Xpath', xpath);
     console.log('Property', property);
@@ -333,7 +332,6 @@
       return;
     }
 
-    console.clear();
     console.group('ApplicationIDE::onDeleteElementClick()');
 
     var elements = OSjs.Applications.ApplicationIDE.Elements;
@@ -371,10 +369,18 @@
     var target = null;
     var ttarget = null;
     var props = null;
+    var dxpath = xpath;
 
     if ( xpath ) {
       target = win.getElement(xpath);
       ttarget = this.currentProject.getElement(xpath);
+
+      if ( elements[tagName].selectQuery ) {
+        var idx = Utils.$index(ttarget);
+        dxpath = elements[tagName].selectQuery(idx, xpath);
+
+        target = win.getElement(dxpath);
+      }
     } else {
       target = win._$root;
       ttarget = this.currentProject.getFragment();
@@ -536,7 +542,6 @@
     var target = win.getElement(xpath.replace(/^\//, '')) || win._$root;
     var ttarget = this.currentProject.getElement(xpath);
 
-    console.clear();
     console.group('ApplicationIDE::onElementDropped()');
     console.log('Xpath', xpath);
     console.log('Element', tagName, elements[tagName]);

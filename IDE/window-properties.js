@@ -131,7 +131,7 @@
       if ( scheme.find(self, 'VBoxInput').$element.style.display !== 'none' ) {
         applyValue(input.get('value'));
       } else if ( scheme.find(self, 'VBoxSelect').$element.style.display !== 'none' ) {
-        val = input.get('value');
+        val = select.get('value');
         if ( val !== '(null)' ) {
           applyValue(val);
         }
