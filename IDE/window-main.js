@@ -40,8 +40,8 @@
       icon: metadata.icon,
       title: metadata.name + ' - Main Window',
       allow_maximize: false,
-      width: 175,
-      height: 420
+      width: 200,
+      height: 460
     }, app, scheme]);
   }
 
