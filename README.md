@@ -33,7 +33,6 @@ In progress, basic interface designing works. You can create, save and load proj
 **BUGS**
 
 * [ ] Current tab gets unselected on UI change
-* [ ] Set default window attributes (width/height does not reflect actual result by default)
 * [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
 * [ ] https://bugzilla.mozilla.org/show_bug.cgi?id=568313
 

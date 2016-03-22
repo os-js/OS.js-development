@@ -474,6 +474,17 @@
   // DESIGNER EVENTS
   //
 
+
+  ApplicationIDE.prototype.onWindowResize = function(dim) {
+    if ( !this.currentProject ) {
+      return;
+    }
+
+    var frag = this.currentProject.getFragment();
+    this.onPropertyApply('', frag.tagName.toLowerCase(), 'width', dim.w, dim.w);
+    this.onPropertyApply('', frag.tagName.toLowerCase(), 'height', dim.h, dim.h);
+  };
+
   ApplicationIDE.prototype.onElementClicked = function(target) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
