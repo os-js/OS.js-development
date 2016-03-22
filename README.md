@@ -26,7 +26,6 @@ In progress, basic interface designing works. You can create, save and load proj
 #### TODO
 
 * [ ] Menu Editor
-* [ ] Dropdown Editor
 * [ ] Adding of files to manifest
 
 **BUGS**
