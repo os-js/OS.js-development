@@ -54,7 +54,7 @@
 
     var designWin = this.getDesignerWindow();
     if ( designWin ) {
-      designWin._close();
+      designWin.destroy();
     }
 
     return Application.prototype.destroy.apply(this, arguments);
