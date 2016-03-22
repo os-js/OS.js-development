@@ -36,8 +36,13 @@
       var destTagName = root.tagName.toLowerCase();
       var valid = OSjs.Applications.ApplicationIDE.isValidTarget(data.tagName, destTagName);
       if ( valid !== true ) {
-        if ( win ) {
-          win._setWarning(valid);
+        var wm = OSjs.Core.getWindowManager();
+        if ( wm ) {
+          wm.notification({
+            icon: 'status/important.png',
+            title: 'IDE',
+            message: valid
+          });
         }
         return;
       }

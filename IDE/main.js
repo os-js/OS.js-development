@@ -404,6 +404,7 @@
   };
 
   ApplicationIDE.prototype.onTreeElementDropped = function(data) {
+    var self = this;
     var win = this.getDesignerWindow();
     if ( !win || !data.src || !data.dest || (data.src.path === data.dest.path) ) {
       return;
@@ -423,6 +424,14 @@
     var sourceTarget = this.currentProject.getElement(data.src.path.replace(/^\//, ''));
     var destTarget = this.currentProject.getElement(data.dest.path.replace(/^\//, ''));
 
+    function done() {
+      win.render()
+
+      if ( propWin ) {
+        propWin.load(self.currentProject);
+      }
+    }
+
     if ( sourceTarget && destTarget ) {
 
       var propWin = this.getPropertiesWindow();
@@ -433,10 +442,18 @@
           destTarget.tagName.toLowerCase() );
 
         if ( valid !== true ) {
-          if ( propWin ) {
-            propWin._setWarning(valid);
+          var wm = OSjs.Core.getWindowManager();
+          if ( wm ) {
+            wm.notification({
+              icon: 'status/important.png',
+              title: 'IDE',
+              message: valid
+            });
           }
-          return;
+
+          destTarget.parentNode.insertBefore(sourceTarget, destTarget);
+
+          return done();
         }
 
         destTarget.appendChild(sourceTarget);
@@ -444,11 +461,7 @@
         destTarget.parentNode.insertBefore(sourceTarget, destTarget);
       }
 
-      win.render()
-
-      if ( propWin ) {
-        propWin.load(this.currentProject);
-      }
+      done();
     }
   };
 
