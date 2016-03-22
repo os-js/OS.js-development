@@ -48,8 +48,14 @@
 
   ApplicationIDE.prototype.destroy = function() {
     document.removeEventListener('click', this.globalClickEvent, false);
+
     this.curentProject = null;
     this.fragmentDialog = null;
+
+    var designWin = this.getDesignerWindow();
+    if ( designWin ) {
+      designWin._close();
+    }
 
     return Application.prototype.destroy.apply(this, arguments);
   };

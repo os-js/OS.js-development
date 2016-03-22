@@ -103,6 +103,8 @@
     var root = Window.prototype.init.apply(this, arguments);
     var self = this;
 
+    this._toggleDisabled(true);
+
     // Load and set up scheme (GUI) here
     var propWin = app.getPropertiesWindow();
     createDroppable(propWin, root, function(data) {
@@ -148,6 +150,8 @@
     var app = this._app;
     var project = app.currentProject;
     var windowName = project.getFragmentName();
+
+    this._toggleDisabled(false);
 
     this.render();
   };
