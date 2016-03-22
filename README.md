@@ -15,6 +15,8 @@ This is my second attempt at creating a Interface Designer and IDE for OS.js.
 
 *Last time I actually deleted my entire work (which was almost complete) by accident... And I did not commit it anywhere*... yeah!
 
+https://www.youtube.com/watch?v=qPhBpkbeZBU
+
 ![ScreenShot](https://raw.githubusercontent.com/os-js/OS.js-development/master/doc/ide.png)
 
 #### Status
