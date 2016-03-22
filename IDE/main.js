@@ -40,6 +40,7 @@
     this.currentProject = null;
     this.currentWindow = null;
     this.globalClickEvent = null;
+    this.fragmentDialog = null;
   }
 
   ApplicationIDE.prototype = Object.create(Application.prototype);
@@ -48,6 +49,7 @@
   ApplicationIDE.prototype.destroy = function() {
     document.removeEventListener('click', this.globalClickEvent, false);
     this.curentProject = null;
+    this.fragmentDialog = null;
 
     return Application.prototype.destroy.apply(this, arguments);
   };
@@ -151,9 +153,46 @@
   };
 
   ApplicationIDE.prototype.onAddFragment = function() {
+    var self = this;
+    var win = this.getDesignerWindow();
+    var propWin = this.getPropertiesWindow();
+
     if ( !this.currentProject ) {
       return;
     }
+
+    if ( this.fragmentDialog ) {
+      this.fragmentDialog._focus();
+      return;
+    }
+
+    function done(data) {
+      if ( data.name ) {
+        self.currentProject.createFragment(data.type, data.name);
+
+        if ( win ) {
+          win.render()
+        }
+
+        if ( propWin ) {
+          propWin.load(self.currentProject);
+        }
+      }
+    }
+
+    API.createDialog(function(args, callback) {
+      self.fragmentDialog = new OSjs.Applications.ApplicationIDE.FragmentDialog(args, callback);
+
+      return self.fragmentDialog;
+    }, {
+      scheme: this.__scheme
+    }, function(ev, btn, data) {
+      self.fragmentDialog = null;
+
+      if ( btn === 'ok' ) {
+        done(data);
+      }
+    }, this);
   };
 
   ApplicationIDE.prototype.onRemoveFragment = function() {

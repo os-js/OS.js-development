@@ -730,6 +730,19 @@
     this.fragments = fragments;
   };
 
+  Project.prototype.createFragment = function(type, name) {
+    if ( this.fragments.indexOf(name) >= 0 ) {
+      throw new Error('A fragment by this name already exists');
+    }
+
+    var el = document.createElement(type);
+    el.setAttribute('data-id', name);
+
+    this.dom.firstChild.appendChild(el);
+
+    this.updateFragments();
+  }
+
   Project.prototype.applyMetadata = function(metadata) {
     var self = this;
     Object.keys(metadata).forEach(function(k) {

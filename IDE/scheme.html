@@ -45,7 +45,7 @@
                 </gui-hbox-container>
 
                 <gui-hbox-container data-grow="0" data-shrink="0" data-basis="auto">
-                  <gui-button data-icon="stock://16x16/actions/add.png" data-id="AddFragment" data-disabled="true" />
+                  <gui-button data-icon="stock://16x16/actions/add.png" data-id="AddFragment" />
                 </gui-hbox-container>
               </gui-hbox>
 
@@ -249,3 +249,39 @@
 <application-window data-id="IDEDesignerWindow">
 
 </application-window>
+
+<application-dialog data-id="Fragment">
+
+  <gui-vbox>
+    <gui-vbox-container data-shrink="1" data-expand="true">
+      <gui-label>Fragment Type</gui-label>
+    </gui-vbox-container>
+    <gui-vbox-container data-shrink="1" data-expand="true">
+      <gui-select data-id="FragmentType">
+        <gui-select-option data-value="application-window">Window</gui-select-option>
+        <!--
+        <gui-select-option data-value="dialog-fragment">Dialog</gui-select-option>
+        -->
+        <gui-select-option data-value="application-fragment">Fragment</gui-select-option>
+      </gui-select>
+    </gui-vbox-container>
+
+    <gui-vbox-container data-shrink="1" data-expand="true">
+      <gui-label>Name</gui-label>
+    </gui-vbox-container>
+    <gui-vbox-container data-shrink="1" data-expand="true">
+      <gui-text data-id="FragmentName" data-placeholder="ExampleName" />
+    </gui-vbox-container>
+
+    <gui-vbox-container data-grow="1">
+    </gui-vbox-container>
+
+    <gui-vbox-container data-shrink="1" data-align="end">
+      <gui-button-bar>
+        <gui-button data-id="ButtonOK">LBL_OK</gui-button>
+        <gui-button data-id="ButtonCancel">LBL_CANCEL</gui-button>
+      </gui-button-bar>
+    </gui-vbox-container>
+  </gui-vbox>
+
+</application-dialog>

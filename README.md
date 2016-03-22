@@ -25,7 +25,6 @@ In progress, basic interface designing works. You can create, save and load proj
 
 #### TODO
 
-* [ ] Adding new fragments
 * [ ] Finish metadata editor
 * [ ] Menu Editor
 * [ ] Dropdown Editor
