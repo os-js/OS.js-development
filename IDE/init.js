@@ -653,11 +653,11 @@
     var self = this;
     var projectPath = 'home:///.packages/' + self.name;
 
-    app._call('createProject', {
+    app._api('createProject', {
       name: self.name,
       template: 'osjs://' + API.getApplicationResource(app, 'template'),
       destination: projectPath
-    }, function(response) {
+    }, function() {
       self.path = projectPath;
       cb(projectPath);
     });
