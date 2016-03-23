@@ -74,7 +74,7 @@
           name: name
         }, expander);
 
-        API.createDraggable(button.$element, {
+        GUI.Helpers.createDraggable(button.$element, {
           data: {
             source: 'palette',
             tagName: name

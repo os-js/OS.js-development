@@ -49,7 +49,7 @@
       (done = done || function() {}).apply(this, arguments);
     }
 
-    API.createDroppable(root, {
+    GUI.Helpers.createDroppable(root, {
       onEnter: function(ev) {
         ev.stopPropagation();
         Utils.$addClass(root, 'ide-hover');
