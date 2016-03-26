@@ -810,10 +810,17 @@
   };
 
   Project.prototype.addMime = function(str) {
+    if ( !this.data.mime ) {
+      this.data.mime = [];
+    }
     this.data.mime.push(str);
   };
 
   Project.prototype.removeMime = function(idx) {
+    if ( !this.data.mime || !this.data.mime.length ) {
+      return;
+    }
+
     this.data.mime.splice(idx, 1);
   };
 
