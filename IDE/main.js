@@ -655,7 +655,7 @@
     var self = this;
 
     API.createDialog('File', {
-      file: new VFS.File('home:///.packages'),
+      path: 'home:///.packages',
       select: 'dir'
     }, function(ev, button, result) {
       if ( button === 'ok' && result ) {

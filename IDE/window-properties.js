@@ -86,6 +86,32 @@
       });
     }
 
+    function applyValues() {
+      var val;
+      if ( scheme.find(self, 'VBoxInput').$element.style.display !== 'none' ) {
+        applyValue(input.get('value'));
+      } else if ( scheme.find(self, 'VBoxSelect').$element.style.display !== 'none' ) {
+        val = select.get('value');
+        if ( val !== '(null)' ) {
+          applyValue(val);
+        }
+      } else {
+        if ( inputTyped.get('value') === 'auto' || selectTyped.get('value') === 'auto' ) {
+          applyValue('auto');
+        } else {
+          val = String(inputTyped.get('value')) + String(selectTyped.get('value'));
+          applyValue(val);
+        }
+      }
+    }
+
+    function resetValue() {
+      input.set('value', '(null)');
+      inputTyped.set('value', '(null)');
+      select.set('value', 'null');
+      selectTyped.set('value', 'null');
+    }
+
     treeView.on('contextmenu', function(ev) {
       var entry = ev.detail.entries[0].data;
       if ( entry ) {
@@ -127,27 +153,18 @@
     this._scheme.find(this, 'VBoxEmpty').show();
 
     this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
-      var val;
-      if ( scheme.find(self, 'VBoxInput').$element.style.display !== 'none' ) {
-        applyValue(input.get('value'));
-      } else if ( scheme.find(self, 'VBoxSelect').$element.style.display !== 'none' ) {
-        val = select.get('value');
-        if ( val !== '(null)' ) {
-          applyValue(val);
-        }
-      } else {
-        if ( inputTyped.get('value') === 'auto' || selectTyped.get('value') === 'auto' ) {
-          applyValue('auto');
-        } else {
-          val = String(inputTyped.get('value')) + String(selectTyped.get('value'));
-          applyValue(val);
-        }
-      }
+      applyValues();
+    });
+
+    input.on('enter', function() {
+      applyValues();
+    });
+    inputTyped.on('enter', function() {
+      applyValues();
     });
 
     this._scheme.find(this, 'PropertyButtonNull').on('click', function() {
-      input.set('value', '(null)');
-      select.set('value', 'null');
+      resetValue();
     });
 
     this._scheme.find(this, 'AddFragment').on('click', function() {
