@@ -631,7 +631,7 @@
         var projectPath = 'home:///.packages/' + name;
 
         VFS.exists(projectPath, function(err, res) {
-          if ( err || !res ) {
+          if ( err || res ) {
             API.createDialog('Confirm', {
               message: 'Overwrite project with the name ' + name + '?',
               buttons: ['yes', 'no']
