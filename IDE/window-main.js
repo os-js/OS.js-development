@@ -114,6 +114,10 @@
   };
 
   ApplicationIDEWindow.prototype.update = function() {
+    if ( !this._scheme ) {
+      return;
+    }
+
     var viewMenu = this._scheme.find(this, 'SubmenuView');
     var app = this._app;
 
@@ -127,6 +131,10 @@
   };
 
   ApplicationIDEWindow.prototype.load = function() {
+    if ( !this._scheme ) {
+      return;
+    }
+
     var app = this._app;
     this._scheme.find(this, 'MenuSave').set('disabled', app.currentProject ? false : true);
   };
