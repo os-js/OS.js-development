@@ -111,7 +111,7 @@
       app.onElementDropped(null, 'application-window', data.tagName);
     });
 
-    this._addHook('resized', function() {
+    this._on('resized', function() {
       app.onWindowResize({
         w: self._dimension.w,
         h: self._dimension.h
