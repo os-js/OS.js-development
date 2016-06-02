@@ -335,9 +335,9 @@
     if ( properties ) {
       var rows = [];
       listView.set('columns', [
-        {label: 'Name', basis: '80px', grow: 0, shrink: 0},
-        {label: 'Type', basis: '70px', grow: 0, shrink: 0},
-        {label: 'Value', grow: 1, shrink: 1}
+        {label: 'Name', size: '80px'},
+        {label: 'Type', size: '70px'},
+        {label: 'Value'}
       ]);
 
       Object.keys(properties).forEach(function(k) {
