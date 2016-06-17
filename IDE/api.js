@@ -35,6 +35,8 @@
       var template = args.template + '/metadata.json';
       var destination = args.destination + '/metadata.json';
 
+      var server = {request: request, response: response, config: config, handler: handler};
+
       function replaceTemplateVariables(content) {
         return content.toString().replace(/EXAMPLE/g, args.name);
       }
@@ -52,12 +54,12 @@
             return _next(i+1);
           }
 
-          _vfs.read({path: args.template + '/' + iter, options: {raw: true}}, request, function(err, content) {
+          _vfs.read(server, {path: args.template + '/' + iter, options: {raw: true}}, function(err, content) {
             content = replaceTemplateVariables(content || '');
-            _vfs.write({path: args.destination + '/' + iter, data: content, options: {raw: true, rawtype: 'utf8'}}, request, function(err) {
+            _vfs.write(server, {path: args.destination + '/' + iter, data: content, options: {raw: true, rawtype: 'utf8'}}, function(err) {
               _next(i+1);
-            }, config);
-          }, config);
+            });
+          });
         }
 
         _next(0);
@@ -67,16 +69,16 @@
         var src = args.template + '/api.js';
         var dest = args.destination + '/api.js';
 
-        _vfs.copy({src: src, dest: dest}, request, function() {
+        _vfs.copy(server, {src: src, dest: dest}, function() {
           done();
-        }, config);
+        });
       }
 
-      _vfs.delete({path: args.destination}, request, function() {
-        _vfs.mkdir({path: args.destination}, request, function() {
-          _vfs.read({path: template, options: {raw: true}}, request, function(err, content) {
+      _vfs.delete(server, {path: args.destination}, function() {
+        _vfs.mkdir(server, {path: args.destination}, function() {
+          _vfs.read(server, {path: template, options: {raw: true}}, function(err, content) {
             var d = replaceTemplateVariables(content || '{}');
-            _vfs.write({path: destination, data: d, options: {raw: true, rawtype: 'utf8'}}, request, function() {
+            _vfs.write(server, {path: destination, data: d, options: {raw: true, rawtype: 'utf8'}}, function() {
               var files = JSON.parse(d).preload || [];
               files.push({type: 'scheme', src: 'scheme.html'});
               files.push({type: 'metadata', src: 'metadata.json'});
@@ -86,10 +88,10 @@
                   callback(false, true);
                 });
               });
-            }, config);
-          }, config);
-        }, config);
-      }, config);
+            });
+          });
+        });
+      });
     }
   };
 
