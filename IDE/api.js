@@ -29,13 +29,11 @@
  */
 (function() {
 
-  module.exports = {
-    createProject: function(args, callback, request, response, config, handler) {
-      var _vfs = handler.instance._vfs;
+  module.exports.api = {
+    createProject: function(env, http, resolve, reject, args) {
+      var _vfs = require(env.NODEDIR + '/core/vfs.js');
       var template = args.template + '/metadata.json';
       var destination = args.destination + '/metadata.json';
-
-      var server = {request: request, response: response, config: config, handler: handler};
 
       function replaceTemplateVariables(content) {
         return content.toString().replace(/EXAMPLE/g, args.name);
@@ -45,53 +43,59 @@
         var result = [];
 
         function _next(i) {
-          if ( i >= (list.length-1) ) {
+          if ( i >= (list.length - 1) ) {
             return done(result);
           }
 
           var iter = list[i].src;
           if ( iter.match(/^(https?|ftp)\:/) ) {
-            return _next(i+1);
+            return _next(i + 1);
           }
 
-          _vfs.read(server, {path: args.template + '/' + iter, options: {raw: true}}, function(err, content) {
+          _vfs._request(http, 'read', {path: args.template + '/' + iter, options: {raw: true, stream: false}}).then(function(content) {
             content = replaceTemplateVariables(content || '');
-            _vfs.write(server, {path: args.destination + '/' + iter, data: content, options: {raw: true, rawtype: 'utf8'}}, function(err) {
-              _next(i+1);
+            _vfs._request(http, 'write', {path: args.destination + '/' + iter, data: content, options: {raw: true, rawtype: 'utf8'}}).then(function() {
+              _next(i + 1);
+            }).catch(function() {
+              _next(i + 1);
             });
+          }).catch(function() {
+            _next(i + 1);
           });
         }
 
         _next(0);
       }
 
-      function copyResources(done) {
-        var src = args.template + '/api.js';
-        var dest = args.destination + '/api.js';
+      function _makeFiles(d) {
+        var files = JSON.parse(d).preload || [];
+        files.push({type: 'scheme', src: 'scheme.html'});
+        files.push({type: 'metadata', src: 'metadata.json'});
 
-        _vfs.copy(server, {src: src, dest: dest}, function() {
-          done();
+        enqueueFiles(files, function() {
+          var src = args.template + '/api.js';
+          var dest = args.destination + '/api.js';
+
+          _vfs._request(http, 'copy', {src: src, dest: dest}).then(function() {
+            resolve(true);
+          }).catch(reject);
         });
       }
 
-      _vfs.delete(server, {path: args.destination}, function() {
-        _vfs.mkdir(server, {path: args.destination}, function() {
-          _vfs.read(server, {path: template, options: {raw: true}}, function(err, content) {
+      function _makeDirectory() {
+        _vfs._request(http, 'mkdir', {path: args.destination}).then(function() {
+          _vfs._request(http, 'read', {path: template, options: {raw: true, stream: false}}).then(function(content) {
             var d = replaceTemplateVariables(content || '{}');
-            _vfs.write(server, {path: destination, data: d, options: {raw: true, rawtype: 'utf8'}}, function() {
-              var files = JSON.parse(d).preload || [];
-              files.push({type: 'scheme', src: 'scheme.html'});
-              files.push({type: 'metadata', src: 'metadata.json'});
+            _vfs._request(http, 'write', {path: destination, data: d, options: {raw: true, rawtype: 'utf8'}})
+              .then(_makeFiles)
+              .catch(reject);
+          }).catch(reject);
+        }).catch(reject);
+      }
 
-              enqueueFiles(files, function() {
-                copyResources(function() {
-                  callback(false, true);
-                });
-              });
-            });
-          });
-        });
-      });
+      _vfs._request(http, 'delete', {path: args.destination})
+        .then(_makeDirectory)
+        .catch(_makeDirectory);
     }
   };
 
