@@ -547,7 +547,7 @@
 
     (project.data.mime || []).forEach(function(m, idx) {
       var tpl = templateEl.firstChild.cloneNode(true);
-      var row = GUI.Scheme.getElementInstance(tpl);
+      var row = GUI.Element.createInstance(tpl);
       var txt = row.querySelector('gui-text', true);
       var btn = row.querySelector('gui-button', true);
       parentEl.append(row);
