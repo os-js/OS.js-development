@@ -655,7 +655,7 @@
 
     app._api('createProject', {
       name: self.name,
-      template: 'osjs://' + API.getApplicationResource(app, 'template'),
+      template: API.getApplicationResource(app, 'template', true),
       destination: projectPath
     }, function() {
       self.path = projectPath;
