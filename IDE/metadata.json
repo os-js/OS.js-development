@@ -4,7 +4,7 @@
   "mime": [
     "osjs\\/project"
   ],
-  "icon":       "categories/gnome-devel.png",
+  "icon":       "categories/applications-development.png",
   "singular":   true,
   "category":   "development",
   "preload":    [

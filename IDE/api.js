@@ -86,9 +86,9 @@
         _vfs._request(http, 'mkdir', {path: args.destination}).then(function() {
           _vfs._request(http, 'read', {path: template, options: {raw: true, stream: false}}).then(function(content) {
             var d = replaceTemplateVariables(content || '{}');
-            _vfs._request(http, 'write', {path: destination, data: d, options: {raw: true, rawtype: 'utf8'}})
-              .then(_makeFiles)
-              .catch(reject);
+            _vfs._request(http, 'write', {path: destination, data: d, options: {raw: true, rawtype: 'utf8'}}).then(function() {
+              _makeFiles(content);
+            }).catch(reject);
           }).catch(reject);
         }).catch(reject);
       }
