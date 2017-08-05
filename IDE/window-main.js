@@ -27,54 +27,49 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function(Application, Window, Utils, API, VFS, GUI) {
-  'use strict';
+import {Elements, Categories} from './elements';
 
-  /////////////////////////////////////////////////////////////////////////////
-  // WINDOWS
-  /////////////////////////////////////////////////////////////////////////////
+const Window = OSjs.require('core/window');
+const Theme = OSjs.require('core/theme');
+const GUI = OSjs.require('utils/gui');
 
-  function ApplicationIDEWindow(app, metadata, scheme) {
-    Window.apply(this, ['ApplicationIDEWindow', {
+export default class ApplicationIDEWindow extends Window {
+
+  constructor(app, metadata) {
+    super('ApplicationIDEWindow', {
       gravity: 'north-west',
       icon: metadata.icon,
       title: metadata.name + ' - Main Window',
       allow_maximize: false,
       width: 250,
       height: 500
-    }, app, scheme]);
+    }, app);
   }
 
-  ApplicationIDEWindow.prototype = Object.create(Window.prototype);
-  ApplicationIDEWindow.constructor = Window.prototype;
-
-  ApplicationIDEWindow.prototype.init = function(wmRef, app, scheme) {
-    var root = Window.prototype.init.apply(this, arguments);
+  init(wmRef, app) {
+    var root = super.init(...arguments);
     var self = this;
 
     // Load and set up scheme (GUI) here
-    scheme.render(this, 'IDEWindow', root);
+    this._render('IDEWindow', require('osjs-scheme-loader!./scheme.html'));
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var categories = OSjs.Applications.ApplicationIDE.Categories;
+    var toolbar = this._find('Buttons');
 
-    var toolbar = scheme.find(this, 'Buttons');
-
-    categories.forEach(function(c) {
-      var expander = scheme.create(this, 'gui-expander', {
+    Categories.forEach(function(c) {
+      var expander = self._create('gui-expander', {
         label: c.label
       }, toolbar);
 
       c.items.forEach(function(name) {
-        var el = elements[name];
+        var el = Elements[name];
 
-        var button = scheme.create(self, 'gui-button', {
-          icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
+        var button = self._create('gui-button', {
+          icon: el.icon.match(/\//) ? Theme.getIcon(el.icon) : app._getResource('icons/' + el.icon),
           tooltip: name,
           name: name
         }, expander);
 
-        GUI.Helpers.createDraggable(button.$element, {
+        GUI.createDraggable(button.$element, {
           data: {
             source: 'palette',
             tagName: name
@@ -100,51 +95,31 @@
       }
       self.update();
     }
-    this._scheme.find(this, 'SubmenuFile').on('select', menuEvent);
-    this._scheme.find(this, 'SubmenuView').on('select', menuEvent);
-    this._scheme.find(this, 'MenuSave').set('disabled', true);
+    this._find('SubmenuFile').on('select', menuEvent);
+    this._find('SubmenuView').on('select', menuEvent);
+    this._find('MenuSave').set('disabled', true);
 
     this.update();
 
     return root;
-  };
+  }
 
-  ApplicationIDEWindow.prototype.destroy = function() {
-    Window.prototype.destroy.apply(this, arguments);
-  };
-
-  ApplicationIDEWindow.prototype.update = function() {
-    if ( !this._scheme ) {
-      return;
-    }
-
-    var viewMenu = this._scheme.find(this, 'SubmenuView');
+  update() {
+    var viewMenu = this._find('SubmenuView');
     var app = this._app;
 
     viewMenu.set('checked', 'MenuDesignerWindow', !!app.getDesignerWindow());
     viewMenu.set('checked', 'MenuPropertyWindow', !!app.getPropertiesWindow());
 
-    this._scheme.find(this, 'MenuSave').set('disabled', app.currentProject ? false : true);
-  };
+    this._find('MenuSave').set('disabled', app.currentProject ? false : true);
+  }
 
-  ApplicationIDEWindow.prototype.clear = function() {
-  };
+  clear() {
+  }
 
-  ApplicationIDEWindow.prototype.load = function() {
-    if ( !this._scheme ) {
-      return;
-    }
-
+  load() {
     var app = this._app;
-    this._scheme.find(this, 'MenuSave').set('disabled', app.currentProject ? false : true);
-  };
+    this._find('MenuSave').set('disabled', app.currentProject ? false : true);
+  }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // EXPORTS
-  /////////////////////////////////////////////////////////////////////////////
-
-  OSjs.Applications = OSjs.Applications || {};
-  OSjs.Applications.ApplicationIDE = OSjs.Applications.ApplicationIDE || {};
-  OSjs.Applications.ApplicationIDE.MainWindow = ApplicationIDEWindow;
-
-})(OSjs.Core.Application, OSjs.Core.Window, OSjs.Utils, OSjs.API, OSjs.VFS, OSjs.GUI);
+}

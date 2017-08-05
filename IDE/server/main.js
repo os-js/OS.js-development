@@ -27,10 +27,38 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function() {
+const Promise = require('bluebird');
+const fs = require('fs-extra');
+const glob = require('glob-promise');
+const path = require('path');
+const VFS = require('vfs.js');
 
-  module.exports = {
-  };
+module.exports.register = () => Promise.resolve(true);
 
-})();
+module.exports.api = {
+  createProject: function(env, http, args, user) {
+
+    return new Promise((resolve, reject) => {
+
+      const template = args.template + '/metadata.json';
+      const destination = args.destination + '/metadata.json';
+
+      const realTemplate = path.dirname(VFS.parseVirtualPath(template, user).real);
+      const realDestination = path.dirname(VFS.parseVirtualPath(destination, user).real);
+
+      fs.copy(realTemplate, realDestination).then(() => {
+        return glob(path.join(realDestination, '/*')).then((files) => {
+          return Promise.each(files, (f) => {
+            return new Promise((yes, no) => {
+              fs.readFile(f, 'utf-8').then((content) => {
+                fs.writeFile(f, content.replace(/EXAMPLE/g, args.name))
+                  .then(() => yes(true)).catch(no);
+              }).catch(no);
+            });
+          }).then(() => resolve(true)).catch(reject);
+        }).catch(reject);
+      }).catch(reject);
+    });
+  }
+};
 

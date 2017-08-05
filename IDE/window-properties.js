@@ -27,15 +27,21 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function(Application, Window, Utils, API, VFS, GUI) {
-  'use strict';
+const Window = OSjs.require('core/window');
+const Process = OSjs.require('core/process');
+const FileMetadata = OSjs.require('vfs/file');
+const Menu = OSjs.require('gui/menu');
+const Theme = OSjs.require('core/theme');
+const GUIElement = OSjs.require('gui/element');
+const Utils = OSjs.require('utils/misc');
 
-  /////////////////////////////////////////////////////////////////////////////
-  // WINDOW INHERITANCE
-  /////////////////////////////////////////////////////////////////////////////
+import {getXpathByElement} from './utils';
+import {Elements} from './elements';
 
-  function ApplicationIDEPropertiesWindow(app, metadata, scheme) {
-    Window.apply(this, ['ApplicationIDEPropertiesWindow', {
+export default class ApplicationIDEPropertiesWindow extends Window {
+
+  constructor(app, metadata) {
+    super('ApplicationIDEPropertiesWindow', {
       tag: 'properties',
       gravity: 'nort-east',
       icon: metadata.icon,
@@ -43,7 +49,7 @@
       allow_maximize: false,
       width: 350,
       height: 740
-    }, app, scheme]);
+    }, app);
 
     this.currentPath = null;
     this.currentProperty = {
@@ -53,24 +59,21 @@
     };
   }
 
-  ApplicationIDEPropertiesWindow.prototype = Object.create(Window.prototype);
-  ApplicationIDEPropertiesWindow.constructor = Window.prototype;
-
-  ApplicationIDEPropertiesWindow.prototype.init = function(wmRef, app, scheme) {
-    var root = Window.prototype.init.apply(this, arguments);
+  init(wmRef, app) {
+    var root = super.init(...arguments);
     var self = this;
 
     // Load and set up scheme (GUI) here
-    scheme.render(this, 'IDEPropertiesWindow', root);
+    this._render('IDEPropertiesWindow', require('osjs-scheme-loader!./scheme.html'));
 
-    var fileView = this._scheme.find(this, 'Files');
-    var treeView = this._scheme.find(this, 'Tree');
-    var iconView = this._scheme.find(this, 'Properties');
-    var input = this._scheme.find(this, 'PropertyValueInput');
-    var inputTyped = this._scheme.find(this, 'PropertyValueTypedInput');
-    var selectTyped = this._scheme.find(this, 'PropertyValueTypedSelect');
-    var select = this._scheme.find(this, 'PropertyValueSelect');
-    var selectFragment = this._scheme.find(this, 'SelectFragment');
+    var fileView = this._find('Files');
+    var treeView = this._find('Tree');
+    var iconView = this._find('Properties');
+    var input = this._find('PropertyValueInput');
+    var inputTyped = this._find('PropertyValueTypedInput');
+    var selectTyped = this._find('PropertyValueTypedSelect');
+    var select = this._find('PropertyValueSelect');
+    var selectFragment = this._find('SelectFragment');
 
     function applyValue(value) {
       app.onPropertyApply(self.currentPath, self.currentProperty.tagName, self.currentProperty.name, self.currentProperty.value, value);
@@ -78,19 +81,19 @@
 
     function applyMetadata() {
       app.onApplyMetadata({
-        className: self._scheme.find(self, 'MetadataClassName').get('value'),
-        name: self._scheme.find(self, 'MetadataName').get('value'),
-        icon: self._scheme.find(self, 'MetadataIcon').get('value'),
-        singular: self._scheme.find(self, 'MetadataSingular').get('value'),
-        category: self._scheme.find(self, 'MetadataCategory').get('value')
+        className: self._find('MetadataClassName').get('value'),
+        name: self._find('MetadataName').get('value'),
+        icon: self._find('MetadataIcon').get('value'),
+        singular: self._find('MetadataSingular').get('value'),
+        category: self._find('MetadataCategory').get('value')
       });
     }
 
     function applyValues() {
       var val;
-      if ( scheme.find(self, 'VBoxInput').$element.style.display !== 'none' ) {
+      if ( self._find('VBoxInput').$element.style.display !== 'none' ) {
         applyValue(input.get('value'));
-      } else if ( scheme.find(self, 'VBoxSelect').$element.style.display !== 'none' ) {
+      } else if ( self._find('VBoxSelect').$element.style.display !== 'none' ) {
         val = select.get('value');
         if ( val !== '(null)' ) {
           applyValue(val);
@@ -115,7 +118,7 @@
     treeView.on('contextmenu', function(ev) {
       var entry = ev.detail.entries[0].data;
       if ( entry ) {
-        API.createMenu([
+        Menu.create([
           {
             title: 'Delete',
             onClick: function() {
@@ -148,11 +151,11 @@
       app.onSelectFragment(idx);
     });
 
-    this._scheme.find(this, 'VBoxSelect').hide();
-    this._scheme.find(this, 'VBoxTyped').hide();
-    this._scheme.find(this, 'VBoxEmpty').show();
+    this._find('VBoxSelect').hide();
+    this._find('VBoxTyped').hide();
+    this._find('VBoxEmpty').show();
 
-    this._scheme.find(this, 'PropertyButtonApply').on('click', function() {
+    this._find('PropertyButtonApply').on('click', function() {
       applyValues();
     });
 
@@ -163,34 +166,34 @@
       applyValues();
     });
 
-    this._scheme.find(this, 'PropertyButtonNull').on('click', function() {
+    this._find('PropertyButtonNull').on('click', function() {
       resetValue();
     });
 
-    this._scheme.find(this, 'AddFragment').on('click', function() {
+    this._find('AddFragment').on('click', function() {
       app.onAddFragment();
     });
-    this._scheme.find(this, 'RemoveFragment').on('click', function() {
+    this._find('RemoveFragment').on('click', function() {
       app.onRemoveFragment();
     });
 
-    this._scheme.find(this, 'MetadataApply').on('click', function() {
+    this._find('MetadataApply').on('click', function() {
       applyMetadata();
     });
 
-    this._scheme.find(this, 'MetadataAddMime').on('click', function() {
-      var value = scheme.find(self, 'MetadataAddMimeValue').get('value');
+    this._find('MetadataAddMime').on('click', function() {
+      var value = self._find('MetadataAddMimeValue').get('value');
       if ( value ) {
         app.onAddMime(value);
       }
-      scheme.find(self, 'MetadataAddMimeValue').set('value', '');
+      self._find('MetadataAddMimeValue').set('value', '');
     });
 
     fileView.on('activate', function(ev) {
       if ( ev.detail && ev.detail.entries ) {
         ev.detail.entries.forEach(function(e) {
           if ( e && e.data ) {
-            API.open(new VFS.File(e.data.filename, e.data.mime), {
+            Process.createFromFile.open(new FileMetadata(e.data.filename, e.data.mime), {
               forceList: true
             });
           }
@@ -199,17 +202,13 @@
     });
 
     return root;
-  };
-
-  ApplicationIDEPropertiesWindow.prototype.destroy = function() {
-    Window.prototype.destroy.apply(this, arguments);
-  };
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // IDE METHODS
   /////////////////////////////////////////////////////////////////////////////
 
-  ApplicationIDEPropertiesWindow.prototype.clear = function() {
+  clear() {
     this.currentPath = null;
     this.currentProperty = {
       name: null,
@@ -217,45 +216,44 @@
       value: null
     };
 
-    this._scheme.find(this, 'Tree').clear();
-    this._scheme.find(this, 'Properties').clear();
-    this._scheme.find(this, 'SelectFragment').clear();
-    this._scheme.find(this, 'Statusbar').set('value', '');
-    this._scheme.find(this, 'PropertyValueInput').set('value', '');
-    this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
+    this._find('Tree').clear();
+    this._find('Properties').clear();
+    this._find('SelectFragment').clear();
+    this._find('Statusbar').set('value', '');
+    this._find('PropertyValueInput').set('value', '');
+    this._find('PropertyValueSelect').clear().set('value', '');
 
-    this._scheme.find(this, 'PropertyButtonNull').set('disabled', true);
-    this._scheme.find(this, 'PropertyButtonApply').set('disabled', true);
+    this._find('PropertyButtonNull').set('disabled', true);
+    this._find('PropertyButtonApply').set('disabled', true);
 
-    this._scheme.find(this, 'VBoxSelect').hide();
-    this._scheme.find(this, 'VBoxTyped').hide();
-    this._scheme.find(this, 'VBoxEmpty').show();
-  };
+    this._find('VBoxSelect').hide();
+    this._find('VBoxTyped').hide();
+    this._find('VBoxEmpty').show();
+  }
 
-  ApplicationIDEPropertiesWindow.prototype.load = function(project) {
+  load(project) {
     this.renderTree();
     this.renderProperties();
     this.renderWindowList(project);
     this.renderFileList(project);
     this.renderMetadata(project);
-  };
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // UI ACTIONS
   /////////////////////////////////////////////////////////////////////////////
 
-  ApplicationIDEPropertiesWindow.prototype.selectElement = function(xpath, tagName, clicked) {
-    var treeView = this._scheme.find(this, 'Tree');
+  selectElement(xpath, tagName, clicked) {
+    var treeView = this._find('Tree');
     treeView.set('selected', xpath, 'path', {scroll:true});
 
     this.currentPath = xpath;
-    this._scheme.find(this, 'PropertyButtonNull').set('disabled', true);
-    this._scheme.find(this, 'PropertyButtonApply').set('disabled', true);
-  };
+    this._find('PropertyButtonNull').set('disabled', true);
+    this._find('PropertyButtonApply').set('disabled', true);
+  }
 
-  ApplicationIDEPropertiesWindow.prototype.selectProperty = function(property, value, tagName) {
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var type = this._app.currentProject.getElementPropertyType(elements[tagName], property);
+  selectProperty(property, value, tagName) {
+    var type = this._app.currentProject.getElementPropertyType(Elements[tagName], property);
 
     var val = value;
     if ( val === null || typeof val === 'undefined') {
@@ -266,22 +264,22 @@
     this.currentProperty.tagName = tagName;
     this.currentProperty.value = value;
 
-    var input = this._scheme.find(this, 'PropertyValueInput').set('value', '');
-    var select = this._scheme.find(this, 'PropertyValueSelect').clear();
-    var inputTyped = this._scheme.find(this, 'PropertyValueTypedInput').set('value', '');
-    var selectTyped = this._scheme.find(this, 'PropertyValueTypedSelect').set('value', 'px');
+    var input = this._find('PropertyValueInput').set('value', '');
+    var select = this._find('PropertyValueSelect').clear();
+    var inputTyped = this._find('PropertyValueTypedInput').set('value', '');
+    var selectTyped = this._find('PropertyValueTypedSelect').set('value', 'px');
 
-    var noopContainer = this._scheme.find(this, 'VBoxEmpty').hide();
-    var normalContainer = this._scheme.find(this, 'VBoxInput').hide();
-    var selectContainer = this._scheme.find(this, 'VBoxSelect').hide();
-    var typedContainer  = this._scheme.find(this, 'VBoxTyped').hide();
+    //var noopContainer = this._find('VBoxEmpty').hide();
+    var normalContainer = this._find('VBoxInput').hide();
+    var selectContainer = this._find('VBoxSelect').hide();
+    var typedContainer  = this._find('VBoxTyped').hide();
 
     if ( type === 'boolean' || type === 'mixed' ) {
       selectContainer.show();
 
       var items = [];
       try {
-        items = Array.prototype.slice.call(type === 'mixed' ? elements[tagName].propertyTypes[property].values : [
+        items = Array.prototype.slice.call(type === 'mixed' ? Elements[tagName].propertyTypes[property].values : [
           {label: 'true', value: 'true'},
           {label: 'false', value: 'false'}
         ]);
@@ -310,26 +308,25 @@
       select.clear();
     }
 
-    this._scheme.find(this, 'PropertyButtonNull').set('disabled', false);
-    this._scheme.find(this, 'PropertyButtonApply').set('disabled', false);
-  };
+    this._find('PropertyButtonNull').set('disabled', false);
+    this._find('PropertyButtonApply').set('disabled', false);
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // PROPERTIES
   /////////////////////////////////////////////////////////////////////////////
 
-  ApplicationIDEPropertiesWindow.prototype.renderProperties = function(xpath, tagName, properties) {
-    var app = this._app;
-    var project = app.currentProject;
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
+  renderProperties(xpath, tagName, properties) {
+    //var app = this._app;
+    //var project = app.currentProject;
 
-    this._scheme.find(this, 'PropertyValueInput').set('value', '');
-    this._scheme.find(this, 'PropertyValueSelect').clear().set('value', '');
+    this._find('PropertyValueInput').set('value', '');
+    this._find('PropertyValueSelect').clear().set('value', '');
 
-    var statusBar = this._scheme.find(this, 'Statusbar');
+    var statusBar = this._find('Statusbar');
     statusBar.set('value', '/' + (typeof xpath === 'string' ? (xpath || '') : (xpath || 'null')));
 
-    var listView = this._scheme.find(this, 'Properties');
+    var listView = this._find('Properties');
     listView.clear();
 
     if ( properties ) {
@@ -354,29 +351,28 @@
       listView.add(rows);
     }
 
-    this._scheme.find(this, 'VBoxEmpty').show();
-    this._scheme.find(this, 'VBoxInput').hide();
-    this._scheme.find(this, 'VBoxSelect').hide();
-    this._scheme.find(this, 'VBoxTyped').hide();
+    this._find('VBoxEmpty').show();
+    this._find('VBoxInput').hide();
+    this._find('VBoxSelect').hide();
+    this._find('VBoxTyped').hide();
 
-    this._scheme.find(this, 'PropertyButtonNull').set('disabled', true);
-    this._scheme.find(this, 'PropertyButtonApply').set('disabled', true);
-  };
+    this._find('PropertyButtonNull').set('disabled', true);
+    this._find('PropertyButtonApply').set('disabled', true);
+  }
 
-  ApplicationIDEPropertiesWindow.prototype.renderTree = function() {
+  renderTree() {
     var app = this._app;
     var project = app.currentProject;
     var windowName = project.getFragmentName();
     var rootWindow = project.getFragment();
-    var wid = String(project.currentWindow + 1);
+    //var wid = String(project.currentWindow + 1);
 
-    var treeView = this._scheme.find(this, 'Tree');
+    var treeView = this._find('Tree');
     treeView.clear();
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
     var rootIter = {
       label: windowName,
-      icon: API.getApplicationResource(app, 'icons/widget-gtk-window.png'),
+      icon: app._getResource('icons/widget-gtk-window.png'),
       dropable: true,
       value: {
         tagName: 'application-window',
@@ -390,7 +386,7 @@
     function traverse(root, riter) {
       if ( root && root.children ) {
         root.children.forEach(function(c) {
-          var el = Utils.argumentDefaults(elements[c.tagName.toLowerCase()] || {}, {
+          var el = Utils.argumentDefaults(Elements[c.tagName.toLowerCase()] || {}, {
             source: 'tree',
             isContainer: false,
             icon: 'status/dialog-question.png'
@@ -404,14 +400,14 @@
 
           var niter = {
             label: name,
-            icon: el.icon.match(/\//) ? API.getIcon(el.icon) : API.getApplicationResource(app, 'icons/' + el.icon),
+            icon: el.icon.match(/\//) ? Theme.getIcon(el.icon) : app._getResource('icons/' + el.icon),
             draggable: true,
             droppable: true,
             value: {
               source: 'tree',
               isContainer: el.isContainer,
               tagName: c.tagName.toLowerCase(),
-              path: OSjs.Applications.ApplicationIDE.getXpathByElement(c, rootWindow)
+              path: getXpathByElement(c, rootWindow)
                 .replace(/\/div\[1\]\/application\-window\[\d+\]\//, '')
                 .replace(/\/div\[1\]\/application\-fragment\[\d+\]\//, '')
             },
@@ -429,16 +425,16 @@
 
     traverse(rootWindow, rootIter);
     treeView.add(tree);
-  };
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // FILES
   /////////////////////////////////////////////////////////////////////////////
 
-  ApplicationIDEPropertiesWindow.prototype.renderFileList = function(project) {
+  renderFileList(project) {
     var self = this;
 
-    var treeView = this._scheme.find(this, 'Files');
+    var treeView = this._find('Files');
     treeView.clear();
 
     var entries = (function() {
@@ -456,7 +452,7 @@
 
         result.push({
           label: iter.src,
-          icon: API.getIcon('mimetypes/binary.png'),
+          icon: Theme.getIcon('mimetypes/binary.png'),
           value: {
             filename: project.path + '/' + iter.src,
             mime: mime
@@ -468,7 +464,7 @@
 
     var tree = [{
       label: project.data.name,
-      icon: API.getIcon('categories/applications-development.png'),
+      icon: Theme.getIcon('categories/applications-development.png'),
       value: {
         tagName: 'application-window',
         path: ''
@@ -476,10 +472,10 @@
       entries: [{
         label: 'Project',
         entries: [{
-          icon: API.getIcon('mimetypes/binary.png'),
+          icon: Theme.getIcon('mimetypes/binary.png'),
           label: 'metadata.json'
         }, {
-          icon: API.getApplicationResource(self._app, 'icons/widget-gtk-window.png'),
+          icon: self._app._getResource('icons/widget-gtk-window.png'),
           label: 'scheme.html'
         }]
       }, {
@@ -488,7 +484,7 @@
       }, {
         label: 'Server',
         entries: [{
-          icon: API.getIcon('mimetypes/binary.png'),
+          icon: Theme.getIcon('mimetypes/binary.png'),
           label: 'api.js',
           value: {
             filename: project.path + '/api.js',
@@ -499,17 +495,17 @@
     }];
 
     treeView.add(tree);
-  };
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // WINDOW LIST
   /////////////////////////////////////////////////////////////////////////////
 
-  ApplicationIDEPropertiesWindow.prototype.renderWindowList = function(project) {
-    var select = this._scheme.find(this, 'SelectFragment');
+  renderWindowList(project) {
+    var select = this._find('SelectFragment');
     select.clear();
 
-    var project = this._app.currentProject;
+    project = this._app.currentProject; // FIXME: Why did I do this again ? :P
     var fragments = project.getFragments();
     var list = [];
 
@@ -522,23 +518,23 @@
 
     select.add(list).set('value', String(project.currentWindow));
 
-    this._scheme.find(this, 'RemoveFragment').set('disabled', project.currentWindow === 0 || list.length <= 1);
-  };
+    this._find('RemoveFragment').set('disabled', project.currentWindow === 0 || list.length <= 1);
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // METADATA
   /////////////////////////////////////////////////////////////////////////////
 
-  ApplicationIDEPropertiesWindow.prototype.renderMetadata = function(project) {
+  renderMetadata(project) {
     var self = this;
 
-    this._scheme.find(this, 'MetadataClassName').set('value', project.data.className);
-    this._scheme.find(this, 'MetadataName').set('value', project.data.name);
-    this._scheme.find(this, 'MetadataIcon').set('value', project.data.icon);
-    this._scheme.find(this, 'MetadataCategory').set('value', project.data.category);
-    this._scheme.find(this, 'MetadataSingular').set('value', project.data.singular === true);
+    this._find('MetadataClassName').set('value', project.data.className);
+    this._find('MetadataName').set('value', project.data.name);
+    this._find('MetadataIcon').set('value', project.data.icon);
+    this._find('MetadataCategory').set('value', project.data.category);
+    this._find('MetadataSingular').set('value', project.data.singular === true);
 
-    var parentEl = this._scheme.find(this, 'MetadataMimeContainer');
+    var parentEl = this._find('MetadataMimeContainer');
     var templateEl = this._scheme.getFragment('MIMERowTemplate');
 
     while ( parentEl.$element.children.length > 1 ) {
@@ -547,7 +543,7 @@
 
     (project.data.mime || []).forEach(function(m, idx) {
       var tpl = templateEl.firstChild.cloneNode(true);
-      var row = GUI.Element.createInstance(tpl);
+      var row = GUIElement.create(tpl);
       var txt = row.querySelector('gui-text', true);
       var btn = row.querySelector('gui-button', true);
       parentEl.append(row);
@@ -560,14 +556,6 @@
         });
       }, 0);
     });
-  };
+  }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // EXPORTS
-  /////////////////////////////////////////////////////////////////////////////
-
-  OSjs.Applications = OSjs.Applications || {};
-  OSjs.Applications.ApplicationIDE = OSjs.Applications.ApplicationIDE || {};
-  OSjs.Applications.ApplicationIDE.PropertiesWindow = ApplicationIDEPropertiesWindow;
-
-})(OSjs.Core.Application, OSjs.Core.Window, OSjs.Utils, OSjs.API, OSjs.VFS, OSjs.GUI);
+}

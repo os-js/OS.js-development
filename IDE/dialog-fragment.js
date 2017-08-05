@@ -27,43 +27,30 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function(Application, Window, Utils, API, VFS, GUI, DialogWindow) {
-  'use strict';
 
-  function FragmentDialog(args, callback) {
+const DialogWindow = OSjs.require('core/dialog');
+const Utils = OSjs.require('utils/misc');
+
+export default class FragmentDialog extends DialogWindow {
+
+  constructor(args, callback) {
     args = Utils.argumentDefaults(args, {});
 
-    DialogWindow.apply(this, ['FragmentDialog', {
+    super('FragmentDialog', {
       title: 'Create Fragment',
       icon: 'actions/add.png',
       width: 400,
       height: 200
-    }, args, callback]);
+    }, args, callback);
   }
 
-  FragmentDialog.prototype = Object.create(DialogWindow.prototype);
-  FragmentDialog.constructor = DialogWindow;
-
-  FragmentDialog.prototype.init = function() {
-    var root = DialogWindow.prototype.init.apply(this, arguments);
-    return root;
-  };
-
-  FragmentDialog.prototype.onClose = function(ev, button) {
+  onClose(ev, button) {
     var data = {
       type: this.scheme.find(this, 'FragmentType').get('value'),
       name: this.scheme.find(this, 'FragmentName').get('value')
     };
 
     this.closeCallback(ev, button, button === 'ok' ? data : null);
-  };
+  }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // EXPORTS
-  /////////////////////////////////////////////////////////////////////////////
-
-  OSjs.Applications = OSjs.Applications || {};
-  OSjs.Applications.ApplicationIDE = OSjs.Applications.ApplicationIDE || {};
-  OSjs.Applications.ApplicationIDE.FragmentDialog = FragmentDialog;
-
-})(OSjs.Core.Application, OSjs.Core.Window, OSjs.Utils, OSjs.API, OSjs.VFS, OSjs.GUI, OSjs.Core.DialogWindow);
+}

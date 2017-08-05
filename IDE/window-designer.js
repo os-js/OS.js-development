@@ -27,80 +27,84 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function(Application, Window, Utils, API, VFS, GUI) {
-  'use strict';
+const DOM = OSjs.require('utils/dom');
+const GUI = OSjs.require('utils/gui');
+const Window = OSjs.require('core/window');
+const WindowManager = OSjs.require('core/window-manager');
 
-  var timeout;
-  function createDroppable(win, root, done) {
-    function onDrop(data) {
-      var destTagName = root.tagName.toLowerCase();
-      var valid = OSjs.Applications.ApplicationIDE.isValidTarget(data.tagName, destTagName);
-      if ( valid !== true ) {
-        var wm = OSjs.Core.getWindowManager();
-        if ( wm ) {
-          wm.notification({
-            icon: 'status/important.png',
-            title: 'IDE',
-            message: valid
-          });
-        }
-        return;
+import {getElementByXpath, getXpathByElement, isValidTarget} from './utils';
+import {Elements} from './elements';
+
+var timeout;
+function createDroppable(win, root, done) {
+  function onDrop(data) {
+    var destTagName = root.tagName.toLowerCase();
+    var valid = isValidTarget(data.tagName, destTagName);
+    if ( valid !== true ) {
+      var wm = WindowManager.instance;
+      if ( wm ) {
+        wm.notification({
+          icon: 'status/important.png',
+          title: 'IDE',
+          message: valid
+        });
       }
-      (done = done || function() {}).apply(this, arguments);
+      return;
     }
-
-    GUI.Helpers.createDroppable(root, {
-      onEnter: function(ev) {
-        ev.stopPropagation();
-        Utils.$addClass(root, 'ide-hover');
-      },
-      onOver: function(ev) {
-        ev.stopPropagation();
-        Utils.$addClass(root, 'ide-hover');
-      },
-      onLeave: function() {
-        Utils.$removeClass(root, 'ide-hover');
-      },
-      onDrop: function(ev) {
-        Utils.$removeClass(root, 'ide-hover');
-      },
-      onItemDropped: function(ev, el, item, args) {
-        ev.stopPropagation();
-        ev.preventDefault();
-
-        timeout = clearTimeout(timeout);
-        timeout = setTimeout(function() {
-          Utils.$removeClass(root, 'ide-hover');
-          onDrop(item.data);
-        }, 10);
-      }
-    });
+    (done = done || function() {}).apply(this, arguments);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // WINDOWS
-  /////////////////////////////////////////////////////////////////////////////
+  GUI.createDroppable(root, {
+    onEnter: function(ev) {
+      ev.stopPropagation();
+      DOM.$addClass(root, 'ide-hover');
+    },
+    onOver: function(ev) {
+      ev.stopPropagation();
+      DOM.$addClass(root, 'ide-hover');
+    },
+    onLeave: function() {
+      DOM.$removeClass(root, 'ide-hover');
+    },
+    onDrop: function(ev) {
+      DOM.$removeClass(root, 'ide-hover');
+    },
+    onItemDropped: function(ev, el, item, args) {
+      ev.stopPropagation();
+      ev.preventDefault();
 
-  function ApplicationIDEDesignerWindow(app, metadata) {
-    Window.apply(this, ['ApplicationIDEDesignerWindow', {
+      timeout = clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        DOM.$removeClass(root, 'ide-hover');
+        onDrop(item.data);
+      }, 10);
+    }
+  });
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// WINDOWS
+/////////////////////////////////////////////////////////////////////////////
+
+export default class ApplicationIDEDesignerWindow extends Window {
+
+  constructor(app, metadata) {
+    super('ApplicationIDEDesignerWindow', {
       tag: 'designer',
       gravity: 'center',
       icon: metadata.icon,
       title: metadata.name,
       width: 400,
       height: 400
-    }, app]);
+    }, app);
 
     this._restored = false;
 
     this.selectedElement = null;
   }
 
-  ApplicationIDEDesignerWindow.prototype = Object.create(Window.prototype);
-  ApplicationIDEDesignerWindow.constructor = Window.prototype;
-
-  ApplicationIDEDesignerWindow.prototype.init = function(wmRef, app) {
-    var root = Window.prototype.init.apply(this, arguments);
+  init(wmRef, app) {
+    var root = super.init(...arguments);
     var self = this;
 
     this._toggleDisabled(true);
@@ -119,44 +123,44 @@
     });
 
     return root;
-  };
+  }
 
-  ApplicationIDEDesignerWindow.prototype.destroy = function() {
+  destroy() {
     this.selectedElement = null;
 
-    Window.prototype.destroy.apply(this, arguments);
-  };
+    super.destroy(...arguments);
+  }
 
-  ApplicationIDEDesignerWindow.prototype.clear = function() {
-  };
+  clear() {
+  }
 
-  ApplicationIDEDesignerWindow.prototype.getElement = function(xpath) {
+  getElement(xpath) {
     var target = null;
     try {
-      target = OSjs.Applications.ApplicationIDE.getElementByXpath(xpath, this._$root);
+      target = getElementByXpath(xpath, this._$root);
     } catch ( e ) {}
     return target;
-  };
+  }
 
-  ApplicationIDEDesignerWindow.prototype.selectElement = function(el, clicked) {
+  selectElement(el, clicked) {
     if ( this.selectedElement ) {
-      Utils.$removeClass(this.selectedElement, 'ide-selected');
+      DOM.$removeClass(this.selectedElement, 'ide-selected');
     }
     this.selectedElement = el;
-    Utils.$addClass(this.selectedElement, 'ide-selected');
-  };
+    DOM.$addClass(this.selectedElement, 'ide-selected');
+  }
 
-  ApplicationIDEDesignerWindow.prototype.load = function() {
-    var app = this._app;
-    var project = app.currentProject;
-    var windowName = project.getFragmentName();
+  load() {
+    //var app = this._app;
+    //var project = app.currentProject;
+    //var windowName = project.getFragmentName();
 
     this._toggleDisabled(false);
 
     this.render();
-  };
+  }
 
-  ApplicationIDEDesignerWindow.prototype.render = function() {
+  render() {
     var self = this;
 
     var app = this._app;
@@ -167,13 +171,12 @@
     this._setTitle(windowName + '@' + project.name, true);
 
     var root = this._$root;
-    Utils.$empty(root);
+    DOM.$empty(root);
     project.scheme.render(this, windowName, root, null, function() {}, {
       resolve: false
     });
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-    var thispath = OSjs.Applications.ApplicationIDE.getXpathByElement(this._$root);
+    //var thispath = OSjs.Applications.ApplicationIDE.getXpathByElement(this._$root);
 
     function traverse(el) {
       if ( el.children ) {
@@ -181,20 +184,20 @@
           sel.setAttribute('data-ide-window', windowName);
 
           var tagName = sel.tagName.toLowerCase();
-          if ( elements[tagName] ) {
-            var cn = elements[tagName].isContainer;
+          if ( Elements[tagName] ) {
+            var cn = Elements[tagName].isContainer;
             if ( cn ) {
 
               if ( cn === true ) {
                 sel.setAttribute('data-ide-container', 'true');
                 createDroppable(propWin, sel, function(data) {
-                  var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(sel, self._$root);
+                  var xpath = getXpathByElement(sel, self._$root);
                   app.onElementDropped(xpath, tagName, data.tagName, data);
                 });
               } else {
                 sel.getElementsByTagName(cn).forEach(function(cel) {
                   createDroppable(propWin, cel, function(data) {
-                    var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(cel, self._$root);
+                    var xpath = getXpathByElement(cel, self._$root);
                     app.onElementDropped(xpath, tagName, data.tagName, data);
                   });
                 });
@@ -211,14 +214,5 @@
     }
 
     traverse(root);
-  };
-
-  /////////////////////////////////////////////////////////////////////////////
-  // EXPORTS
-  /////////////////////////////////////////////////////////////////////////////
-
-  OSjs.Applications = OSjs.Applications || {};
-  OSjs.Applications.ApplicationIDE = OSjs.Applications.ApplicationIDE || {};
-  OSjs.Applications.ApplicationIDE.DesignerWindow = ApplicationIDEDesignerWindow;
-
-})(OSjs.Core.Application, OSjs.Core.Window, OSjs.Utils, OSjs.API, OSjs.VFS, OSjs.GUI);
+  }
+}

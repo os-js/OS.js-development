@@ -27,15 +27,30 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function(Application, Window, Utils, API, VFS, GUI) {
-  'use strict';
+import FragmentDialog from './dialog-fragment';
+import Project from './project';
+import PropertiesWindow from './window-properties';
+import DesignerWindow from './window-designer';
+import MainWindow from './window-main';
+import {Elements} from './elements';
+import * as Utils from './utils';
 
-  /////////////////////////////////////////////////////////////////////////////
-  // APPLICATION CLASS
-  /////////////////////////////////////////////////////////////////////////////
+const Application = OSjs.require('core/application');
+const Dialog = OSjs.require('core/dialog');
+const DOM = OSjs.require('utils/dom');
+const VFS = OSjs.require('vfs/fs');
+const FileMetadata = OSjs.require('vfs/file');
+const PackageManager = OSjs.require('core/package-manager');
+const WindowManager = OSjs.require('core/window-manager');
 
-  function ApplicationIDE(args, metadata) {
-    Application.apply(this, ['ApplicationIDE', args, metadata]);
+/////////////////////////////////////////////////////////////////////////////
+// APPLICATION CLASS
+/////////////////////////////////////////////////////////////////////////////
+
+class ApplicationIDE extends Application {
+
+  constructor(args, metadata) {
+    super('ApplicationIDE', args, metadata);
 
     this.currentProject = null;
     this.currentWindow = null;
@@ -43,10 +58,7 @@
     this.fragmentDialog = null;
   }
 
-  ApplicationIDE.prototype = Object.create(Application.prototype);
-  ApplicationIDE.constructor = Application;
-
-  ApplicationIDE.prototype.destroy = function() {
+  destroy() {
     document.removeEventListener('click', this.globalClickEvent, false);
 
     this.curentProject = null;
@@ -57,41 +69,34 @@
       designWin.destroy();
     }
 
-    return Application.prototype.destroy.apply(this, arguments);
-  };
+    return super.destroy(...arguments);
+  }
 
-  ApplicationIDE.prototype.init = function(settings, metadata) {
-    Application.prototype.init.apply(this, arguments);
+  init(settings, metadata) {
+    super.init(...arguments);
 
     var self = this;
+    self._addWindow(new PropertiesWindow(self, metadata));
+    self._addWindow(new DesignerWindow(self, metadata));
+    self._addWindow(new MainWindow(self, metadata), null, true);
 
-    var url = API.getApplicationResource(this, './scheme.html');
-    var scheme = GUI.createScheme(url);
-    scheme.load(function(error, result) {
-      self._addWindow(new OSjs.Applications.ApplicationIDE.PropertiesWindow(self, metadata, scheme));
-      self._addWindow(new OSjs.Applications.ApplicationIDE.DesignerWindow(self, metadata));
-      self._addWindow(new OSjs.Applications.ApplicationIDE.MainWindow(self, metadata, scheme), null, true);
-
-      var file = self._getArgument('file');
-      if ( file ) {
-        self.loadProject(null, file.path);
-      }
-    });
+    var file = self._getArgument('file');
+    if ( file ) {
+      self.loadProject(null, file.path);
+    }
 
     this.globalClickEvent = function(ev) {
       self.onDOMElementClicked(ev, ev.target || ev.srcElement);
     };
 
     document.addEventListener('click', this.globalClickEvent, false);
-
-    this._setScheme(scheme);
-  };
+  }
 
   //
   // HELPERS
   //
 
-  ApplicationIDE.prototype.windowAction = function(fn, args) {
+  windowAction(fn, args) {
     var mainWin = this.getMainWindow();
     if ( mainWin ) {
       mainWin[fn].apply(mainWin, args);
@@ -106,46 +111,45 @@
     if ( designWin ) {
       designWin[fn].apply(designWin, args);
     }
-  };
+  }
 
-  ApplicationIDE.prototype.loadProject = function(name, path) {
+  loadProject(name, path) {
     var self = this;
 
     this.currentProject = null;
     this.windowAction('_toggleLoading', [true]);
     this.windowAction('clear', []);
 
-    this.currentProject = new OSjs.Applications.ApplicationIDE.Project(name, path);
+    this.currentProject = new Project(name, path);
     this.currentProject.load(this, function(err) {
       self.windowAction('_toggleLoading', [false]);
       if ( !err ) {
         self.windowAction('load', [self.currentProject]);
 
-        self._setArgument('file', new VFS.File(self.currentProject.path));
+        self._setArgument('file', new FileMetadata(self.currentProject.path));
       }
     });
-  };
+  }
 
-  ApplicationIDE.prototype.toggleDesignerWindow = function() {
+  toggleDesignerWindow() {
     var win = this.getDesignerWindow();
     if ( win ) {
       win._minimize();
     }
-  };
+  }
 
-  ApplicationIDE.prototype.togglePropertiesWindow = function() {
+  togglePropertiesWindow() {
     var win = this.getPropertiesWindow();
     if ( win ) {
       win._minimize();
     }
-  };
+  }
 
   //
   // PROPERTY EVENTS
   //
 
-
-  ApplicationIDE.prototype.onAddMime = function(mime) {
+  onAddMime(mime) {
     if ( !this.currentProject ) {
       return;
     }
@@ -155,9 +159,9 @@
     if ( propWin ) {
       propWin.load(this.currentProject);
     }
-  };
+  }
 
-  ApplicationIDE.prototype.onApplyMetadata = function(metadata) {
+  onApplyMetadata(metadata) {
     if ( !this.currentProject ) {
       return;
     }
@@ -167,13 +171,12 @@
 
     var win = this.getDesignerWindow();
     if ( win ) {
-      win.render()
+      win.render();
     }
-  };
+  }
 
-  ApplicationIDE.prototype.onAddFragment = function() {
+  onAddFragment() {
     var self = this;
-    var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
 
     if ( !this.currentProject ) {
@@ -199,8 +202,8 @@
       }
     }
 
-    API.createDialog(function(args, callback) {
-      self.fragmentDialog = new OSjs.Applications.ApplicationIDE.FragmentDialog(args, callback);
+    Dialog.create(function(args, callback) {
+      self.fragmentDialog = new FragmentDialog(args, callback);
 
       return self.fragmentDialog;
     }, {
@@ -212,9 +215,9 @@
         done(data);
       }
     }, this);
-  };
+  }
 
-  ApplicationIDE.prototype.onRemoveFragment = function() {
+  onRemoveFragment() {
     if ( !this.currentProject ) {
       return;
     }
@@ -223,7 +226,7 @@
     if ( this.currentProject.removeFragment(idx) ) {
       var win = this.getDesignerWindow();
       if ( win ) {
-        win.render()
+        win.render();
       }
 
       var propWin = this.getPropertiesWindow();
@@ -231,9 +234,9 @@
         propWin.load(this.currentProject);
       }
     }
-  };
+  }
 
-  ApplicationIDE.prototype.onSelectFragment = function(index) {
+  onSelectFragment(index) {
     if ( !this.currentProject ) {
       return;
     }
@@ -242,16 +245,16 @@
 
     var win = this.getDesignerWindow();
     if ( win ) {
-      win.render()
+      win.render();
     }
 
     var propWin = this.getPropertiesWindow();
     if ( propWin ) {
       propWin.load(this.currentProject);
     }
-  };
+  }
 
-  ApplicationIDE.prototype.onPropertyApply = function(xpath, tagName, property, originalValue, value) {
+  onPropertyApply(xpath, tagName, property, originalValue, value) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
     var self = this;
@@ -260,7 +263,6 @@
       return;
     }
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
     var target = win.getElement(xpath);
     var ttarget = this.currentProject.getElement(xpath);
 
@@ -268,17 +270,17 @@
     console.log('Xpath', xpath);
     console.log('Property', property);
     console.log('Value', originalValue, value);
-    console.log('Element', tagName, elements[tagName]);
+    console.log('Element', tagName, Elements[tagName]);
     console.log('Target', target);
     console.log('Template Target', ttarget);
     console.groupEnd();
 
-    if ( ttarget && elements[tagName] ) {
+    if ( ttarget && Elements[tagName] ) {
       var result;
-      if ( typeof elements[tagName].onpropertyupdate === 'function' ) {
-        result = elements[tagName].onpropertyupdate(ttarget, tagName, property, value);
+      if ( typeof Elements[tagName].onpropertyupdate === 'function' ) {
+        result = Elements[tagName].onpropertyupdate(ttarget, tagName, property, value);
       } else {
-        result = OSjs.Applications.ApplicationIDE.setProperty(ttarget, tagName, property, value);
+        result = Utils.setProperty(ttarget, tagName, property, value);
       }
 
       if ( tagName === 'application-window' ) {
@@ -305,9 +307,9 @@
     }
 
     return true;
-  };
+  }
 
-  ApplicationIDE.prototype.onPropertySelected = function(property, item) {
+  onPropertySelected(property, item) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
     if ( !win || !propWin ) {
@@ -318,20 +320,19 @@
     var tagName;
 
     if ( property && item ) {
-      var elements = OSjs.Applications.ApplicationIDE.Elements;
       tagName = item.tagName;
 
       if ( item.path ) {
-        value = this.currentProject.getElementProperty(item.path, tagName, elements[tagName], property);
+        value = this.currentProject.getElementProperty(item.path, tagName, Elements[tagName], property);
       } else {
         value = property === 'id' ? this.currentProject.getFragmentName() : null;
       }
     }
 
     propWin.selectProperty(property, value, tagName);
-  };
+  }
 
-  ApplicationIDE.prototype.onDeleteElementClick = function(xpath, tagName) {
+  onDeleteElementClick(xpath, tagName) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
     if ( !win ) {
@@ -340,18 +341,17 @@
 
     console.group('ApplicationIDE::onDeleteElementClick()');
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
     var target = win.getElement(xpath);
     var ttarget = this.currentProject.getElement(xpath);
 
     console.log('Xpath', xpath);
-    console.log('Element', tagName, elements[tagName]);
+    console.log('Element', tagName, Elements[tagName]);
     console.log('Target', target);
     console.log('Template Target', ttarget);
     console.groupEnd();
 
     if ( target && ttarget ) {
-      Utils.$remove(ttarget);
+      DOM.$remove(ttarget);
 
       if ( win ) {
         win.render();
@@ -361,10 +361,9 @@
         propWin.load(this.currentProject);
       }
     }
-  };
+  }
 
-  ApplicationIDE.prototype.onElementSelected = function(xpath, tagName) {
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
+  onElementSelected(xpath, tagName) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
 
@@ -374,16 +373,15 @@
 
     var target = null;
     var ttarget = null;
-    var props = null;
     var dxpath = xpath;
 
     if ( xpath ) {
       target = win.getElement(xpath);
       ttarget = this.currentProject.getElement(xpath);
 
-      if ( elements[tagName].selectQuery ) {
-        var idx = Utils.$index(ttarget);
-        dxpath = elements[tagName].selectQuery(idx, xpath);
+      if ( Elements[tagName].selectQuery ) {
+        var idx = DOM.$index(ttarget);
+        dxpath = Elements[tagName].selectQuery(idx, xpath);
 
         target = win.getElement(dxpath);
       }
@@ -395,7 +393,7 @@
 
     console.group('ApplicationIDE::onElementSelected()');
     console.log('Xpath', xpath);
-    console.log('Element', tagName, elements[tagName]);
+    console.log('Element', tagName, Elements[tagName]);
     console.log('Target', target);
     console.log('Template Target', ttarget);
     console.groupEnd();
@@ -403,15 +401,17 @@
     var props = {};
     if ( target ) {
       win.selectElement(target);
-      props = this.currentProject.getElementProperties(xpath, tagName, elements[tagName]);
+      props = this.currentProject.getElementProperties(xpath, tagName, Elements[tagName]);
     }
 
     propWin.renderProperties(xpath, tagName, props);
-  };
+  }
 
-  ApplicationIDE.prototype.onTreeElementDropped = function(data) {
+  onTreeElementDropped(data) {
     var self = this;
     var win = this.getDesignerWindow();
+    var propWin;
+
     if ( !win || !data.src || !data.dest || (data.src.path === data.dest.path) ) {
       return;
     }
@@ -431,7 +431,7 @@
     var destTarget = this.currentProject.getElement(data.dest.path.replace(/^\//, ''));
 
     function done() {
-      win.render()
+      win.render();
 
       if ( propWin ) {
         propWin.load(self.currentProject);
@@ -440,15 +440,15 @@
 
     if ( sourceTarget && destTarget ) {
 
-      var propWin = this.getPropertiesWindow();
+      propWin = this.getPropertiesWindow();
 
       if ( data.dest.isContainer ) {
-        var valid = OSjs.Applications.ApplicationIDE.isValidTarget(
-          sourceTarget.tagName.toLowerCase(), 
+        var valid = Utils.isValidTarget(
+          sourceTarget.tagName.toLowerCase(),
           destTarget.tagName.toLowerCase() );
 
         if ( valid !== true ) {
-          var wm = OSjs.Core.getWindowManager();
+          var wm = WindowManager.instance;
           if ( wm ) {
             wm.notification({
               icon: 'status/important.png',
@@ -469,13 +469,13 @@
 
       done();
     }
-  };
+  }
 
   //
   // GLOBAL EVENTS
   //
 
-  ApplicationIDE.prototype.onDOMElementClicked = function(ev, target) {
+  onDOMElementClicked(ev, target) {
     function isValid(el) {
       if ( el ) {
         if ( el.getAttribute('data-ide-element') === 'true' || el.getAttribute('data-ide-container') === 'true' ) {
@@ -486,21 +486,20 @@
     }
 
     if ( isValid(target) ) {
-      if ( Utils.$hasClass(target, 'ide-selected') ) {
+      if ( DOM.$hasClass(target, 'ide-selected') ) {
         if ( isValid(target.parentNode) ) {
           target = target.parentNode;
         }
       }
       this.onElementClicked(target);
     }
-  };
+  }
 
   //
   // DESIGNER EVENTS
   //
 
-
-  ApplicationIDE.prototype.onWindowResize = function(dim) {
+  onWindowResize(dim) {
     if ( !this.currentProject ) {
       return;
     }
@@ -508,9 +507,9 @@
     var frag = this.currentProject.getFragment();
     this.onPropertyApply('', frag.tagName.toLowerCase(), 'width', dim.w, dim.w);
     this.onPropertyApply('', frag.tagName.toLowerCase(), 'height', dim.h, dim.h);
-  };
+  }
 
-  ApplicationIDE.prototype.onElementClicked = function(target) {
+  onElementClicked(target) {
     var win = this.getDesignerWindow();
     var propWin = this.getPropertiesWindow();
 
@@ -518,8 +517,8 @@
       return;
     }
 
-    var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
-    var xpath = OSjs.Applications.ApplicationIDE.getXpathByElement(target).replace(rootPath + '/', '');
+    var rootPath = Utils.getXpathByElement(win._$root);
+    var xpath = Utils.getXpathByElement(target).replace(rootPath + '/', '');
     var tagName = target.tagName.toLowerCase();
 
     win.selectElement(target, true);
@@ -531,17 +530,15 @@
     if ( propWin ) {
       propWin.selectElement(xpath, tagName, true);
     }
-  };
+  }
 
-  ApplicationIDE.prototype.onElementDropped = function(xpath, tagName, elementTagName, dragData) {
+  onElementDropped(xpath, tagName, elementTagName, dragData) {
     if ( !xpath ) {
       console.error('onElementDropped()', 'NO XPATH', xpath);
       //return;
     }
 
-    var elements = OSjs.Applications.ApplicationIDE.Elements;
-
-    if ( elements[tagName] && (elements[tagName].isExternal || !elements[tagName].isContainer) ) {
+    if ( Elements[tagName] && (Elements[tagName].isExternal || !Elements[tagName].isContainer) ) {
       console.warn('Invalid target');
       return;
     }
@@ -555,7 +552,7 @@
       return;
     }
 
-    var rootPath = OSjs.Applications.ApplicationIDE.getXpathByElement(win._$root);
+    var rootPath = Utils.getXpathByElement(win._$root);
     xpath = (xpath || '').replace(rootPath, '');
 
     var target = win.getElement(xpath.replace(/^\//, '')) || win._$root;
@@ -563,18 +560,18 @@
 
     console.group('ApplicationIDE::onElementDropped()');
     console.log('Xpath', xpath);
-    console.log('Element', tagName, elements[tagName]);
+    console.log('Element', tagName, Elements[tagName]);
     console.log('Target', target);
     console.log('Template Target', ttarget);
-    console.log('Teplate Element', elementTagName, elements[elementTagName]);
+    console.log('Teplate Element', elementTagName, Elements[elementTagName]);
 
     if ( target && ttarget ) {
       var el = document.createElement(elementTagName);
-      var setProps = elements[elementTagName].properties || {};
+      var setProps = Elements[elementTagName].properties || {};
 
       Object.keys(setProps).forEach(function(k) {
         var val = setProps[k];
-        var ref = elements[elementTagName];
+        var ref = Elements[elementTagName];
 
         if ( typeof setProps[k] === 'function' ) {
           //val = setProps[k](null, elementTagName);
@@ -596,14 +593,14 @@
         }
       });
 
-      if ( typeof elements[elementTagName].oncreate === 'function' ) {
-        elements[elementTagName].oncreate(el, ttarget, elementTagName);
+      if ( typeof Elements[elementTagName].oncreate === 'function' ) {
+        Elements[elementTagName].oncreate(el, ttarget, elementTagName);
       }
 
       ttarget.appendChild(el);
 
       if ( win ) {
-        win.render()
+        win.render();
       }
 
       if ( propWin ) {
@@ -612,49 +609,48 @@
     }
 
     console.groupEnd();
-  };
+  }
 
   //
   // MAIN EVENTS
   //
 
-  ApplicationIDE.prototype.onNew = function() {
+  onNew() {
     var self = this;
 
     this._setArgument('file', null);
 
-    API.createDialog('Input', {
+    Dialog.create('Input', {
       message: 'Please enter the name of your project',
       value: 'MyProject'
     }, function(ev, btn, name) {
       if ( btn === 'ok' && name ) {
         var projectPath = 'home:///.packages/' + name;
 
-        VFS.exists(projectPath, function(err, res) {
-          if ( err || res ) {
-            API.createDialog('Confirm', {
+        VFS.exists(projectPath).then((res) => {
+          if ( res ) {
+            return Dialog.create('Confirm', {
               message: 'Overwrite project with the name ' + name + '?',
               buttons: ['yes', 'no']
             }, function(ev, button, result) {
               if ( button === 'ok' || button === 'yes' ) {
-                VFS.mkdir('home:///.packages', function() {
+                VFS.mkdir('home:///.packages').finally(() => {
                   self.loadProject(name);
                 });
               }
             });
-            return;
           }
 
-          self.loadProject(name);
+          return self.loadProject(name);
         });
       }
     });
-  };
+  }
 
-  ApplicationIDE.prototype.onOpen = function() {
+  onOpen() {
     var self = this;
 
-    API.createDialog('File', {
+    Dialog.create('File', {
       path: 'home:///.packages',
       select: 'dir'
     }, function(ev, button, result) {
@@ -662,20 +658,20 @@
         self.loadProject(null, result.path);
       }
     });
-  };
+  }
 
-  ApplicationIDE.prototype.onSave = function(type) {
+  onSave(type) {
     var self = this;
 
     if ( !this.currentProject ) {
       return;
     }
 
-    this._setArgument('file', new VFS.File(this.currentProject.path));
+    this._setArgument('file', new FileMetadata(this.currentProject.path));
 
     this.windowAction('_toggleLoading', [true]);
     this.currentProject.save(type, function() {
-      var pm = OSjs.Core.getPackageManager();
+      var pm = PackageManager.instance;
 
       function done() {
         self.windowAction('_toggleLoading', [false]);
@@ -687,31 +683,29 @@
         done();
       }
     });
-  };
+  }
 
   //
   // GETTERS
   //
 
-  ApplicationIDE.prototype.getMainWindow = function() {
+  getMainWindow() {
     return this._getWindow(null);
-  };
+  }
 
-  ApplicationIDE.prototype.getDesignerWindow = function() {
+  getDesignerWindow() {
     return this._getWindowsByTag('designer')[0];
-  };
+  }
 
-  ApplicationIDE.prototype.getPropertiesWindow = function() {
+  getPropertiesWindow() {
     return this._getWindowsByTag('properties')[0];
-  };
+  }
 
+}
 
-  /////////////////////////////////////////////////////////////////////////////
-  // EXPORTS
-  /////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+/////////////////////////////////////////////////////////////////////////////
 
-  OSjs.Applications = OSjs.Applications || {};
-  OSjs.Applications.ApplicationIDE = OSjs.Applications.ApplicationIDE || {};
-  OSjs.Applications.ApplicationIDE.Class = ApplicationIDE;
+OSjs.Applications.ApplicationIDE = ApplicationIDE;
 
-})(OSjs.Core.Application, OSjs.Core.Window, OSjs.Utils, OSjs.API, OSjs.VFS, OSjs.GUI);

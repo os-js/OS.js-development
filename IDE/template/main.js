@@ -27,73 +27,47 @@
  * @author  Anders Evenrud <andersevenrud@gmail.com>
  * @licence Simplified BSD License
  */
-(function(Application, Window, Utils, API, VFS, GUI) {
-  'use strict';
+const Application = OSjs.require('core/application');
+const Window = OSjs.require('core/window');
+const GUIScheme = OSjs.require('gui/scheme');
 
-  /////////////////////////////////////////////////////////////////////////////
-  // WINDOWS
-  /////////////////////////////////////////////////////////////////////////////
-
-  function ApplicationEXAMPLEWindow(app, metadata, scheme) {
-    Window.apply(this, ['ApplicationEXAMPLEWindow', {
+class ApplicationEXAMPLEWindow extends Window {
+  constructor(app, metadata) {
+    super('ApplicationEXAMPLEWindow', {
       icon: metadata.icon,
       title: metadata.name,
       width: 400,
       height: 200
-    }, app, scheme]);
+    }, app);
   }
 
-  ApplicationEXAMPLEWindow.prototype = Object.create(Window.prototype);
-  ApplicationEXAMPLEWindow.constructor = Window.prototype;
+  init(wmRef, app) {
+    const root = super.init(...arguments);
 
-  ApplicationEXAMPLEWindow.prototype.init = function(wmRef, app, scheme) {
-    var root = Window.prototype.init.apply(this, arguments);
-    var self = this;
-
-    // Load and set up scheme (GUI) here
-    scheme.render(this, 'EXAMPLEWindow', root);
-
-    return root;
-  };
-
-  ApplicationEXAMPLEWindow.prototype.destroy = function() {
-    Window.prototype.destroy.apply(this, arguments);
-  };
-
-  /////////////////////////////////////////////////////////////////////////////
-  // APPLICATION
-  /////////////////////////////////////////////////////////////////////////////
-
-  function ApplicationEXAMPLE(args, metadata) {
-    Application.apply(this, ['ApplicationEXAMPLE', args, metadata]);
-  }
-
-  ApplicationEXAMPLE.prototype = Object.create(Application.prototype);
-  ApplicationEXAMPLE.constructor = Application;
-
-  ApplicationEXAMPLE.prototype.destroy = function() {
-    return Application.prototype.destroy.apply(this, arguments);
-  };
-
-  ApplicationEXAMPLE.prototype.init = function(settings, metadata) {
-    Application.prototype.init.apply(this, arguments);
-
-    var self = this;
-    var url = API.getApplicationResource(this, './scheme.html');
-    var scheme = GUI.createScheme(url);
-    scheme.load(function(error, result) {
-      self._addWindow(new ApplicationEXAMPLEWindow(self, metadata, scheme));
+    // You should replace this:
+    const scheme = new GUIScheme(app._getResource('./scheme.html'));
+    scheme.load((error, result) => {
+      scheme.render(this, 'EXAMPLEWindow', root);
     });
 
-    this._setScheme(scheme);
-  };
+    // With this:
+    //this._render('EXAMPLEWindow', require('osjs-scheme-loader!./scheme.html'));
 
-  /////////////////////////////////////////////////////////////////////////////
-  // EXPORTS
-  /////////////////////////////////////////////////////////////////////////////
+    return root;
+  }
+}
 
-  OSjs.Applications = OSjs.Applications || {};
-  OSjs.Applications.ApplicationEXAMPLE = OSjs.Applications.ApplicationEXAMPLE || {};
-  OSjs.Applications.ApplicationEXAMPLE.Class = ApplicationEXAMPLE;
+class ApplicationEXAMPLE extends Application {
 
-})(OSjs.Core.Application, OSjs.Core.Window, OSjs.Utils, OSjs.API, OSjs.VFS, OSjs.GUI);
+  constructor(args, metadata) {
+    super('ApplicationEXAMPLE', args, metadata);
+  }
+
+  init(settings, metadata) {
+    super.init(...arguments);
+    this._addWindow(new ApplicationEXAMPLEWindow(self, metadata));
+  }
+
+}
+
+OSjs.Applications.ApplicationEXAMPLE = ApplicationEXAMPLE;

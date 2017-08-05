@@ -1,22 +1,17 @@
 {
-  "className":  "ApplicationIDE",
-  "name":       "IDE",
+  "className": "ApplicationIDE",
+  "name": "IDE",
   "mime": [
     "osjs\\/project"
   ],
-  "icon":       "categories/applications-development.png",
-  "singular":   true,
-  "category":   "development",
-  "preload":    [
-    {"src": "init.js", "type": "javascript"},
+  "icon": "categories/applications-development.png",
+  "singular": true,
+  "category": "development",
+  "build": {
+    "copy": ["icons", "template"]
+  },
+  "preload": [
     {"src": "main.js", "type": "javascript"},
-    {"src": "window-main.js", "type": "javascript"},
-    {"src": "window-properties.js", "type": "javascript"},
-    {"src": "window-designer.js", "type": "javascript"},
-    {"src": "dialog-fragment.js", "type": "javascript"},
     {"src": "main.css", "type": "stylesheet"}
   ]
 }
-
-
-
