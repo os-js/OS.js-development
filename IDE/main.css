@@ -53,6 +53,7 @@
   min-width : 100%;
   min-height : 100%;
   display : block;
+  position : relative;
 }
 .ApplicationIDEDesignerWindow gui-fragment:before {
   position : absolute;
