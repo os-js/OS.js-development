@@ -46,6 +46,9 @@
 /**
  * Overrides
  */
+.ApplicationIDEDesignerWindow application-window-content {
+  overflow : hidden;
+}
 .ApplicationIDEDesignerWindow gui-fragment {
   min-width : 100%;
   min-height : 100%;
