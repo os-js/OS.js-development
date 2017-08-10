@@ -65,7 +65,7 @@ class ApplicationEXAMPLE extends Application {
 
   init(settings, metadata) {
     super.init(...arguments);
-    this._addWindow(new ApplicationEXAMPLEWindow(self, metadata));
+    this._addWindow(new ApplicationEXAMPLEWindow(this, metadata));
   }
 
 }
