@@ -19,13 +19,19 @@ https://www.youtube.com/watch?v=qPhBpkbeZBU
 
 ![ScreenShot](https://raw.githubusercontent.com/os-js/OS.js-development/master/doc/ide.png)
 
-#### Status
+### Installation
+
+```
+./bin/add-package-repo.sh development https://github.com/os-js/OS.js-development.git
+```
+
+### Status
 
 In progress, basic interface designing works. You can create, save and load projects.
 
 **Does not work properly in firefox due to a [bug](https://bugzilla.mozilla.org/show_bug.cgi?id=568313) in the browser**
 
-#### TODO
+### TODO
 
 * [ ] Menu Editor
 * [ ] Adding of files to manifest
@@ -36,7 +42,7 @@ In progress, basic interface designing works. You can create, save and load proj
 * [ ] Update className on metadata change (**do not change this one at the moment, name your project correctly from the start**)
 * [ ] https://bugzilla.mozilla.org/show_bug.cgi?id=568313
 
-#### How to use
+### How to use
 
 Just select `File -> New` to create a new project. It will be saved in `home:///.packages/ProjectName`.
 
