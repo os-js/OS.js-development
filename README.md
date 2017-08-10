@@ -19,6 +19,8 @@ https://www.youtube.com/watch?v=qPhBpkbeZBU
 
 ![ScreenShot](https://raw.githubusercontent.com/os-js/OS.js-development/master/doc/ide.png)
 
+**As of v2.1 of OS.js you cannot run this package directly after designing. I will introduce compilation + editing in the next release of this package**
+
 ### Installation
 
 ```
